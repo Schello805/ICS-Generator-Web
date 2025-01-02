@@ -166,4 +166,71 @@ body {
 .accordion .card-header {
     background-color: #f8f9fa;
     padding: 0.75rem 1.25rem;
+}
+
+/* Select2 Timepicker Styles */
+.select2-container--bootstrap4 .select2-selection {
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+}
+
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+    line-height: 1.5;
+    padding-left: 0;
+}
+
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__placeholder {
+    color: #6c757d;
+}
+
+.select2-container--bootstrap4 .select2-results__option--highlighted[aria-selected] {
+    background-color: #007bff;
+}
+
+.select2-container--bootstrap4 .select2-results__group {
+    padding: 6px;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+/* Hover-Effekte für Buttons */
+.btn {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Hover-Effekt für das Logo */
+.header img {
+    transition: transform 0.3s;
+}
+
+.header img:hover {
+    transform: scale(1.05);
+}
+
+/* Verbesserte Card-Styles */
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+/* Accordion-Animation */
+.collapse {
+    transition: all 0.3s ease-out;
+}
+
+.btn-link {
+    transition: color 0.3s;
+}
+
+.btn-link:hover {
+    color: #0056b3;
 } 

@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICS Datei erstellen</title>
+    <title>ICS Tools - Kalenderdateien einfach erstellen</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
 </head>
 
@@ -25,16 +26,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item active">
-                        <a class="nav-link" href="index.html">ICS Generator</a>
+                        <a class="nav-link" href="index.html">Startseite</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="generator.html">Termine erstellen</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="validator.html">ICS Validator</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="impressum.html">Impressum</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="privacy.html">Datenschutz</a>
                     </li>
                 </ul>
             </div>
@@ -42,10 +40,28 @@
     </nav>
     <div class="container mt-5">
         <div class="header">
-            <h2 class="mb-4">ICS Generator</h2>
-            <img src="DigitalCoach.png" alt="Digital Coach">
+            <div>
+                <h1 class="mb-4 animate__animated animate__fadeInDown">ICS Tools</h1>
+                <p class="lead animate__animated animate__fadeIn animate__delay-1s">
+                    Erstellen und validieren Sie Kalenderdateien im iCalendar-Format
+                </p>
+                <div class="btn-group mb-4">
+                    <a href="generator.html" class="btn btn-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s">
+                        <i class="fas fa-calendar-plus"></i> Termine erstellen
+                    </a>
+                    <a href="validator.html" class="btn btn-outline-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s">
+                        <i class="fas fa-check-circle"></i> ICS validieren
+                    </a>
+                    <button onclick="document.getElementById('importFile').click()" 
+                            class="btn btn-outline-secondary btn-lg animate__animated animate__fadeInLeft animate__delay-1s">
+                        <i class="fas fa-file-import"></i> ICS importieren
+                    </button>
+                    <input type="file" id="importFile" accept=".ics" style="display: none" onchange="importAndRedirect(this)">
+                </div>
+            </div>
+            <img src="DigitalCoach.png" alt="Digital Coach" class="animate__animated animate__fadeInRight animate__delay-1s">
         </div>
- <h4>Erstelle mühelos iCalendar-Einladungen</h4>
+        <h4 class="animate__animated animate__fadeIn animate__delay-2s">Erstelle mühelos iCalendar-Einladungen</h4>
         <p>Suchst du nach einer einfachen Möglichkeit, iCalendar-Einladungen mit Anhängen oder relevanten URLs zu erstellen? Dann ist mein Programm genau das Richtige für dich! Mit dieser benutzerfreundlichen Anwendung kannst du im Handumdrehen einzelne oder mehrere Termine planen und direkt in eine iCalendar-Datei (.ics) exportieren.</p>
 
         <div class="accordion mb-4" id="solutionsAccordion">
@@ -152,103 +168,6 @@
                 </div>
             </div>
         </div>
-
-        <div id="eventsContainer">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0">Termin 1</h5>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="duplicateEvent(1)" title="Termin duplizieren">
-                                <i class="fas fa-copy"></i> Duplizieren
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteEvent(1)" title="Termin löschen">
-                                <i class="fas fa-trash"></i> Löschen
-                            </button>
-                        </div>
-                    </div>
-                    <form class="eventForm">
-                        <div class="form-group">
-                            <label for="summary1">Titel:*</label>
-                            <input type="text" class="form-control summary" id="summary1"
-                                placeholder="Titel eingeben" required>
-                        </div>
-                        <div class="custom-control custom-checkbox mb-3">
-                            <input type="checkbox" class="custom-control-input allDayCheckbox" id="allDay1"
-                                onchange="toggleDateTimeFields(1)">
-                            <label class="custom-control-label" for="allDay1">Ganztägiger Termin</label>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="startDate1">Startdatum:*</label>
-                                <input type="date" class="form-control startDate" id="startDate1">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="startTimeLabel1" class="time-label">Startzeit:</label>
-                                <input type="time" class="form-control startTime" id="startTime1">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="endDate1">Enddatum:*</label>
-                                <input type="date" class="form-control endDate" id="endDate1">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="endTimeLabel1" class="time-label">Endzeit:</label>
-                                <input type="time" class="form-control endTime" id="endTime1">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="location1">Ort:</label>
-                            <input type="text" class="form-control location" id="location1"
-                                placeholder="Ort eingeben">
-                        </div>
-                        <div class="form-group">
-                            <label for="description1">Beschreibung:</label>
-                            <textarea class="form-control description" id="description1" rows="3"
-                                placeholder="Beschreibung eingeben"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="attachment1">Anhang (URL):</label>
-                            <input type="text" class="form-control attachment" id="attachment1"
-                                placeholder="URL des Anhangs eingeben">
-                        </div>
-                        <div class="form-group">
-                            <label for="url1">Link:</label>
-                            <input type="text" class="form-control url" id="url1"
-                                placeholder="URL des Links eingeben">
-                        </div>
-                        <div class="form-group">
-                            <label for="reminder1">Erinnerung:</label>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <select class="form-control" id="reminderTime1">
-                                        <option value="10">10 Minuten vorher</option>
-                                        <option value="15">15 Minuten vorher</option>
-                                        <option value="30">30 Minuten vorher</option>
-                                        <option value="60">1 Stunde vorher</option>
-                                        <option value="120">2 Stunden vorher</option>
-                                        <option value="1440">1 Tag vorher</option>
-                                        <option value="2880">2 Tage vorher</option>
-                                        <option value="10080">1 Woche vorher</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="custom-control custom-checkbox mt-2">
-                                        <input type="checkbox" class="custom-control-input" id="noReminder1" 
-                                               onchange="toggleReminderField(1)">
-                                        <label class="custom-control-label" for="noReminder1">Keine Erinnerung</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <button class="btn btn-create mr-2" onclick="createICSCalendar()">ICS Datei erstellen</button>
-        <button class="btn btn-secondary" onclick="addAnotherEvent()">Weiteren Termin hinzufügen</button>
     </div>
 
     <!-- Bootstrap JS und zusätzliche Abhängigkeiten (optional) -->

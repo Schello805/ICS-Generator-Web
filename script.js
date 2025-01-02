@@ -3,9 +3,34 @@ var events = 1;
 
 window.onload = function () {
     initializePlaceholderTexts();
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('startDate1').value = today;
+    
+    const now = new Date();
+    const currentHour = `${String(now.getHours()).padStart(2, '0')}:00`;
+    document.getElementById('startTime1').value = currentHour;
+    
+    updateEndDate(1);
+    
     document.getElementById('startDate1').addEventListener('change', function() {
         updateEndDate(1);
     });
+    document.getElementById('startTime1').addEventListener('change', function() {
+        updateEndDate(1);
+    });
+    
+    // Prüfen ob eine importierte Datei vorliegt
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('import') === 'true') {
+        const importedContent = localStorage.getItem('importedICS');
+        if (importedContent) {
+            importICSFile({ 
+                files: [new Blob([importedContent], {type: 'text/calendar'})],
+                value: '' // Reset file input
+            });
+            localStorage.removeItem('importedICS');
+        }
+    }
 };
 
 function initializePlaceholderTexts() {
@@ -46,7 +71,7 @@ function formatDateTime(date, time, isAllDay) {
     return `:${date.replace(/-/g, '')}T${time.replace(/:/g, '')}00${tzString}`;
 }
 
-function generateEventBlock(summary, startDateTime, endDateTime, location, description, attachment, url, allDay) {
+function generateEventBlock(summary, startDateTime, endDateTime, location, description, attachment, url, allDay, eventNumber) {
     let event = [
         'BEGIN:VEVENT',
         `UID:${generateUID()}`,
@@ -144,7 +169,7 @@ function createICSCalendar() {
             endDateTime = endDate + "T" + endTime + ":00";
         }
 
-        icsContent += generateEventBlock(summary, startDateTime, endDateTime, location, description, attachment, url, allDay);
+        icsContent += generateEventBlock(summary, startDateTime, endDateTime, location, description, attachment, url, allDay, i);
     }
 
     icsContent += 'END:VCALENDAR\r\n';
@@ -232,6 +257,30 @@ function generateEventFormHTML(eventNumber) {
                         placeholder="https://example.com" 
                         onchange="validateURL(this, 'Link')">
                 </div>
+                <div class="form-group">
+                    <label for="reminder${eventNumber}">Erinnerung:</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <select class="form-control" id="reminderTime${eventNumber}">
+                                <option value="10">10 Minuten vorher</option>
+                                <option value="15">15 Minuten vorher</option>
+                                <option value="30">30 Minuten vorher</option>
+                                <option value="60">1 Stunde vorher</option>
+                                <option value="120">2 Stunden vorher</option>
+                                <option value="1440">1 Tag vorher</option>
+                                <option value="2880">2 Tage vorher</option>
+                                <option value="10080">1 Woche vorher</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="custom-control custom-checkbox mt-2">
+                                <input type="checkbox" class="custom-control-input" id="noReminder${eventNumber}" 
+                                       onchange="toggleReminderField(${eventNumber})">
+                                <label class="custom-control-label" for="noReminder${eventNumber}">Keine Erinnerung</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     `;
@@ -272,11 +321,23 @@ function getCurrentDateTimeUTC() {
 }
 
 function updateEndDate(eventNumber) {
-    var startDate = document.getElementById('startDate' + eventNumber);
-    var endDate = document.getElementById('endDate' + eventNumber);
+    const startDate = document.getElementById('startDate' + eventNumber).value;
+    const startTime = document.getElementById('startTime' + eventNumber).value;
+    const endDate = document.getElementById('endDate' + eventNumber);
+    const endTime = document.getElementById('endTime' + eventNumber);
     
-    if (startDate.value) {
-        endDate.value = startDate.value;
+    if (startDate) {
+        // Setze das Enddatum auf das Startdatum
+        endDate.value = startDate;
+        
+        // Wenn eine Startzeit gesetzt ist, setze die Endzeit auf eine Stunde später
+        if (startTime) {
+            const [hours, minutes] = startTime.split(':');
+            const endDateTime = new Date(2000, 0, 1, parseInt(hours), parseInt(minutes));
+            endDateTime.setHours(endDateTime.getHours() + 1);
+            
+            endTime.value = `${String(endDateTime.getHours()).padStart(2, '0')}:${String(endDateTime.getMinutes()).padStart(2, '0')}`;
+        }
     }
 }
 
@@ -305,6 +366,16 @@ function duplicateEvent(eventNumber) {
     
     // Event-Listener neu binden
     bindEventListeners(newForm, events);
+    
+    // Erinnerungseinstellungen kopieren
+    const originalReminder = document.getElementById('noReminder' + eventNumber);
+    const originalReminderTime = document.getElementById('reminderTime' + eventNumber);
+    const newReminder = newForm.querySelector(`#noReminder${events}`);
+    const newReminderTime = newForm.querySelector(`#reminderTime${events}`);
+    
+    newReminder.checked = originalReminder.checked;
+    newReminderTime.value = originalReminderTime.value;
+    newReminderTime.disabled = originalReminder.checked;
     
     // Am Ende der Liste einfügen
     document.getElementById('eventsContainer').appendChild(newForm);
@@ -369,4 +440,256 @@ function renumberEvents() {
         const number = index + 1;
         updateFormIds(form, number);
     });
+}
+
+function importICSFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const content = e.target.result;
+            
+            // Grundlegende ICS-Validierung
+            if (!content.includes('BEGIN:VCALENDAR') || !content.includes('END:VCALENDAR')) {
+                throw new Error('Die Datei scheint keine gültige ICS-Datei zu sein.');
+            }
+
+            // Prüfen auf mindestens ein Event
+            if (!content.includes('BEGIN:VEVENT')) {
+                throw new Error('Die Datei enthält keine Termine.');
+            }
+
+            parseICSContent(content);
+            
+            // Erfolgsmeldung
+            showImportMessage('success', 'Termine wurden erfolgreich importiert!');
+            
+        } catch (error) {
+            console.error('Import error:', error);
+            showImportMessage('danger', `Fehler beim Import: ${error.message}`);
+            
+            // Formular zurücksetzen
+            input.value = '';
+        }
+    };
+
+    reader.onerror = function() {
+        showImportMessage('danger', 'Fehler beim Lesen der Datei.');
+        input.value = '';
+    };
+
+    reader.readAsText(file);
+}
+
+function showImportMessage(type, message) {
+    // Bestehende Meldungen entfernen
+    const existingAlert = document.getElementById('importAlert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    // Neue Meldung erstellen
+    const alert = document.createElement('div');
+    alert.id = 'importAlert';
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    `;
+
+    // Meldung einfügen
+    const header = document.querySelector('.header');
+    header.insertAdjacentElement('afterend', alert);
+
+    // Meldung nach 5 Sekunden automatisch ausblenden
+    if (type === 'success') {
+        setTimeout(() => {
+            const alert = document.getElementById('importAlert');
+            if (alert) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+}
+
+function parseICSContent(content) {
+    try {
+        // Events aus der ICS-Datei extrahieren
+        const eventRegex = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/g;
+        const events = [...content.matchAll(eventRegex)];
+        
+        if (events.length === 0) {
+            throw new Error('Keine Termine in der ICS-Datei gefunden.');
+        }
+
+        // Bestehende Events löschen
+        document.getElementById('eventsContainer').innerHTML = '';
+        window.events = 0;
+
+        // Jeden Event parsen und ins Formular einfügen
+        events.forEach((event) => {
+            try {
+                const eventContent = event[1];
+                addEventFromICS(parseEventProperties(eventContent));
+            } catch (error) {
+                console.warn('Fehler beim Parsen eines Events:', error);
+                // Weiter mit nächstem Event
+            }
+        });
+    } catch (error) {
+        throw new Error('Fehler beim Verarbeiten der ICS-Datei: ' + error.message);
+    }
+}
+
+function parseEventProperties(eventContent) {
+    const properties = {};
+    const lines = eventContent.split('\r\n').map(line => line.trim());
+
+    lines.forEach(line => {
+        if (line.includes(':')) {
+            const [key, ...values] = line.split(':');
+            const value = values.join(':')
+                .replace(/\\n/g, '\n')
+                .replace(/\\,/g, ',')
+                .replace(/\\;/g, ';');
+            
+            switch (key) {
+                case 'SUMMARY':
+                    properties.summary = value;
+                    break;
+                case 'LOCATION':
+                    properties.location = value;
+                    break;
+                case 'DESCRIPTION':
+                    properties.description = value;
+                    break;
+                case 'DTSTART':
+                    properties.start = parseICSDate(value);
+                    break;
+                case 'DTEND':
+                    properties.end = parseICSDate(value);
+                    break;
+                case 'URL':
+                    properties.url = value;
+                    break;
+                case 'ATTACH':
+                    properties.attachment = value;
+                    break;
+            }
+        }
+    });
+
+    // Prüfen auf Erinnerung
+    const hasAlarm = eventContent.includes('BEGIN:VALARM');
+    if (hasAlarm) {
+        const triggerMatch = eventContent.match(/TRIGGER:-PT(\d+)M/);
+        if (triggerMatch) {
+            properties.reminderTime = triggerMatch[1];
+            properties.noReminder = false;
+        }
+    } else {
+        properties.noReminder = true;
+    }
+
+    return properties;
+}
+
+function parseICSDate(dateStr) {
+    // Entferne mögliche Zeitzonenparameter
+    dateStr = dateStr.split(';').pop();
+    
+    // Prüfen ob ganztägiges Event (nur Datum)
+    const isAllDay = !dateStr.includes('T');
+    
+    if (isAllDay) {
+        return {
+            date: `${dateStr.substr(0,4)}-${dateStr.substr(4,2)}-${dateStr.substr(6,2)}`,
+            time: null,
+            allDay: true
+        };
+    }
+
+    // Datum mit Uhrzeit
+    const hasTimezone = dateStr.includes('Z') || dateStr.includes('+') || dateStr.includes('-');
+    let time;
+    
+    if (hasTimezone) {
+        // Konvertiere UTC zu lokaler Zeit
+        const date = new Date(
+            parseInt(dateStr.substr(0,4)),
+            parseInt(dateStr.substr(4,2)) - 1,
+            parseInt(dateStr.substr(6,2)),
+            parseInt(dateStr.substr(9,2)),
+            parseInt(dateStr.substr(11,2))
+        );
+        time = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+    } else {
+        time = `${dateStr.substr(9,2)}:${dateStr.substr(11,2)}`;
+    }
+
+    return {
+        date: `${dateStr.substr(0,4)}-${dateStr.substr(4,2)}-${dateStr.substr(6,2)}`,
+        time: time,
+        allDay: false
+    };
+}
+
+function addEventFromICS(properties) {
+    addAnotherEvent();
+    const eventNumber = window.events;
+
+    // Formularfelder befüllen
+    document.getElementById(`summary${eventNumber}`).value = properties.summary || '';
+    document.getElementById(`location${eventNumber}`).value = properties.location || '';
+    document.getElementById(`description${eventNumber}`).value = properties.description || '';
+    document.getElementById(`url${eventNumber}`).value = properties.url || '';
+    document.getElementById(`attachment${eventNumber}`).value = properties.attachment || '';
+
+    // Datum und Zeit setzen
+    if (properties.start) {
+        document.getElementById(`startDate${eventNumber}`).value = properties.start.date;
+        if (properties.start.time) {
+            document.getElementById(`startTime${eventNumber}`).value = properties.start.time;
+        }
+    }
+    if (properties.end) {
+        document.getElementById(`endDate${eventNumber}`).value = properties.end.date;
+        if (properties.end.time) {
+            document.getElementById(`endTime${eventNumber}`).value = properties.end.time;
+        }
+    }
+
+    // Ganztägig-Checkbox
+    const allDayCheckbox = document.getElementById(`allDay${eventNumber}`);
+    if (properties.start && properties.start.allDay) {
+        allDayCheckbox.checked = true;
+        toggleDateTimeFields(eventNumber);
+    }
+
+    // Erinnerung setzen
+    const noReminderCheckbox = document.getElementById(`noReminder${eventNumber}`);
+    const reminderSelect = document.getElementById(`reminderTime${eventNumber}`);
+    
+    noReminderCheckbox.checked = properties.noReminder;
+    if (!properties.noReminder && properties.reminderTime) {
+        reminderSelect.value = properties.reminderTime;
+    }
+    toggleReminderField(eventNumber);
+}
+
+function importAndRedirect(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Speichern Sie die Datei temporär im localStorage
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        localStorage.setItem('importedICS', e.target.result);
+        window.location.href = 'generator.html?import=true';
+    };
+    reader.readAsText(file);
 } 
