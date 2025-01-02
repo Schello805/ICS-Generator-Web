@@ -11,27 +11,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="DigitalCoach.png" alt="Logo" height="30" class="mr-2">
-                ICS Tools
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Startseite</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="generator.html">Termine erstellen</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div id="header"></div>
 
     <div class="container mt-4">
         <h1 class="mb-4">Datenschutzerklärung</h1>
@@ -44,6 +24,18 @@
                 
                 <h3 class="h5 mt-3">Datenverarbeitung im Browser</h3>
                 <p>Der ICS Generator und Validator verarbeiten alle Daten ausschließlich lokal in Ihrem Browser. Es werden keine Daten an Server übertragen oder extern gespeichert.</p>
+                
+                <h3 class="h5 mt-3">Cookies und Tracking</h3>
+                <p>Diese Website verwendet keine Cookies und keine Tracking-Mechanismen. Alle Funktionen werden ausschließlich clientseitig im Browser ausgeführt.</p>
+                
+                <h3 class="h5 mt-3">Externe Ressourcen</h3>
+                <p>Diese Website lädt folgende externe Ressourcen:</p>
+                <ul>
+                    <li>Bootstrap CSS und JavaScript von stackpath.bootstrapcdn.com und cdn.jsdelivr.net</li>
+                    <li>Font Awesome Icons von cdnjs.cloudflare.com</li>
+                    <li>jQuery von code.jquery.com</li>
+                </ul>
+                <p>Diese Ressourcen werden nur zur Darstellung und Funktionalität der Website benötigt. Es werden keine Nutzerdaten an diese Dienste übermittelt.</p>
             </div>
         </div>
 
@@ -83,28 +75,12 @@
         <p class="text-muted">Stand: Februar 2024</p>
     </div>
 
-    <footer class="bg-dark text-light py-4 mt-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-left">
-                    <p class="mb-0">
-                        &copy; 2024 ICS Tools. Alle Rechte vorbehalten.
-                    </p>
-                </div>
-                <div class="col-md-6">
-                    <div class="text-center text-md-right">
-                        <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" class="text-light mx-2"><i class="fab fa-github"></i></a>
-                        <a href="mailto:info@schellenberger.biz" class="text-light mx-2"><i class="fas fa-envelope"></i></a>
-                        <a href="https://apps.apple.com/us/app/ics-generator/id6738963683" target="_blank" class="text-light mx-2"><i class="fab fa-app-store-ios"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <div id="footer"></div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+    <script src="js/components.js"></script>
 </body>
 
 </html> 

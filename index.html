@@ -14,30 +14,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="DigitalCoach.png" alt="Logo" height="30" class="mr-2">
-                ICS Tools
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="index.html">Startseite</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="generator.html">Termine erstellen</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="validator.html">ICS Validator</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div id="header"></div>
     <div class="container mt-5">
         <div class="header">
             <div>
@@ -169,56 +146,14 @@
         </div>
     </div>
 
+    <div id="footer"></div>
+
     <!-- Bootstrap JS und zusätzliche Abhängigkeiten (optional) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-
+    <script src="js/components.js"></script>
     <script src="script.js"></script>
-    
-     <footer class="footer mt-4 py-4 bg-dark text-light">
-        <div class="container">
-            <div class="row">
-                <!-- Spalte 1: Über das Projekt -->
-                <div class="col-md-4 mb-3">
-                    <h5 class="mb-3">ICS Tools</h5>
-                    <p class="small">Ein Open-Source-Projekt zur einfachen Erstellung und Validierung von Kalenderdateien. Ideal für Schulen, Vereine und Organisationen.</p>
-                </div>
-                
-                <!-- Spalte 2: Quick Links -->
-                <div class="col-md-4 mb-3">
-                    <h5 class="mb-3">Quick Links</h5>
-                    <ul class="list-unstyled small">
-                        <li><a href="index.html" class="text-light">ICS Generator</a></li>
-                        <li><a href="validator.html" class="text-light">ICS Validator</a></li>
-                        <li><a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" class="text-light">GitHub Repository</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Spalte 3: Rechtliches & Kontakt -->
-                <div class="col-md-4 mb-3">
-                    <h5 class="mb-3">Rechtliches & Kontakt</h5>
-                    <ul class="list-unstyled small">
-                        <li><a href="impressum.html" class="text-light">Impressum</a></li>
-                        <li><a href="privacy.html" class="text-light">Datenschutz</a></li>
-                        <li><a href="mailto:info@schellenberger.biz" class="text-light">Kontakt</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Copyright & Social Links -->
-            <div class="row mt-3 pt-3 border-top">
-                <div class="col-md-6 text-center text-md-left">
-                    <p class="small mb-0">&copy; 2024 Michael Schellenberger</p>
-                </div>
-                <div class="col-md-6 text-center text-md-right">
-                    <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" class="text-light mx-2" title="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="mailto:info@schellenberger.biz" class="text-light mx-2" title="E-Mail"><i class="fas fa-envelope"></i></a>
-                    <a href="https://Michael.Schellenberger.biz" target="_blank" class="text-light mx-2" title="Website"><i class="fas fa-globe"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
     
 </body>
 

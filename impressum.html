@@ -6,31 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Impressum - ICS Tools</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="DigitalCoach.png" alt="Logo" height="30" class="mr-2">
-                ICS Tools
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Startseite</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="generator.html">Termine erstellen</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div id="header"></div>
     <div class="container mt-2">
         <div class="mb-4">
             <h1 class="h3 mb-3">Impressum</h1>
@@ -52,7 +33,7 @@
                 <h2>Projektinformationen</h2>
                 <p>
                     Diese Webseite ist ein Open-Source-Projekt und auf GitHub verfügbar:<br>
-                    <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank">
+                    <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" rel="noopener noreferrer">
                         github.com/Schello805/ICS-Generator-Web
                     </a>
                 </p>
@@ -72,19 +53,29 @@
                     Wir übernehmen keine Gewähr für die Richtigkeit, Vollständigkeit und 
                     Aktualität der erstellten oder validierten Dateien.
                 </p>
+
+                <h2>Haftung für Links</h2>
+                <p>
+                    Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. 
+                    Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. 
+                    Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. 
+                    Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. 
+                    Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.
+                </p>
+                <p>
+                    Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer 
+                    Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+                </p>
             </div>
         </div>
     </div>
 
-    <footer class="footer mt-4 py-4 bg-dark text-light">
-        <div class="container text-center">
-            <span class="small">&copy; 2024 Michael Schellenberger. Besuchen Sie <a href="https://Michael.Schellenberger.biz" target="_blank" class="text-light">https://Michael.Schellenberger.biz</a> für weitere Informationen.</span>
-        </div>
-    </footer>
+    <div id="footer"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+    <script src="js/components.js"></script>
 </body>
 
 </html> 

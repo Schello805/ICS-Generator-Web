@@ -2,33 +2,36 @@ var scriptRevision = 15;
 var events = 1;
 
 window.onload = function () {
-    initializePlaceholderTexts();
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('startDate1').value = today;
-    
-    const now = new Date();
-    const currentHour = `${String(now.getHours()).padStart(2, '0')}:00`;
-    document.getElementById('startTime1').value = currentHour;
-    
-    updateEndDate(1);
-    
-    document.getElementById('startDate1').addEventListener('change', function() {
+    // Prüfen, ob wir auf der Generator-Seite sind (generator.html)
+    if (window.location.pathname.includes('generator.html')) {
+        initializePlaceholderTexts();
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate1').value = today;
+        
+        const now = new Date();
+        const currentHour = `${String(now.getHours()).padStart(2, '0')}:00`;
+        document.getElementById('startTime1').value = currentHour;
+        
         updateEndDate(1);
-    });
-    document.getElementById('startTime1').addEventListener('change', function() {
-        updateEndDate(1);
-    });
-    
-    // Prüfen ob eine importierte Datei vorliegt
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('import') === 'true') {
-        const importedContent = localStorage.getItem('importedICS');
-        if (importedContent) {
-            importICSFile({ 
-                files: [new Blob([importedContent], {type: 'text/calendar'})],
-                value: '' // Reset file input
-            });
-            localStorage.removeItem('importedICS');
+        
+        document.getElementById('startDate1').addEventListener('change', function() {
+            updateEndDate(1);
+        });
+        document.getElementById('startTime1').addEventListener('change', function() {
+            updateEndDate(1);
+        });
+        
+        // Prüfen ob eine importierte Datei vorliegt
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('import') === 'true') {
+            const importedContent = localStorage.getItem('importedICS');
+            if (importedContent) {
+                importICSFile({ 
+                    files: [new Blob([importedContent], {type: 'text/calendar'})],
+                    value: '' // Reset file input
+                });
+                localStorage.removeItem('importedICS');
+            }
         }
     }
 };
@@ -57,27 +60,38 @@ function escapeText(text) {
 }
 
 function formatDateTime(date, time, isAllDay) {
-    const tzOffset = new Date().getTimezoneOffset();
-    const offsetHours = Math.abs(Math.floor(tzOffset / 60));
-    const offsetMinutes = Math.abs(tzOffset % 60);
-    const tzString = (tzOffset > 0 ? '-' : '+') + 
-                    String(offsetHours).padStart(2, '0') + 
-                    String(offsetMinutes).padStart(2, '0');
-
     if (isAllDay) {
-        return `;VALUE=DATE:${date.replace(/-/g, '')}`;
+        return `VALUE=DATE:${date.replace(/-/g, '')}`;
     }
-    
-    return `:${date.replace(/-/g, '')}T${time.replace(/:/g, '')}00${tzString}`;
+
+    const dateObj = new Date(date + 'T' + (time || '00:00'));
+    // In UTC konvertieren
+    return dateObj.toISOString()
+        .replace(/[-:]/g, '')  // Entferne - und :
+        .replace(/\.\d{3}Z$/, 'Z');  // Entferne Millisekunden, behalte Z
+}
+
+function sanitizeInput(input) {
+    return input.replace(/[<>{}]/g, '');
 }
 
 function generateEventBlock(summary, startDateTime, endDateTime, location, description, attachment, url, allDay, eventNumber) {
+    summary = sanitizeInput(summary);
+    location = sanitizeInput(location);
+    description = sanitizeInput(description);
+    attachment = sanitizeInput(attachment);
+    url = sanitizeInput(url);
+
     let event = [
         'BEGIN:VEVENT',
         `UID:${generateUID()}`,
         `DTSTAMP:${getCurrentDateTimeUTC()}`,
-        `DTSTART${formatDateTime(startDateTime.split('T')[0], startDateTime.split('T')[1] || '000000', allDay)}`,
-        `DTEND${formatDateTime(endDateTime.split('T')[0], endDateTime.split('T')[1] || '000000', allDay)}`,
+        allDay ? 
+            `DTSTART;${formatDateTime(startDateTime.split('T')[0], null, true)}` :
+            `DTSTART:${formatDateTime(startDateTime.split('T')[0], startDateTime.split('T')[1], false)}`,
+        allDay ? 
+            `DTEND;${formatDateTime(endDateTime.split('T')[0], null, true)}` :
+            `DTEND:${formatDateTime(endDateTime.split('T')[0], endDateTime.split('T')[1], false)}`,
         `SUMMARY:${escapeText(summary)}`,
     ];
 
@@ -104,7 +118,17 @@ function generateEventBlock(summary, startDateTime, endDateTime, location, descr
 
 function isValidURL(url) {
     try {
-        new URL(url);
+        const parsedUrl = new URL(url);
+        // Erlaubte Protokolle
+        const allowedProtocols = ['http:', 'https:'];
+        if (!allowedProtocols.includes(parsedUrl.protocol)) {
+            return false;
+        }
+        // Keine IP-Adressen erlauben
+        const ipRegex = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+        if (ipRegex.test(parsedUrl.hostname)) {
+            return false;
+        }
         return true;
     } catch (e) {
         return false;
@@ -311,13 +335,10 @@ function generateUID() {
 }
 
 function getCurrentDateTimeUTC() {
-    var now = new Date();
-    return now.getUTCFullYear() +
-        ('0' + (now.getUTCMonth() + 1)).slice(-2) +
-        ('0' + now.getUTCDate()).slice(-2) + 'T' +
-        ('0' + now.getUTCHours()).slice(-2) +
-        ('0' + now.getUTCMinutes()).slice(-2) +
-        ('0' + now.getUTCSeconds()).slice(-2) + 'Z';
+    const now = new Date();
+    return now.toISOString()
+        .replace(/[-:]/g, '')  // Entferne - und :
+        .replace(/\.\d{3}Z$/, 'Z'); // Entferne nur Millisekunden, behalte Z
 }
 
 function updateEndDate(eventNumber) {
