@@ -4,15 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICS Validator</title>
-    <!-- Bootstrap CSS -->
+    <title>ICS Validator - Kalender-Datei prüfen</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="DigitalCoach.png" alt="Logo" height="30" class="mr-2">
@@ -32,68 +30,89 @@
                     <li class="nav-item">
                         <a class="nav-link" href="impressum.html">Impressum</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="privacy.html">Datenschutz</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
     <div class="container mt-4">
-        <div class="mb-4">
-            <h1 class="h3 mb-3">ICS Validator</h1>
-            <p class="lead text-muted">Überprüfen Sie Ihre ICS-Dateien auf Gültigkeit und Konformität.</p>
-        </div>
+        <h1>ICS Validator</h1>
+        <p class="lead">Prüfen Sie Ihre ICS-Datei auf Konformität mit dem RFC 5545 Standard</p>
 
-        <div class="card mb-3">
+        <div class="card mb-4">
             <div class="card-body">
-                <form id="validatorForm">
-                    <div class="custom-file mb-3">
-                        <input type="file" class="custom-file-input" id="icsFile" accept=".ics">
-                        <label class="custom-file-label" for="icsFile">ICS-Datei auswählen</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-check-circle mr-2"></i>Datei validieren
-                    </button>
-                    <div id="loadingSpinner" class="spinner-border text-primary ml-2" role="status" style="display: none;">
-                        <span class="sr-only">Lädt...</span>
-                    </div>
-                </form>
+                <h5 class="card-title">Datei hochladen</h5>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="icsFile" accept=".ics">
+                    <label class="custom-file-label" for="icsFile">ICS-Datei auswählen...</label>
+                </div>
             </div>
         </div>
 
-        <div id="validationResults"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Validierungsergebnisse</h5>
+                        <div id="validationResults">
+                            <div class="alert alert-info">
+                                Laden Sie eine ICS-Datei hoch, um die Validierung zu starten.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Dateiinhalt</h5>
+                        <pre id="fileContent" class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;">
+Hier wird der Inhalt der ICS-Datei angezeigt...
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <div class="card mt-4">
+        <div class="card mb-4">
             <div class="card-body">
-                <div class="form-group">
-                    <label for="icsContent">ICS Inhalt</label>
-                    <textarea class="form-control" id="icsContent" rows="10" oninput="debouncedValidation()"></textarea>
+                <h5 class="card-title">Prüfkriterien nach RFC 5545</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Grundlegende Struktur</h6>
+                        <ul>
+                            <li>BEGIN:VCALENDAR und END:VCALENDAR vorhanden</li>
+                            <li>VERSION Property (muss 2.0 sein)</li>
+                            <li>PRODID Property vorhanden</li>
+                            <li>Korrekte Verschachtelung der Komponenten</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Event-Validierung</h6>
+                        <ul>
+                            <li>Pflichtfelder in VEVENT (UID, DTSTAMP, DTSTART)</li>
+                            <li>Korrekte Datums- und Zeitformate</li>
+                            <li>Gültige Zeitzonen</li>
+                            <li>Zeilenumbrüche nach RFC-Standard</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer class="bg-dark text-light py-4 mt-auto">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-left">
-                    <p class="mb-0">
-                        &copy; 2024 ICS Tools. Alle Rechte vorbehalten.
-                    </p>
-                </div>
-                <div class="col-md-6">
-                    <div class="text-center text-md-right">
-                        <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" class="text-light mx-2"><i class="fab fa-github"></i></a>
-                        <a href="mailto:info@schellenberger.biz" class="text-light mx-2"><i class="fas fa-envelope"></i></a>
-                        <a href="https://apps.apple.com/us/app/ics-generator/id6738963683" target="_blank" class="text-light mx-2"><i class="fab fa-app-store-ios"></i></a>
-                    </div>
-                </div>
-            </div>
+    <footer class="footer mt-4 py-4 bg-dark text-light">
+        <div class="container text-center">
+            <span class="small">&copy; 2024 Michael Schellenberger. Besuchen Sie <a href="https://Michael.Schellenberger.biz" target="_blank" class="text-light">https://Michael.Schellenberger.biz</a> für weitere Informationen.</span>
         </div>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
     <script src="validator.js"></script>
 </body>
 

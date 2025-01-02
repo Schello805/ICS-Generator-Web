@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICS Datei erstellen</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="DigitalCoach.png" alt="Logo" height="30" class="mr-2">
@@ -31,141 +33,212 @@
                     <li class="nav-item">
                         <a class="nav-link" href="impressum.html">Impressum</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="privacy.html">Datenschutz</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="container mt-2">
-        <div class="mb-4">
-            <h1 class="h3 mb-3">Kalendereinträge erstellen</h1>
-            <p class="lead text-muted">Erstelle professionelle Kalendereinträge mit allen wichtigen Details und exportiere sie als .ics Datei.</p>
+    <div class="container mt-5">
+        <div class="header">
+            <h2 class="mb-4">ICS Generator</h2>
+            <img src="DigitalCoach.png" alt="Digital Coach">
         </div>
+ <h4>Erstelle mühelos iCalendar-Einladungen</h4>
+        <p>Suchst du nach einer einfachen Möglichkeit, iCalendar-Einladungen mit Anhängen oder relevanten URLs zu erstellen? Dann ist mein Programm genau das Richtige für dich! Mit dieser benutzerfreundlichen Anwendung kannst du im Handumdrehen einzelne oder mehrere Termine planen und direkt in eine iCalendar-Datei (.ics) exportieren.</p>
 
-        <!-- Neue Import/Export Sektion -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <button type="button" class="btn btn-primary mr-3" onclick="document.getElementById('importFile').click()">
-                            <i class="fas fa-file-import mr-2"></i>ICS Datei importieren
+        <div class="accordion mb-4" id="solutionsAccordion">
+            <!-- Lösung 1: ICS Datei -->
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            📅 Lösung 1: Termine als ICS-Datei bereitstellen
                         </button>
-                        <small class="text-muted">Importieren Sie bestehende ICS-Dateien zur Bearbeitung</small>
-                        <input type="file" id="importFile" accept=".ics" style="display: none" onchange="importICSFile(this)">
+                    </h2>
+                </div>
+
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#solutionsAccordion">
+                    <div class="card-body bg-light">
+                        <h5>Der einfache Weg</h5>
+                        <p>Erstellen und teilen Sie Termine mit allen Beteiligten in wenigen Schritten:</p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6>Für Bildungseinrichtungen</h6>
+                                        <ul class="mb-0">
+                                            <li>Einmalige Erstellung aller Termine</li>
+                                            <li>Export als eine ICS-Datei</li>
+                                            <li>Einfache Verteilung an alle Eltern</li>
+                                            <li>Keine technische Infrastruktur nötig</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6>Für Eltern</h6>
+                                        <ul class="mb-0">
+                                            <li>Einmaliger Import aller Termine</li>
+                                            <li>Keine manuelle Eingabe nötig</li>
+                                            <li>Sofort im eigenen Kalender verfügbar</li>
+                                            <li>Funktioniert mit allen Kalender-Apps</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-success mt-3">
+                            <strong>Perfekt für:</strong>
+                            <p class="mb-0">Schuljahresplanung, Ferienzeiten, Elternabende, Schulfeste, Klassenarbeiten und alle weiteren festen Termine des Schuljahres. Eine einmalige Erstellung spart hunderten Eltern wertvolle Zeit beim manuellen Eintragen!</p>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-success" onclick="createAndDownloadICS()">
-                        <i class="fas fa-download mr-2"></i>ICS herunterladen
-                    </button>
+                </div>
+            </div>
+
+            <!-- Lösung 2: Kalender-Abo -->
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            🔄 Lösung 2: Kalender als Abonnement anbieten
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#solutionsAccordion">
+                    <div class="card-body bg-light">
+                        <h5>Der dynamische Weg</h5>
+                        <p>Noch einen Schritt weiter: Stellen Sie Ihren Kalender als Abonnement zur Verfügung. Das bedeutet:</p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6>Für Bildungseinrichtungen</h6>
+                                        <ul class="mb-0">
+                                            <li>Termine jederzeit aktualisierbar</li>
+                                            <li>Neue Termine automatisch verteilt</li>
+                                            <li>Änderungen sofort bei allen sichtbar</li>
+                                            <li>Einmalige Einrichtung genügt</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6>Für Eltern</h6>
+                                        <ul class="mb-0">
+                                            <li>Immer aktuelle Termine</li>
+                                            <li>Keine manuelle Aktualisierung nötig</li>
+                                            <li>Automatische Synchronisation</li>
+                                            <li>Funktioniert mit allen Kalender-Apps</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <strong>So funktioniert's:</strong>
+                            <p class="mb-0">Erstellen Sie einen Online-Kalender (z.B. in Google Calendar oder Apple iCloud) und teilen Sie den Abo-Link mit den Eltern. Sobald diese den Link in ihrer Kalender-App hinzufügen, werden alle Termine automatisch synchronisiert. Bei Änderungen oder neuen Terminen wird der Kalender aller Eltern automatisch aktualisiert - ganz ohne zusätzlichen Aufwand!</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="eventsContainer">
-            <div class="card mb-4" id="event1">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Termin 1</h5>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-outline-primary btn-sm mr-2" onclick="duplicateEvent(1)">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteEvent(1)">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </div>
+            <div class="card mb-4">
                 <div class="card-body">
-                    <form class="eventForm" data-event-number="1">
-                        <div class="card bg-light mb-3">
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="summary1" class="required">Titel</label>
-                                    <input type="text" class="form-control" id="summary1">
-                                </div>
-                            </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Termin 1</h5>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="duplicateEvent(1)" title="Termin duplizieren">
+                                <i class="fas fa-copy"></i> Duplizieren
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteEvent(1)" title="Termin löschen">
+                                <i class="fas fa-trash"></i> Löschen
+                            </button>
+                        </div>
+                    </div>
+                    <form class="eventForm">
+                        <div class="form-group">
+                            <label for="summary1">Titel:*</label>
+                            <input type="text" class="form-control summary" id="summary1"
+                                placeholder="Titel eingeben" required>
                         </div>
                         <div class="custom-control custom-checkbox mb-3">
-                            <input type="checkbox" class="custom-control-input" id="allDay1" onchange="toggleDateTimeFields(1)">
-                            <label class="custom-control-label" for="allDay1">Ganztägig</label>
+                            <input type="checkbox" class="custom-control-input allDayCheckbox" id="allDay1"
+                                onchange="toggleDateTimeFields(1)">
+                            <label class="custom-control-label" for="allDay1">Ganztägiger Termin</label>
                         </div>
-                        <div class="card bg-light mb-3">
-                            <div class="card-body">
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="startDate1" class="required">Startdatum</label>
-                                        <input type="date" class="form-control startDate" id="startDate1">
-                                    </div>
-                                    <div class="form-group col-md-6 time-field-container">
-                                        <label for="startTime1" class="time-label">Startzeit</label>
-                                        <input type="time" class="form-control startTime" id="startTime1">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label for="endDate1" class="required">Enddatum</label>
-                                        <input type="date" class="form-control endDate" id="endDate1">
-                                    </div>
-                                    <div class="form-group col-md-6 time-field-container">
-                                        <label for="endTime1" class="time-label">Endzeit</label>
-                                        <input type="time" class="form-control endTime" id="endTime1">
-                                    </div>
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="startDate1">Startdatum:*</label>
+                                <input type="date" class="form-control startDate" id="startDate1">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="startTimeLabel1" class="time-label">Startzeit:</label>
+                                <input type="time" class="form-control startTime" id="startTime1">
                             </div>
                         </div>
-                        <div class="card bg-light mb-3">
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="location1">Ort</label>
-                                    <input type="text" class="form-control location" id="location1">
-                                </div>
-                                <div class="form-group mb-0">
-                                    <label for="description1">Beschreibung</label>
-                                    <textarea class="form-control description" id="description1" rows="3"></textarea>
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="endDate1">Enddatum:*</label>
+                                <input type="date" class="form-control endDate" id="endDate1">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="endTimeLabel1" class="time-label">Endzeit:</label>
+                                <input type="time" class="form-control endTime" id="endTime1">
                             </div>
                         </div>
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="attachment1">Anhang (URL)</label>
-                                    <input type="text" class="form-control attachment" id="attachment1">
-                                </div>
-                                <div class="form-group mb-0">
-                                    <label for="url1">Link</label>
-                                    <input type="text" class="form-control url" id="url1">
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label for="location1">Ort:</label>
+                            <input type="text" class="form-control location" id="location1"
+                                placeholder="Ort eingeben">
                         </div>
-                        <hr class="my-3">
-                        <div class="form-group mb-0">
-                            <label for="recurrence1">Wiederholung</label>
-                            <select class="form-control" id="recurrence1" onchange="toggleRecurrenceOptions(1)">
-                                <option value="none">Keine Wiederholung</option>
-                                <option value="daily">Täglich</option>
-                                <option value="weekly">Wöchentlich</option>
-                                <option value="monthly">Monatlich</option>
-                                <option value="yearly">Jährlich</option>
-                                <option value="custom">Benutzerdefiniert</option>
-                            </select>
+                        <div class="form-group">
+                            <label for="description1">Beschreibung:</label>
+                            <textarea class="form-control description" id="description1" rows="3"
+                                placeholder="Beschreibung eingeben"></textarea>
                         </div>
-                        <div id="recurrenceOptions1" class="mt-3" style="display: none;">
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="recurrenceInterval1">Alle</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" id="recurrenceInterval1" value="1" min="1">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text" id="intervalUnit1">Tage</span>
-                                        </div>
+                        <div class="form-group">
+                            <label for="attachment1">Anhang (URL):</label>
+                            <input type="text" class="form-control attachment" id="attachment1"
+                                placeholder="URL des Anhangs eingeben">
+                        </div>
+                        <div class="form-group">
+                            <label for="url1">Link:</label>
+                            <input type="text" class="form-control url" id="url1"
+                                placeholder="URL des Links eingeben">
+                        </div>
+                        <div class="form-group">
+                            <label for="reminder1">Erinnerung:</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="reminderTime1">
+                                        <option value="10">10 Minuten vorher</option>
+                                        <option value="15">15 Minuten vorher</option>
+                                        <option value="30">30 Minuten vorher</option>
+                                        <option value="60">1 Stunde vorher</option>
+                                        <option value="120">2 Stunden vorher</option>
+                                        <option value="1440">1 Tag vorher</option>
+                                        <option value="2880">2 Tage vorher</option>
+                                        <option value="10080">1 Woche vorher</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-checkbox mt-2">
+                                        <input type="checkbox" class="custom-control-input" id="noReminder1" 
+                                               onchange="toggleReminderField(1)">
+                                        <label class="custom-control-label" for="noReminder1">Keine Erinnerung</label>
                                     </div>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="recurrenceCount1">Anzahl</label>
-                                    <input type="number" class="form-control" id="recurrenceCount1" value="1" min="1">
-                                </div>
-                            </div>
-                            <div id="customOptions1" class="mt-3" style="display: none;">
-                                <div class="form-group">
-                                    <label>Benutzerdefiniertes Intervall (in Tagen)</label>
-                                    <input type="number" class="form-control" id="customInterval1" value="1" min="1">
                                 </div>
                             </div>
                         </div>
@@ -174,40 +247,61 @@
             </div>
         </div>
 
-        <!-- Nur noch der "Weiterer Termin" Button -->
-        <div class="text-center mt-4 mb-4">
-            <button type="button" class="btn btn-outline-primary btn-lg" onclick="addAnotherEvent()">
-                <i class="fas fa-plus mr-2"></i>Weiteren Termin hinzufügen
-            </button>
-        </div>
+        <button class="btn btn-create mr-2" onclick="createICSCalendar()">ICS Datei erstellen</button>
+        <button class="btn btn-secondary" onclick="addAnotherEvent()">Weiteren Termin hinzufügen</button>
     </div>
 
-    <footer class="bg-dark text-light py-4 mt-auto">
+    <!-- Bootstrap JS und zusätzliche Abhängigkeiten (optional) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+    <script src="script.js"></script>
+    
+     <footer class="footer mt-4 py-4 bg-dark text-light">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-left">
-                    <p class="mb-0">
-                        &copy; 2024 ICS Tools. Alle Rechte vorbehalten.
-                    </p>
+            <div class="row">
+                <!-- Spalte 1: Über das Projekt -->
+                <div class="col-md-4 mb-3">
+                    <h5 class="mb-3">ICS Tools</h5>
+                    <p class="small">Ein Open-Source-Projekt zur einfachen Erstellung und Validierung von Kalenderdateien. Ideal für Schulen, Vereine und Organisationen.</p>
                 </div>
-                <div class="col-md-6">
-                    <div class="text-center text-md-right">
-                        <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" class="text-light mx-2"><i class="fab fa-github"></i></a>
-                        <a href="mailto:info@schellenberger.biz" class="text-light mx-2"><i class="fas fa-envelope"></i></a>
-                        <a href="https://apps.apple.com/us/app/ics-generator/id6738963683" target="_blank" class="text-light mx-2"><i class="fab fa-app-store-ios"></i></a>
-                    </div>
+                
+                <!-- Spalte 2: Quick Links -->
+                <div class="col-md-4 mb-3">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled small">
+                        <li><a href="index.html" class="text-light">ICS Generator</a></li>
+                        <li><a href="validator.html" class="text-light">ICS Validator</a></li>
+                        <li><a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" class="text-light">GitHub Repository</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Spalte 3: Rechtliches & Kontakt -->
+                <div class="col-md-4 mb-3">
+                    <h5 class="mb-3">Rechtliches & Kontakt</h5>
+                    <ul class="list-unstyled small">
+                        <li><a href="impressum.html" class="text-light">Impressum</a></li>
+                        <li><a href="privacy.html" class="text-light">Datenschutz</a></li>
+                        <li><a href="mailto:info@schellenberger.biz" class="text-light">Kontakt</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Copyright & Social Links -->
+            <div class="row mt-3 pt-3 border-top">
+                <div class="col-md-6 text-center text-md-left">
+                    <p class="small mb-0">&copy; 2024 Michael Schellenberger</p>
+                </div>
+                <div class="col-md-6 text-center text-md-right">
+                    <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" class="text-light mx-2" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="mailto:info@schellenberger.biz" class="text-light mx-2" title="E-Mail"><i class="fas fa-envelope"></i></a>
+                    <a href="https://Michael.Schellenberger.biz" target="_blank" class="text-light mx-2" title="Website"><i class="fas fa-globe"></i></a>
                 </div>
             </div>
         </div>
     </footer>
-
-    <!-- Bootstrap JS und zusätzliche Abhängigkeiten -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <!-- Benutzerdefiniertes JavaScript -->
-    <script src="generator.js"></script>
+    
 </body>
 
 </html>

@@ -5,14 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Impressum - ICS Tools</title>
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="DigitalCoach.png" alt="Logo" height="30" class="mr-2">
@@ -31,6 +29,9 @@
                     </li>
                     <li class="nav-item active">
                         <a class="nav-link" href="impressum.html">Impressum</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="privacy.html">Datenschutz</a>
                     </li>
                 </ul>
             </div>
@@ -61,75 +62,35 @@
                         github.com/Schello805/ICS-Generator-Web
                     </a>
                 </p>
-                <p>
-                    Live-Demo: <a href="https://www.ics-generator.de" target="_blank">www.ics-generator.de</a>
-                </p>
 
-                <h2>iOS App</h2>
-                <p>
-                    Der ICS Generator ist auch als iOS App verfügbar:
-                </p>
-                <p>
-                    <a href="https://apps.apple.com/us/app/ics-generator/id6738963683" target="_blank">
-                        <img src="App_Store_(iOS).png" 
-                             alt="Download on the App Store" 
-                             style="height: 40px;">
-                    </a>
-                </p>
-                <p class="text-muted">
-                    Version 2.0 • Kostenlos • Erfordert iOS/iPadOS 18.1 oder neuer
-                </p>
-                <p>
-                    Features der App:
-                    <ul>
-                        <li>Intuitive Erstellung von Kalenderereignissen</li>
-                        <li>Wiederkehrende Termine mit flexiblen Optionen</li>
-                        <li>Standort- und Notizfeld für wichtige Details</li>
-                        <li>Export als universelle .ics Datei</li>
-                        <li>Teilen via Message, Mail, AirDrop und mehr</li>
-                        <li>Unterstützt Dark Mode</li>
-                    </ul>
-                </p>
+                <h2>Funktionsumfang</h2>
+                <ul>
+                    <li>ICS Generator für Kalenderdateien</li>
+                    <li>ICS Validator für bestehende Dateien</li>
+                    <li>Erinnerungsfunktionen</li>
+                    <li>URL-Validierung</li>
+                    <li>Termin-Duplikation</li>
+                </ul>
 
-                <h2>Haftung für Inhalte</h2>
+                <h2>Haftungsausschluss</h2>
                 <p>
-                    Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den
-                    allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht
-                    verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu
-                    forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
-                </p>
-
-                <h2>Datenschutz</h2>
-                <p>
-                    Die Nutzung dieser Webseite ist ohne Angabe personenbezogener Daten möglich. Die ICS-Dateien werden
-                    lokal in Ihrem Browser erstellt und nicht an unsere Server übermittelt.
+                    Die Nutzung des ICS Generators und Validators erfolgt auf eigene Gefahr. 
+                    Wir übernehmen keine Gewähr für die Richtigkeit, Vollständigkeit und 
+                    Aktualität der erstellten oder validierten Dateien.
                 </p>
             </div>
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p>&copy; 2024 ICS Tools. Alle Rechte vorbehalten.</p>
-                </div>
-                <div class="col-md-6">
-                    <div class="social-links text-md-right">
-                        <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="mailto:info@schellenberger.biz"><i class="fas fa-envelope"></i></a>
-                        <a href="https://apps.apple.com/us/app/ics-generator/id6738963683" target="_blank"><i class="fab fa-app-store-ios"></i></a>
-                        <a href="impressum.html">Impressum</a>
-                    </div>
-                </div>
-            </div>
+    <footer class="footer mt-4 py-4 bg-dark text-light">
+        <div class="container text-center">
+            <span class="small">&copy; 2024 Michael Schellenberger. Besuchen Sie <a href="https://Michael.Schellenberger.biz" target="_blank" class="text-light">https://Michael.Schellenberger.biz</a> für weitere Informationen.</span>
         </div>
     </footer>
 
-    <!-- Bootstrap JS und zusätzliche Abhängigkeiten -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html> 
