@@ -1,6 +1,6 @@
-# ICS Generator & Validator
+# ICS Tools
 
-Eine webbasierte Anwendung zur Erstellung und Validierung von iCalendar (.ics) Dateien.
+Ein webbasiertes Tool zur Erstellung und Validierung von iCalendar-Dateien.
 
 ## Features
 
@@ -10,7 +10,6 @@ Eine webbasierte Anwendung zur Erstellung und Validierung von iCalendar (.ics) D
 - Flexible Erinnerungsfunktionen (10 Min. bis 1 Woche vorher)
 - Anhänge und URLs zu Terminen hinzufügen
 - Termine duplizieren und löschen
-- Validierung von URLs
 - Export als standardkonforme ICS-Datei
 
 ### ICS Validator
@@ -19,11 +18,21 @@ Eine webbasierte Anwendung zur Erstellung und Validierung von iCalendar (.ics) D
 - Syntax- und Formatprüfung
 - Detaillierte Fehler- und Warnmeldungen
 
-### Besonders geeignet für
-- Bildungseinrichtungen (Schulen, Kitas, Universitäten)
-- Organisationen mit regelmäßigen Terminen
-- Veranstaltungsplaner
-- Private Nutzer
+## Struktur
+
+- `components/` - Wiederverwendbare HTML-Komponenten
+  - `header.html` - Navigation
+  - `footer.html` - Footer
+- `js/` - JavaScript-Dateien
+  - `components.js` - Komponenten-System
+  - `script.js` - ICS-Generierung
+- HTML-Dateien für jede Seite
+
+## Setup
+
+1. Repository klonen
+2. Keine Build-Tools nötig
+3. Über Webserver bereitstellen
 
 ## Technische Details
 - Rein clientseitige Verarbeitung
@@ -32,4 +41,8 @@ Eine webbasierte Anwendung zur Erstellung und Validierung von iCalendar (.ics) D
 - Responsive Design
 
 ## Datenschutz
-Alle Daten werden ausschließlich lokal im Browser verarbeitet. Es erfolgt keine Übertragung an externe Server. 
+Alle Daten werden ausschließlich lokal im Browser verarbeitet. Es erfolgt keine Übertragung an externe Server.
+
+## Lizenz
+
+MIT-Lizenz 
