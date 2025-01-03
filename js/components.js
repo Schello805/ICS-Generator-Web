@@ -99,4 +99,18 @@ try {
     }
 } catch (e) {
     // Ignorieren im Browser-Kontext
+}
+
+// Import-Funktion für den Header
+window.importAndRedirect = function(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Speichere den Inhalt temporär im localStorage
+            localStorage.setItem('importedICS', e.target.result);
+            // Weiterleitung zum Generator mit Import-Flag
+            window.location.href = 'generator.html?import=true';
+        };
+        reader.readAsText(input.files[0]);
+    }
 } 
