@@ -85,6 +85,18 @@ function updateIdsAndLabels(clone, eventNumber) {
         if (element.classList.contains('weekInMonth')) element.id = `weekInMonth${eventNumber}`;
     });
     
+    // Ganztägig Checkbox
+    const allDayCheckbox = clone.querySelector('.allDayCheckbox');
+    const allDayLabel = clone.querySelector('.custom-control-label');
+    if (allDayCheckbox) {
+        allDayCheckbox.id = `allDay${eventNumber}`;
+        allDayCheckbox.onchange = () => toggleDateTimeFields(eventNumber);
+        // Label mit der Checkbox verknüpfen
+        if (allDayLabel) {
+            allDayLabel.setAttribute('for', `allDay${eventNumber}`);
+        }
+    }
+    
     return clone;
 }
 
@@ -205,15 +217,33 @@ function updateEndDate(eventNumber) {
 }
 
 function createICSCalendar() {
+    // Prüfe alle Formulare auf Pflichtfelder
+    for (let i = 1; i <= events; i++) {
+        const summary = document.getElementById(`summary${i}`).value;
+        const startDate = document.getElementById(`startDate${i}`).value;
+        const endDate = document.getElementById(`endDate${i}`).value;
+        
+        if (!summary || !startDate || !endDate) {
+            alert('Bitte füllen Sie alle Pflichtfelder aus (Titel, Startdatum und Enddatum)');
+            return;
+        }
+        
+        // Prüfe ob das Enddatum nach dem Startdatum liegt
+        if (new Date(endDate) < new Date(startDate)) {
+            alert('Das Enddatum muss nach dem Startdatum liegen');
+            return;
+        }
+    }
+
     let icsContent = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//ICS Tools//DE\r\n';
     
     // Für jeden Event
     for (let i = 1; i <= events; i++) {
         const summary = document.getElementById(`summary${i}`).value;
         const startDate = document.getElementById(`startDate${i}`).value;
-        const startTime = document.getElementById(`startTime${i}`).value;
+        const startTime = document.getElementById(`startTime${i}`).value || '00:00';
         const endDate = document.getElementById(`endDate${i}`).value;
-        const endTime = document.getElementById(`endTime${i}`).value;
+        const endTime = document.getElementById(`endTime${i}`).value || '23:59';
         const location = document.getElementById(`location${i}`).value;
         const description = document.getElementById(`description${i}`).value;
         const allDay = document.getElementById(`allDay${i}`).checked;
@@ -368,4 +398,325 @@ function generateEventBlock(summary, startDateTime, endDateTime, location, descr
 
     event.push('END:VEVENT');
     return event.map(line => foldLine(line)).join('\r\n') + '\r\n';
+}
+
+function updateFormIds(form, eventNumber) {
+    // Titel aktualisieren
+    const title = form.querySelector('.card-title');
+    if (title) {
+        title.textContent = `Termin ${eventNumber}`;
+        title.id = `event-title-${eventNumber}`;
+    }
+
+    // Form ID und aria-labelledby aktualisieren
+    form.setAttribute('aria-labelledby', `event-title-${eventNumber}`);
+
+    // Löschen-Button nur hinzufügen, wenn es nicht der erste Termin ist
+    const deleteButton = form.querySelector('.btn-outline-danger');
+    if (eventNumber > 1) {
+        if (!deleteButton) {
+            // Button erstellen wenn er noch nicht existiert
+            const btnGroup = document.createElement('div');
+            btnGroup.className = 'ml-2';
+            btnGroup.innerHTML = `
+                <button type="button" 
+                        class="btn btn-outline-danger btn-sm"
+                        onclick="deleteEvent(${eventNumber})"
+                        aria-label="Termin ${eventNumber} löschen">
+                    <i class="fas fa-trash-alt"></i>
+                </button>`;
+            form.querySelector('.d-flex').appendChild(btnGroup);
+        } else {
+            // Existierenden Button aktualisieren
+            deleteButton.setAttribute('onclick', `deleteEvent(${eventNumber})`);
+            deleteButton.setAttribute('aria-label', `Termin ${eventNumber} löschen`);
+        }
+    }
+}
+
+function deleteEvent(eventNumber) {
+    try {
+        // Das zu löschende Event finden und entfernen
+        const eventCard = document.getElementById(`event-title-${eventNumber}`).closest('.card');
+        if (eventCard) {
+            eventCard.remove();
+            events--; // Gesamtzahl der Events reduzieren
+            
+            // Alle nachfolgenden Events neu nummerieren
+            const remainingEvents = document.querySelectorAll('.eventForm');
+            let newNumber = 1;
+            remainingEvents.forEach(form => {
+                updateFormIds(form, newNumber);
+                newNumber++;
+            });
+        }
+    } catch (error) {
+        console.error('Fehler beim Löschen des Events:', error);
+    }
+}
+
+function importICSFile(input) {
+    if (input.files && input.files[0]) {
+        // Ladebalken anzeigen
+        const progressBar = document.getElementById('importProgress');
+        const progressBarInner = progressBar.querySelector('.progress-bar');
+        progressBar.style.display = 'block';
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const icsContent = e.target.result;
+                const parsedEvents = parseICSContent(icsContent);
+                
+                // Gesamtanzahl der Events für den Fortschritt
+                const totalEvents = parsedEvents.length;
+                let processedEvents = 0;
+                
+                // Ersten Event sofort verarbeiten
+                if (totalEvents > 0) {
+                    fillFormWithEvent(document.querySelector('.eventForm'), parsedEvents[0], 1);
+                    processedEvents++;
+                    updateProgress(progressBarInner, (processedEvents / totalEvents) * 100);
+                }
+                
+                // Weitere Events mit Verzögerung
+                if (totalEvents > 1) {
+                    const processNextEvent = (index) => {
+                        if (index >= parsedEvents.length) {
+                            // Import abgeschlossen
+                            setTimeout(() => {
+                                progressBar.style.display = 'none';
+                            }, 500);
+                            return;
+                        }
+                        
+                        duplicateEvent(events);
+                        setTimeout(() => {
+                            fillFormWithEvent(
+                                document.querySelector(`#eventsContainer .card:nth-child(${index + 1}) .eventForm`),
+                                parsedEvents[index],
+                                index + 1
+                            );
+                            processedEvents++;
+                            updateProgress(progressBarInner, (processedEvents / totalEvents) * 100);
+                            processNextEvent(index + 1);
+                        }, 100);
+                    };
+                    
+                    processNextEvent(1);
+                } else {
+                    progressBar.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Fehler beim Importieren:', error);
+                alert('Die ICS-Datei konnte nicht importiert werden. Bitte überprüfen Sie das Format.');
+                progressBar.style.display = 'none';
+            }
+        };
+        reader.readAsText(input.files[0]);
+    }
+}
+
+function updateProgress(progressBar, percentage) {
+    progressBar.style.width = percentage + '%';
+    progressBar.setAttribute('aria-valuenow', percentage);
+    progressBar.textContent = `Importiere Termine... ${Math.round(percentage)}%`;
+}
+
+function validateICSLine(line) {
+    // Ignoriere Google-spezifische Zeilen
+    if (line.includes('hangouts.google.com') || 
+        line.includes('~:~:~:~:~:~') ||
+        line.includes('calendar/') ||
+        /[a-zA-Z0-9]{20,}/.test(line)) {
+        return true;
+    }
+    
+    // Normale Validierung für Standard ICS-Eigenschaften
+    return line.match(/^[A-Z-]+[:;]/) || 
+           line.match(/^BEGIN:/) || 
+           line.match(/^END:/);
+}
+
+function parseICSContent(icsContent) {
+    const events = [];
+    let currentEvent = null;
+    let lines = icsContent.split(/\r\n|\n|\r/).filter(line => {
+        // Filtere Google-spezifische Zeilen
+        return !(line.includes('hangouts.google.com') || 
+                line.includes('~:~:~:~:~:~') ||
+                line.includes('calendar/') ||
+                /[a-zA-Z0-9]{20,}/.test(line));
+    });
+
+    lines.forEach(line => {
+        line = line.trim();
+        if (line === 'BEGIN:VEVENT') {
+            currentEvent = {};
+        } else if (line === 'END:VEVENT') {
+            if (currentEvent) events.push(currentEvent);
+            currentEvent = null;
+        } else if (currentEvent && line) {
+            // Zeilen mit Zeilenumbrüchen zusammenfügen
+            if (line.startsWith(' ')) {
+                const lastKey = Object.keys(currentEvent).pop();
+                if (lastKey) {
+                    currentEvent[lastKey].value += line.substring(1);
+                    return;
+                }
+            }
+
+            const [key, ...values] = line.split(':');
+            const value = values.join(':');
+            if (key && value) {
+                const [mainKey, params] = key.split(';');
+                if (mainKey) {  // Nur wenn ein Hauptschlüssel existiert
+                    currentEvent[mainKey] = {
+                        value: value.trim(),
+                        params: params || ''
+                    };
+                }
+            }
+        }
+    });
+
+    return events;
+}
+
+function fillEventForm(event, number) {
+    try {
+        // Warten bis die Elemente existieren
+        const form = document.querySelector(`#eventsContainer .card:nth-child(${number}) .eventForm`);
+        if (!form) {
+            // Versuche es mit dem ersten Formular für number=1
+            if (number === 1) {
+                const firstForm = document.querySelector('#eventsContainer .card:first-child .eventForm');
+                if (firstForm) {
+                    fillFormWithEvent(firstForm, event, number);
+                    return;
+                }
+            }
+            console.error(`Form ${number} nicht gefunden`);
+            return;
+        }
+        fillFormWithEvent(form, event, number);
+    } catch (error) {
+        console.error('Fehler beim Füllen des Formulars:', error);
+    }
+}
+
+// Neue Hilfsfunktion zum Füllen des Formulars
+function fillFormWithEvent(form, event, number) {
+    // Pflichtfelder
+    const summaryInput = document.getElementById(`summary${number}`);
+    if (summaryInput && event.SUMMARY) {
+        summaryInput.value = event.SUMMARY.value;
+    }
+    
+    // Start- und Enddatum/Zeit
+    const allDayCheckbox = document.getElementById(`allDay${number}`);
+    const startDateInput = document.getElementById(`startDate${number}`);
+    const startTimeInput = document.getElementById(`startTime${number}`);
+    const endDateInput = document.getElementById(`endDate${number}`);
+    const endTimeInput = document.getElementById(`endTime${number}`);
+
+    if (event.DTSTART) {
+        const isAllDay = event.DTSTART.params && event.DTSTART.params.includes('VALUE=DATE');
+        if (allDayCheckbox) allDayCheckbox.checked = isAllDay;
+        
+        if (startDateInput) {
+            startDateInput.value = formatICSDate(event.DTSTART.value);
+        }
+        
+        if (!isAllDay && startTimeInput) {
+            startTimeInput.value = formatICSTime(event.DTSTART.value);
+        }
+    }
+    
+    if (event.DTEND) {
+        if (endDateInput) {
+            endDateInput.value = formatICSDate(event.DTEND.value);
+        }
+        
+        if (!allDayCheckbox?.checked && endTimeInput) {
+            endTimeInput.value = formatICSTime(event.DTEND.value);
+        }
+    }
+    
+    // Optionale Felder
+    const locationInput = document.getElementById(`location${number}`);
+    if (locationInput && event.LOCATION) {
+        locationInput.value = event.LOCATION.value;
+    }
+
+    const descriptionInput = document.getElementById(`description${number}`);
+    if (descriptionInput && event.DESCRIPTION) {
+        descriptionInput.value = event.DESCRIPTION.value;
+    }
+    
+    // Wiederholungsregeln
+    if (event.RRULE) {
+        parseAndSetRecurrence(event.RRULE.value, number);
+    }
+}
+
+function formatICSDate(icsDateTime) {
+    // YYYYMMDDTHHMMSS oder YYYYMMDD in YYYY-MM-DD umwandeln
+    return icsDateTime.substring(0, 8).replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+}
+
+function formatICSTime(icsDateTime) {
+    // YYYYMMDDTHHMMSS in HH:MM umwandeln
+    if (icsDateTime.includes('T')) {
+        return icsDateTime.split('T')[1].substring(0, 4).replace(/(\d{2})(\d{2})/, '$1:$2');
+    }
+    return '';
+}
+
+function parseAndSetRecurrence(rrule, number) {
+    const rules = Object.fromEntries(
+        rrule.split(';').map(rule => rule.split('='))
+    );
+    
+    const repeatType = document.getElementById(`repeatType${number}`);
+    if (rules.FREQ) {
+        repeatType.value = rules.FREQ.toLowerCase();
+        toggleRepeatOptions(number);
+    }
+    
+    if (rules.INTERVAL) {
+        document.getElementById(`repeatInterval${number}`).value = rules.INTERVAL;
+    }
+    
+    if (rules.BYDAY) {
+        const days = rules.BYDAY.split(',');
+        days.forEach(day => {
+            const checkbox = document.getElementById(`weekday_${day.toLowerCase()}_${number}`);
+            if (checkbox) checkbox.checked = true;
+        });
+    }
+    
+    // Endbedingung
+    const repeatEnd = document.getElementById(`repeatEnd${number}`);
+    if (rules.COUNT) {
+        repeatEnd.value = 'after';
+        document.getElementById(`repeatCount${number}`).value = rules.COUNT;
+    } else if (rules.UNTIL) {
+        repeatEnd.value = 'until';
+        document.getElementById(`repeatUntil${number}`).value = formatICSDate(rules.UNTIL);
+    }
+    toggleEndDate(number);
+}
+
+function importAndRedirect(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Speichere den Inhalt temporär im localStorage
+            localStorage.setItem('importedICS', e.target.result);
+            // Weiterleitung zum Generator mit Import-Flag
+            window.location.href = 'generator.html?import=true';
+        };
+        reader.readAsText(input.files[0]);
+    }
 }

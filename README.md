@@ -2,41 +2,30 @@
 
 Ein webbasiertes Tool zur Erstellung und Validierung von iCalendar-Dateien.
 
-## Demo
-
-Eine Live-Demo ist verfügbar unter: [https://ICS-Generator.de)
-
-<img width="1194" alt="Screenshot" src="https://github.com/user-attachments/assets/c7c17264-b442-4d0a-9660-878814e7a523" />
-
-
 ## Features
 
 ### ICS Generator
 - Erstellung einzelner oder mehrerer Termine
 - Unterstützung für ganztägige Termine
-- Flexible Erinnerungsfunktionen (10 Min. bis 1 Woche vorher)
-- Anhänge und URLs zu Terminen hinzufügen
-- Termine duplizieren und löschen
+- Flexible Wiederholungsoptionen:
+  - Täglich, wöchentlich, monatlich, jährlich
+  - Auswahl spezifischer Wochentage
+  - Auswahl spezifischer Monate
+  - Verschiedene Endbedingungen (nach X Wiederholungen, bis Datum)
+- Erinnerungsfunktionen (10 Min. bis 1 Woche vorher)
 - Export als standardkonforme ICS-Datei
-- Wiederholungsmuster für regelmäßige Termine
-
-### ICS Validator
-- Prüfung auf RFC 5545 Konformität
-- Validierung von Pflichtfeldern
-- Syntax- und Formatprüfung
-- Detaillierte Fehler- und Warnmeldungen
-- Syntax-Highlighting für ICS-Dateien
 
 ## Struktur
 
 - `components/` - Wiederverwendbare HTML-Komponenten
-  - `header.html` - Navigation
   - `footer.html` - Footer
 - `js/` - JavaScript-Dateien
   - `components.js` - Komponenten-System
-  - `script.js` - ICS-Generierung
-  - `validator.js` - ICS-Validierung
-- HTML-Dateien für jede Seite
+- `favicon/` - Favicon für die Website
+- `script.js` - Hauptlogik für ICS-Generierung
+- `styles.css` - Styling
+- `index.html` - Startseite
+- `generator.html` - Termin-Generator
 
 ## Setup
 
@@ -45,8 +34,8 @@ Eine Live-Demo ist verfügbar unter: [https://ICS-Generator.de)
 git clone https://github.com/Schello805/ICS-Generator-Web.git
 cd ICS-Generator-Web
 ```
-2. Keine Build-Tools nötig
-3. Über Webserver bereitstellen
+
+2. Über Webserver bereitstellen
 ```bash
 # Mit Python (Python 3)
 python -m http.server 8000
@@ -55,7 +44,7 @@ python -m http.server 8000
 php -S localhost:8000
 ```
 
-Öffnen Sie dann http://localhost:8000 im Browser.
+3. http://localhost:8000 im Browser öffnen
 
 ## Technische Details
 - Rein clientseitige Verarbeitung
@@ -68,7 +57,6 @@ php -S localhost:8000
 - CSS3 mit Bootstrap 4.5.2
 - JavaScript (ES6+)
 - Font Awesome 5.15.4
-- jQuery 3.6.0
 
 ### Browser-Kompatibilität
 - Chrome (letzte 2 Versionen)
@@ -78,10 +66,6 @@ php -S localhost:8000
 
 ## Datenschutz
 Alle Daten werden ausschließlich lokal im Browser verarbeitet. Es erfolgt keine Übertragung an externe Server.
-
-## Beitragen
-
-Beiträge sind willkommen! Bitte erstellen Sie einen Pull Request oder ein Issue für Verbesserungsvorschläge.
 
 ## Lizenz
 
