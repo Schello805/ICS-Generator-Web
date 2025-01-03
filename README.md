@@ -4,7 +4,10 @@ Ein webbasiertes Tool zur Erstellung und Validierung von iCalendar-Dateien.
 
 ## Demo
 
-Eine Live-Demo ist verfügbar unter: [https://michael.schellenberger.biz/ics-tools](https://michael.schellenberger.biz/ics-tools)
+Eine Live-Demo ist verfügbar unter: [https://ICS-Generator.de)
+
+<img width="1194" alt="Screenshot" src="https://github.com/user-attachments/assets/c7c17264-b442-4d0a-9660-878814e7a523" />
+
 
 ## Features
 
