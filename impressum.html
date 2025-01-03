@@ -4,6 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Impressum und rechtliche Informationen zu ICS Tools - Ein Open-Source-Projekt von Michael Schellenberger">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com; script-src 'self' https://code.jquery.com https://cdn.jsdelivr.net; font-src 'self' https://cdnjs.cloudflare.com;">
+    <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://code.jquery.com">
     <title>Impressum - ICS Tools</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -11,35 +16,39 @@
 </head>
 
 <body>
-    <div id="header"></div>
-    <div class="container mt-2">
+    <header id="header" class="sticky-top"></header>
+    <div class="container mt-5">
         <div class="mb-4">
-            <h1 class="h3 mb-3">Impressum</h1>
+            <h1 class="h3 mb-3" id="page-title">Impressum</h1>
         </div>
 
-        <div class="card">
+        <div class="card" role="region" aria-labelledby="page-title">
             <div class="card-body">
-                <h2>Angaben gemäß § 5 TMG</h2>
+                <h2 class="h4">Angaben gemäß § 5 TMG</h2>
                 <p>
                     Michael Schellenberger<br>
                     91572 Bechhofen
                 </p>
 
-                <h2>Kontakt</h2>
+                <h2 class="h4">Kontakt</h2>
                 <p>
-                    E-Mail: info@schellenberger.biz
+                    E-Mail: <a href="mailto:info@schellenberger.biz" aria-label="E-Mail an Michael Schellenberger senden">info@schellenberger.biz</a>
                 </p>
 
-                <h2>Projektinformationen</h2>
+                <h2 class="h4">Projektinformationen</h2>
                 <p>
                     Diese Webseite ist ein Open-Source-Projekt und auf GitHub verfügbar:<br>
-                    <a href="https://github.com/Schello805/ICS-Generator-Web" target="_blank" rel="noopener noreferrer">
+                    <a href="https://github.com/Schello805/ICS-Generator-Web" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        aria-label="ICS Tools auf GitHub öffnen (öffnet in neuem Tab)">
                         github.com/Schello805/ICS-Generator-Web
+                        <i class="fas fa-external-link-alt" aria-hidden="true"></i>
                     </a>
                 </p>
 
-                <h2>Funktionsumfang</h2>
-                <ul>
+                <h2 class="h4">Funktionsumfang</h2>
+                <ul aria-label="Liste der Hauptfunktionen">
                     <li>ICS Generator für Kalenderdateien</li>
                     <li>ICS Validator für bestehende Dateien</li>
                     <li>Erinnerungsfunktionen</li>
@@ -47,14 +56,14 @@
                     <li>Termin-Duplikation</li>
                 </ul>
 
-                <h2>Haftungsausschluss</h2>
+                <h2 class="h4">Haftungsausschluss</h2>
                 <p>
                     Die Nutzung des ICS Generators und Validators erfolgt auf eigene Gefahr. 
                     Wir übernehmen keine Gewähr für die Richtigkeit, Vollständigkeit und 
                     Aktualität der erstellten oder validierten Dateien.
                 </p>
 
-                <h2>Haftung für Links</h2>
+                <h2 class="h4">Haftung für Links</h2>
                 <p>
                     Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. 
                     Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. 
@@ -71,6 +80,21 @@
     </div>
 
     <div id="footer"></div>
+
+    <!-- Strukturierte Daten für SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Impressum - ICS Tools",
+        "description": "Rechtliche Informationen und Kontaktdaten für ICS Tools",
+        "publisher": {
+            "@type": "Person",
+            "name": "Michael Schellenberger",
+            "email": "info@schellenberger.biz"
+        }
+    }
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>

@@ -1,16 +1,16 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="index.html">
-            <img src="DigitalCoach.png" alt="Logo" height="30" class="mr-2">
-            ICS Tools
+        <a class="navbar-brand d-flex align-items-center" href="index.html" aria-label="Zur Startseite">
+            <img src="DigitalCoach.png" alt="ICS Tools Logo" height="30" class="mr-2">
+            <span>ICS Tools</span>
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Navigation ein/ausblenden">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav" role="navigation">
                 <li class="nav-item" id="nav-home">
-                    <a class="nav-link" href="index.html">Startseite</a>
+                    <a class="nav-link" href="index.html" aria-current="page">Startseite</a>
                 </li>
                 <li class="nav-item" id="nav-generator">
                     <a class="nav-link" href="generator.html">Termine erstellen</a>
@@ -19,6 +19,19 @@
                     <a class="nav-link" href="validator.html">ICS Validator</a>
                 </li>
             </ul>
+            <!-- Import Button -->
+            <div class="ml-auto">
+                <label class="btn btn-outline-light mb-0" role="button">
+                    <i class="fas fa-file-import" aria-hidden="true"></i> 
+                    <span>ICS Datei importieren</span>
+                    <input type="file" 
+                           id="importFile" 
+                           accept=".ics" 
+                           class="sr-only"
+                           aria-label="Bestehende ICS-Datei zum Bearbeiten importieren" 
+                           onchange="importICSFile(this)">
+                </label>
+            </div>
         </div>
     </div>
 </nav> 

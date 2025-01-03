@@ -13,30 +13,90 @@
  * 3. Automatische Initialisierung beim DOMContentLoaded
  */
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Header laden
-    fetch('components/header.html')
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('header').innerHTML = html;
-            // Aktiven Navigationspunkt setzen
-            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-            const navId = {
-                'index.html': 'nav-home',
-                'generator.html': 'nav-generator',
-                'validator.html': 'nav-validator'
-            }[currentPage];
-            if (navId) {
-                document.getElementById(navId).classList.add('active');
-            }
-        })
-        .catch(error => console.error('Error loading header:', error));
+// Konfigurationsobjekt für die Navigation
+const NAV_CONFIG = {
+    'index.html': { id: 'nav-home', label: 'Startseite' },
+    'generator.html': { id: 'nav-generator', label: 'Generator' },
+    'validator.html': { id: 'nav-validator', label: 'Validator' }
+};
 
-    // Footer laden
-    fetch('components/footer.html')
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('footer').innerHTML = html;
-        })
-        .catch(error => console.error('Error loading footer:', error));
-}); 
+// Fehlerbehandlung für fehlende Komponenten
+function handleComponentError(componentName, error) {
+    console.error(`Error loading ${componentName}:`, error);
+    return `<div class="alert alert-danger" role="alert">
+        Fehler beim Laden der ${componentName}-Komponente. 
+        Bitte laden Sie die Seite neu.
+    </div>`;
+}
+
+// Komponenten laden mit Fehlerbehandlung
+async function loadComponent(elementId, path) {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.warn(`Element with id "${elementId}" not found`);
+        return;
+    }
+
+    try {
+        const response = await fetch(path);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const html = await response.text();
+        element.innerHTML = html;
+
+        // Spezielle Behandlung für Header
+        if (elementId === 'header') {
+            setActiveNavItem();
+            // Logo aktualisieren
+            const logo = document.querySelector('.navbar-brand img');
+            if (logo) {
+                logo.src = 'Logo ICS Generator.png';
+                logo.alt = 'ICS Generator Logo';
+            }
+        }
+    } catch (error) {
+        element.innerHTML = handleComponentError(elementId, error);
+    }
+}
+
+// Aktiven Navigationspunkt setzen
+function setActiveNavItem() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navConfig = NAV_CONFIG[currentPage];
+
+    if (navConfig) {
+        const navItem = document.getElementById(navConfig.id);
+        if (navItem) {
+            navItem.classList.add('active');
+            // Für Screenreader
+            const link = navItem.querySelector('a');
+            if (link) {
+                link.setAttribute('aria-current', 'page');
+                link.setAttribute('aria-label', `${navConfig.label} (aktuelle Seite)`);
+            }
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Komponenten laden
+    Promise.all([
+        loadComponent('header', 'components/header.html'),
+        loadComponent('footer', 'components/footer.html')
+    ]).catch(error => {
+        console.error('Error loading components:', error);
+    });
+});
+
+try {
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = {
+            loadComponent,
+            setActiveNavItem,
+            handleComponentError
+        };
+    }
+} catch (e) {
+    // Ignorieren im Browser-Kontext
+} 

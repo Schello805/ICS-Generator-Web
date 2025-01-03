@@ -3,60 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Erstellen Sie einzelne oder wiederkehrende Kalenderereignisse und exportieren Sie diese als ICS-Datei">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self' ws://127.0.0.1:* ws://localhost:*; 
+        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com; 
+        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net; 
+        font-src 'self' https://cdnjs.cloudflare.com;
+        img-src 'self' data:;
+        connect-src 'self' ws: wss: http: https:;">
+    <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://code.jquery.com">
     <title>Termine erstellen - ICS Tools</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <div id="header"></div>
+    <header id="header" class="sticky-top"></header>
 
-    <div class="container mt-5">
+    <main class="container mt-5">
         <div class="header">
             <div>
-                <h2 class="mb-4">Termine erstellen</h2>
-                <div class="btn-group mb-4">
-                    <label class="btn btn-outline-primary mb-0">
-                        <i class="fas fa-file-import"></i> Bestehende ICS Datei importieren
-                        <input type="file" id="importFile" accept=".ics" style="display: none" onchange="importICSFile(this)">
-                    </label>
-                </div>
+                <h1 class="h2 mb-4" id="page-title">Termine erstellen</h1>
             </div>
-            <img src="DigitalCoach.png" alt="Digital Coach">
         </div>
 
         <!-- Hier den kompletten Event-Container aus index.html einfügen -->
-        <div id="eventsContainer">
+        <div id="eventsContainer" role="region" aria-label="Termine">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Termin 1</h5>
-                    <form class="eventForm">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h5 card-title mb-0" id="event-title-1">Termin 1</h2>
+                    </div>
+                    <form class="eventForm" aria-labelledby="event-title-1">
                         <div class="form-group">
-                            <label for="summary1">Titel:*</label>
-                            <input type="text" class="form-control summary" id="summary1" placeholder="Titel eingeben" pattern="[^<>{}]*" maxlength="255" required>
+                            <label for="summary1" class="h5">
+                                Titel
+                                <span class="text-danger" aria-hidden="true">*</span>
+                                <span class="sr-only">erforderlich</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="summary1" 
+                                   placeholder="Titel eingeben" 
+                                   pattern="[^<>{}]*" 
+                                   maxlength="255" 
+                                   required
+                                   aria-required="true"
+                                   aria-describedby="summary1-help">
+                            <small id="summary1-help" class="form-text text-muted">
+                                Bitte geben Sie einen Titel für den Termin ein (max. 255 Zeichen)
+                            </small>
                         </div>
-                        <div class="custom-control custom-checkbox mb-3">
-                            <input type="checkbox" class="custom-control-input allDayCheckbox" id="allDay1" onchange="toggleDateTimeFields(1)">
-                            <label class="custom-control-label" for="allDay1">Ganztägiger Termin</label>
+                        <div class="form-group">
+                            <div class="d-flex align-items-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input allDayCheckbox" id="allDay1" onchange="toggleDateTimeFields(1)">
+                                    <label class="custom-control-label" for="allDay1">Ganztägiger Termin</label>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="startDate1">Startdatum:*</label>
-                                <input type="date" class="form-control startDate" id="startDate1" onchange="updateEndDate(1)">
+                                <label for="startDate1">
+                                    Startdatum
+                                    <span class="text-danger" aria-hidden="true">*</span>
+                                    <span class="sr-only">erforderlich</span>
+                                </label>
+                                <input type="date" 
+                                       class="form-control startDate" 
+                                       id="startDate1" 
+                                       onchange="updateEndDate(1)"
+                                       required
+                                       aria-required="true">
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="startTime1" class="time-label">Startzeit:</label>
-                                <input type="time" class="form-control startTime" id="startTime1">
+                                <label for="startTime1" class="time-label">
+                                    Startzeit
+                                    <span class="sr-only">im 24-Stunden-Format</span>
+                                </label>
+                                <input type="time" 
+                                       class="form-control startTime" 
+                                       id="startTime1"
+                                       aria-describedby="time-format-help">
                             </div>
                         </div>
+                        <small id="time-format-help" class="form-text text-muted">
+                            Zeit im 24-Stunden-Format (z.B. 14:30)
+                        </small>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="endDate1">Enddatum:*</label>
-                                <input type="date" class="form-control endDate" id="endDate1">
+                                <label for="endDate1">
+                                    Enddatum
+                                    <span class="text-danger" aria-hidden="true">*</span>
+                                    <span class="sr-only">erforderlich</span>
+                                </label>
+                                <input type="date" 
+                                       class="form-control endDate" 
+                                       id="endDate1"
+                                       required
+                                       aria-required="true">
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="endTime1" class="time-label">Endzeit:</label>
-                                <input type="time" class="form-control endTime" id="endTime1">
+                                <label for="endTime1" class="time-label">
+                                    Endzeit
+                                    <span class="sr-only">im 24-Stunden-Format</span>
+                                </label>
+                                <input type="time" 
+                                       class="form-control endTime" 
+                                       id="endTime1"
+                                       aria-describedby="time-format-help">
                             </div>
                         </div>
                         <div class="form-group">
@@ -64,22 +121,170 @@
                             <input type="text" class="form-control location" id="location1" placeholder="Ort eingeben">
                         </div>
                         <div class="form-group">
-                            <label for="description1">Beschreibung:</label>
-                            <textarea class="form-control description" id="description1" rows="3" placeholder="Beschreibung eingeben"></textarea>
+                            <label for="description1">
+                                Beschreibung
+                                <span class="sr-only">Optional: Fügen Sie weitere Details zum Termin hinzu</span>
+                            </label>
+                            <textarea class="form-control description" 
+                                      id="description1" 
+                                      rows="3" 
+                                      placeholder="Beschreibung eingeben"
+                                      aria-describedby="description1-help"></textarea>
+                            <small id="description1-help" class="form-text text-muted">
+                                Fügen Sie optional weitere Details zum Termin hinzu
+                            </small>
                         </div>
                         <div class="form-group">
                             <label for="attachment1">Anhang (URL):</label>
                             <input type="url" class="form-control attachment" id="attachment1" placeholder="https://example.com/dokument.pdf" onchange="validateURL(this, 'Anhang')">
                         </div>
                         <div class="form-group">
-                            <label for="url1">Link:</label>
-                            <input type="url" class="form-control url" id="url1" placeholder="https://example.com" onchange="validateURL(this, 'Link')">
+                            <label for="url1">
+                                Link
+                                <span class="sr-only">Optional: Fügen Sie eine relevante Webseite hinzu</span>
+                            </label>
+                            <input type="url" 
+                                   class="form-control url" 
+                                   id="url1" 
+                                   placeholder="https://example.com"
+                                   aria-describedby="url1-help"
+                                   pattern="https?://.+"
+                                   onchange="validateURL(this, 'Link')">
+                            <small id="url1-help" class="form-text text-muted">
+                                Geben Sie eine vollständige URL ein (beginnt mit http:// oder https://)
+                            </small>
                         </div>
-                        <div class="form-group">
-                            <label for="reminder1">Erinnerung:</label>
+                        <fieldset class="form-group">
+                            <legend class="h5">Wiederholung</legend>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <select class="form-control" id="reminderTime1">
+                                    <select class="form-control form-select repeatType" id="repeatType1" onchange="toggleRepeatOptions(1)">
+                                        <option value="none">Keine Wiederholung</option>
+                                        <option value="daily">Täglich</option>
+                                        <option value="weekly">Wöchentlich</option>
+                                        <option value="monthly">Monatlich</option>
+                                        <option value="yearly">Jährlich</option>
+                                        <option value="custom">Benutzerdefiniert</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="repeatDetails1" style="display:none;">
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control form-select" 
+                                               id="repeatInterval1" 
+                                               min="1" 
+                                               value="1"
+                                               aria-label="Wiederholungsintervall">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text form-select" 
+                                                  id="repeatIntervalLabel1"
+                                                  aria-hidden="true">Tag(e)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2 weekdaySelector" style="display:none;">
+                                <div class="col-12">
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" role="group">
+                                        <label class="btn btn-outline-primary">
+                                            <input type="checkbox" class="weekday_mo" id="weekday_mo_1"> Mo
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <input type="checkbox" class="weekday_tu" id="weekday_tu_1"> Di
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <input type="checkbox" class="weekday_we" id="weekday_we_1"> Mi
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <input type="checkbox" class="weekday_th" id="weekday_th_1"> Do
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <input type="checkbox" class="weekday_fr" id="weekday_fr_1"> Fr
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <input type="checkbox" class="weekday_sa" id="weekday_sa_1"> Sa
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <input type="checkbox" class="weekday_su" id="weekday_su_1"> So
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2 monthSelector" style="display:none;">
+                                <div class="col-12">
+                                    <label class="mb-2">Monate auswählen:</label>
+                                    <div class="btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_1"> Jan
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_2"> Feb
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_3"> Mär
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_4"> Apr
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_5"> Mai
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_6"> Jun
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_7"> Jul
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_8"> Aug
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_9"> Sep
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_10"> Okt
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_11"> Nov
+                                        </label>
+                                        <label class="btn btn-outline-primary m-1">
+                                            <input type="checkbox" class="month_12"> Dez
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <label class="mb-2">Woche im Monat:</label>
+                                    <select class="form-control weekInMonth">
+                                        <option value="1">Erste Woche</option>
+                                        <option value="2">Zweite Woche</option>
+                                        <option value="3">Dritte Woche</option>
+                                        <option value="4">Vierte Woche</option>
+                                        <option value="-1">Letzte Woche</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mt-2 repeatEndOptions" style="display:none;">
+                                <div class="col-md-6">
+                                    <select class="form-control form-select repeatEnd">
+                                        <option value="never">Kein Enddatum</option>
+                                        <option value="after">Nach X Wiederholungen</option>
+                                        <option value="until">Bis zum Datum</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="number" class="form-control repeatCount" style="display:none;" min="1" value="1">
+                                    <input type="date" class="form-control repeatUntil" style="display:none;">
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <legend class="h5">Erinnerung</legend>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control form-select" 
+                                            id="reminderTime1"
+                                            aria-label="Erinnerungszeitpunkt auswählen">
+                                        <option value="0">Keine Erinnerung</option>
                                         <option value="10">10 Minuten vorher</option>
                                         <option value="15">15 Minuten vorher</option>
                                         <option value="30">30 Minuten vorher</option>
@@ -90,26 +295,268 @@
                                         <option value="10080">1 Woche vorher</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="custom-control custom-checkbox mt-2">
-                                        <input type="checkbox" class="custom-control-input" id="noReminder1" onchange="toggleReminderField(1)">
-                                        <label class="custom-control-label" for="noReminder1">Keine Erinnerung</label>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
+                        </fieldset>
                     </form>
                 </div>
             </div>
         </div>
 
+        <template id="eventTemplate">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h5 card-title mb-0">Termin</h2>
+                </div>
+                <form class="eventForm">
+                    <!-- Titel -->
+                    <div class="form-group">
+                        <label class="h5">
+                            Titel
+                            <span class="text-danger" aria-hidden="true">*</span>
+                            <span class="sr-only">erforderlich</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control summary" 
+                               placeholder="Titel eingeben" 
+                               pattern="[^<>{}]*" 
+                               maxlength="255" 
+                               required
+                               aria-required="true">
+                    </div>
+
+                    <!-- Ganztägig -->
+                    <div class="form-group">
+                        <div class="d-flex align-items-center">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input allDayCheckbox">
+                                <label class="custom-control-label">Ganztägiger Termin</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Datum/Zeit -->
+                    <div class="form-row">
+                        <div class="col-md-6 form-group">
+                            <label>
+                                Startdatum
+                                <span class="text-danger" aria-hidden="true">*</span>
+                            </label>
+                            <input type="date" class="form-control startDate" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Startzeit</label>
+                            <input type="time" class="form-control startTime">
+                            <small class="form-text text-muted">Zeit im 24-Stunden-Format (z.B. 14:30)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-6 form-group">
+                            <label>
+                                Enddatum
+                                <span class="text-danger" aria-hidden="true">*</span>
+                            </label>
+                            <input type="date" class="form-control endDate" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Endzeit</label>
+                            <input type="time" class="form-control endTime">
+                        </div>
+                    </div>
+
+                    <!-- Ort -->
+                    <div class="form-group">
+                        <label>Ort</label>
+                        <input type="text" class="form-control location" placeholder="Ort eingeben">
+                    </div>
+
+                    <!-- Beschreibung -->
+                    <div class="form-group">
+                        <label>Beschreibung</label>
+                        <textarea class="form-control description" rows="3"></textarea>
+                    </div>
+
+                    <!-- Wiederholung -->
+                    <fieldset class="form-group">
+                        <legend class="h5">Wiederholung</legend>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-control form-select repeatType">
+                                    <option value="none">Keine Wiederholung</option>
+                                    <option value="daily">Täglich</option>
+                                    <option value="weekly">Wöchentlich</option>
+                                    <option value="monthly">Monatlich</option>
+                                    <option value="yearly">Jährlich</option>
+                                    <option value="custom">Benutzerdefiniert</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 repeatDetails" style="display:none;">
+                                <div class="input-group">
+                                    <input type="number" class="form-control repeatInterval">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text repeatIntervalLabel">Tag(e)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wochentage -->
+                        <div class="row mt-2 weekdaySelector" style="display:none;">
+                            <div class="col-12">
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" role="group">
+                                    <label class="btn btn-outline-primary">
+                                        <input type="checkbox" class="weekday_mo"> Mo
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="checkbox" class="weekday_tu"> Di
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="checkbox" class="weekday_we"> Mi
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="checkbox" class="weekday_th"> Do
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="checkbox" class="weekday_fr"> Fr
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="checkbox" class="weekday_sa"> Sa
+                                    </label>
+                                    <label class="btn btn-outline-primary">
+                                        <input type="checkbox" class="weekday_su"> So
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monatsauswahl -->
+                        <div class="row mt-2 monthSelector" style="display:none;">
+                            <div class="col-12">
+                                <label class="mb-2">Monate auswählen:</label>
+                                <div class="btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_1"> Jan
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_2"> Feb
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_3"> Mär
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_4"> Apr
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_5"> Mai
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_6"> Jun
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_7"> Jul
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_8"> Aug
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_9"> Sep
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_10"> Okt
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_11"> Nov
+                                    </label>
+                                    <label class="btn btn-outline-primary m-1">
+                                        <input type="checkbox" class="month_12"> Dez
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <label class="mb-2">Woche im Monat:</label>
+                                <select class="form-control weekInMonth">
+                                    <option value="1">Erste Woche</option>
+                                    <option value="2">Zweite Woche</option>
+                                    <option value="3">Dritte Woche</option>
+                                    <option value="4">Vierte Woche</option>
+                                    <option value="-1">Letzte Woche</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Wiederholungsende -->
+                        <div class="row mt-2 repeatEndOptions" style="display:none;">
+                            <div class="col-md-6">
+                                <select class="form-control form-select repeatEnd">
+                                    <option value="never">Kein Enddatum</option>
+                                    <option value="after">Nach X Wiederholungen</option>
+                                    <option value="until">Bis zum Datum</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="number" class="form-control repeatCount" style="display:none;" min="1" value="1">
+                                <input type="date" class="form-control repeatUntil" style="display:none;">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Erinnerung -->
+                    <fieldset class="form-group">
+                        <legend class="h5">Erinnerung</legend>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-control form-select reminderTime">
+                                    <option value="0">Keine Erinnerung</option>
+                                    <option value="10">10 Minuten vorher</option>
+                                    <option value="15">15 Minuten vorher</option>
+                                    <option value="30">30 Minuten vorher</option>
+                                    <option value="60">1 Stunde vorher</option>
+                                    <option value="120">2 Stunden vorher</option>
+                                    <option value="1440">1 Tag vorher</option>
+                                    <option value="2880">2 Tage vorher</option>
+                                    <option value="10080">1 Woche vorher</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </template>
+
         <div class="btn-group mb-4">
-            <button class="btn btn-create mr-2" onclick="createICSCalendar()">ICS Datei erstellen</button>
-            <button class="btn btn-secondary" onclick="addAnotherEvent()">Weiteren Termin hinzufügen</button>
+            <button class="btn btn-primary mr-2" 
+                    onclick="createICSCalendar()" 
+                    aria-label="ICS-Datei erstellen und herunterladen">
+                <i class="fas fa-file-download" aria-hidden="true"></i> ICS Datei erstellen
+            </button>
+            <button type="button" 
+                    class="btn btn-outline-primary" 
+                    onclick="duplicateEvent(1)"
+                    aria-label="Weiteren Termin hinzufügen">
+                <i class="fas fa-plus" aria-hidden="true"></i>
+                Weiterer Termin hinzufügen
+            </button>
         </div>
-    </div>
+    </main>
 
     <div id="footer"></div>
+
+    <!-- Strukturierte Daten für SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ICS Tools - Termine erstellen",
+        "description": "Erstellen Sie Kalenderereignisse und exportieren Sie diese als ICS-Datei",
+        "applicationCategory": "Calendar",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        }
+    }
+    </script>
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

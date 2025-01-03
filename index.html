@@ -5,16 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICS Tools - Kalenderdateien einfach erstellen</title>
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self' ws://127.0.0.1:* ws://localhost:*; 
+        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com; 
+        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net; 
+        font-src 'self' https://cdnjs.cloudflare.com;
+        img-src 'self' data:;
+        connect-src 'self' ws: wss: http: https:;">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <meta name="description" content="Erstellen und validieren Sie einfach iCalendar (ICS) Dateien für Ihre Termine und Veranstaltungen">
+    <meta name="keywords" content="ICS, iCalendar, Kalender, Termine, Generator, Validator">
+    <link rel="preload" href="Logo ICS Generator.png" as="image">
+    <link rel="preload" href="styles.css" as="style">
     
 </head>
 
 <body>
-    <div id="header"></div>
+    <header id="header" class="sticky-top"></header>
     <div class="container mt-5">
         <div class="header">
             <div>
@@ -22,9 +33,10 @@
                 <p class="lead animate__animated animate__fadeIn animate__delay-1s">
                     Erstellen und validieren Sie Kalenderdateien im iCalendar-Format
                 </p>
-                <div class="btn-group mb-4">
-                    <a href="generator.html" class="btn btn-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s">
-                        <i class="fas fa-calendar-plus"></i> Termine erstellen
+                <div class="btn-group mb-4" role="group" aria-label="Hauptfunktionen">
+                    <a href="generator.html" class="btn btn-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s" role="button">
+                        <i class="fas fa-calendar-plus" aria-hidden="true"></i> 
+                        <span>Termine erstellen</span>
                     </a>
                     <a href="validator.html" class="btn btn-outline-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s">
                         <i class="fas fa-check-circle"></i> ICS validieren
@@ -35,7 +47,6 @@
                     </label>
                 </div>
             </div>
-            <img src="DigitalCoach.png" alt="Digital Coach" class="animate__animated animate__fadeInRight animate__delay-1s">
         </div>
         <h4 class="animate__animated animate__fadeIn animate__delay-2s">Erstelle mühelos iCalendar-Einladungen</h4>
         <p>Suchst du nach einer einfachen Möglichkeit, iCalendar-Einladungen mit Anhängen oder relevanten URLs zu erstellen? Dann ist mein Programm genau das Richtige für dich! Mit dieser benutzerfreundlichen Anwendung kannst du im Handumdrehen einzelne oder mehrere Termine planen und direkt in eine iCalendar-Datei (.ics) exportieren.</p>
