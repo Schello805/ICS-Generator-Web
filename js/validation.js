@@ -1,4 +1,3 @@
-// Entferne diese Funktionen:
 function validateICS(icsContent) {
     const lines = icsContent.split(/\r\n|\n|\r/);
     const errors = [];
@@ -57,4 +56,4 @@ function validateICSLine(line) {
     
     // Unbekannte Property
     return false;
-}
+} 

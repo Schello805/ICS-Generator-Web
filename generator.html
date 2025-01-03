@@ -145,15 +145,9 @@
                                 <span class="sr-only">Optional: Fügen Sie eine relevante Webseite hinzu</span>
                             </label>
                             <input type="url" 
-                                   class="form-control url" 
+                                   class="form-control" 
                                    id="url1" 
-                                   placeholder="https://example.com"
-                                   aria-describedby="url1-help"
-                                   pattern="https?://.+"
-                                   onchange="validateURL(this, 'Link')">
-                            <small id="url1-help" class="form-text text-muted">
-                                Geben Sie eine vollständige URL ein (beginnt mit http:// oder https://)
-                            </small>
+                                   placeholder="URL eingeben">
                         </div>
                         <fieldset class="form-group">
                             <legend class="h5">Wiederholung</legend>
@@ -385,6 +379,16 @@
                     <div class="form-group">
                         <label>Beschreibung</label>
                         <textarea class="form-control description" rows="3"></textarea>
+                    </div>
+
+                    <!-- Anhang (URL) -->
+                    <div class="form-group">
+                        <label>Anhang (URL):</label>
+                        <input type="url" class="form-control attachment" placeholder="https://example.com/dokument.pdf">
+                    </div>
+                    <div class="form-group">
+                        <label>Link</label>
+                        <input type="url" class="form-control url" placeholder="URL eingeben">
                     </div>
 
                     <!-- Wiederholung -->
