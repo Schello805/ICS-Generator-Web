@@ -1,79 +1,91 @@
 // Date Time Manager Module
 
-export const toggleDateTimeFields = (eventNumber) => {
-    try {
-        const form = document.querySelector(`#eventForm${eventNumber}`);
-        if (!form) {
-            console.error(`Form #eventForm${eventNumber} nicht gefunden`);
-            return;
-        }
-
-        const allDayCheckbox = form.querySelector('.allDay');
-        const startTimeInput = form.querySelector('.startTime');
-        const endTimeInput = form.querySelector('.endTime');
-        const timeFormatHelp = form.querySelector('#time-format-help');
-
-        if (!allDayCheckbox || !startTimeInput || !endTimeInput) {
-            console.error('Zeit-Elemente nicht gefunden');
-            return;
-        }
-
-        const isAllDay = allDayCheckbox.checked;
-        startTimeInput.style.display = isAllDay ? 'none' : 'block';
-        endTimeInput.style.display = isAllDay ? 'none' : 'block';
-        if (timeFormatHelp) {
-            timeFormatHelp.style.display = isAllDay ? 'none' : 'block';
-        }
-
-        // Setze Standardzeiten für ganztägige Events
-        if (isAllDay) {
-            startTimeInput.value = '00:00';
-            endTimeInput.value = '23:59';
-        }
-
-        console.log(`Zeitfelder für Event ${eventNumber} aktualisiert. Ganztägig: ${isAllDay}`);
-    } catch (error) {
-        console.error('Fehler beim Umschalten der Zeitfelder:', error);
+/**
+ * Aktualisiert das Enddatum wenn das Startdatum geändert wird
+ * @param {HTMLElement} form - Das Formular-Element, das die Datums-Inputs enthält
+ */
+const updateEndDate = (form) => {
+    const startDate = form.querySelector('.startDate');
+    const endDate = form.querySelector('.endDate');
+    
+    if (startDate && endDate) {
+        startDate.addEventListener('change', () => {
+            // Setze das Enddatum nur, wenn es entweder leer ist oder vor dem Startdatum liegt
+            if (!endDate.value || new Date(endDate.value) < new Date(startDate.value)) {
+                endDate.value = startDate.value;
+            }
+        });
     }
 };
 
-export const updateEndDate = (eventNumber) => {
+export const toggleDateTimeFields = (form) => {
     try {
-        const form = document.querySelector(`#eventForm${eventNumber}`);
         if (!form) {
-            console.error(`Form #eventForm${eventNumber} nicht gefunden`);
+            console.error('Form element is required');
             return;
         }
 
-        const startDateInput = form.querySelector('.startDate');
-        const endDateInput = form.querySelector('.endDate');
-        const repeatUntilInput = form.querySelector('.repeatUntil');
-
-        if (!startDateInput || !endDateInput) {
-            console.error('Datum-Elemente nicht gefunden');
-            return;
-        }
-
-        const startDate = startDateInput.value;
+        const checkbox = form.querySelector('.allDay');
+        const timeFields = form.querySelectorAll('.time-field');
         
-        // Setze das Enddatum auf das Startdatum, wenn es leer ist oder vor dem Startdatum liegt
-        if (!endDateInput.value || endDateInput.value < startDate) {
-            endDateInput.value = startDate;
+        if (!checkbox || timeFields.length === 0) {
+            console.error('Required elements not found');
+            return;
         }
 
-        // Aktualisiere auch das "Wiederholung bis" Datum
-        if (repeatUntilInput && (!repeatUntilInput.value || repeatUntilInput.value < startDate)) {
-            repeatUntilInput.value = startDate;
-        }
+        console.log('Checkbox checked:', checkbox.checked);
+        console.log('Found time fields:', timeFields.length);
 
-        // Setze die Mindestdaten
-        endDateInput.min = startDate;
-        if (repeatUntilInput) {
-            repeatUntilInput.min = startDate;
-        }
-
-        console.log(`Enddatum für Event ${eventNumber} aktualisiert`);
+        timeFields.forEach(field => {
+            field.style.display = checkbox.checked ? 'none' : '';
+            // Deaktiviere auch die Eingabefelder
+            const inputs = field.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.disabled = checkbox.checked;
+                if (checkbox.checked) {
+                    input.value = '';  // Leere die Zeitfelder wenn ganztägig
+                }
+            });
+        });
     } catch (error) {
-        console.error('Fehler beim Aktualisieren des Enddatums:', error);
+        console.error('Error in toggleDateTimeFields:', error);
+    }
+};
+
+export const initializeDateTimeFields = () => {
+    try {
+        document.querySelectorAll('.eventForm').forEach(form => {
+            // Setze das aktuelle Datum für alle Datumsfelder
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = form.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(dateInput => {
+                if (!dateInput.value) {
+                    dateInput.value = today;
+                }
+            });
+
+            // Initialisiere die Aktualisierung des Enddatums
+            updateEndDate(form);
+
+            // Setze die aktuelle Zeit für Startzeit-Felder
+            const now = new Date();
+            const currentHour = String(now.getHours()).padStart(2, '0');
+            const currentMinute = String(now.getMinutes()).padStart(2, '0');
+            const startTimeInput = form.querySelector('.startTime');
+            if (startTimeInput && !startTimeInput.value) {
+                startTimeInput.value = `${currentHour}:${currentMinute}`;
+            }
+
+            // Setze die Zeit eine Stunde später für Endzeit-Felder
+            const later = new Date(now.getTime() + 60 * 60 * 1000);
+            const laterHour = String(later.getHours()).padStart(2, '0');
+            const laterMinute = String(later.getMinutes()).padStart(2, '0');
+            const endTimeInput = form.querySelector('.endTime');
+            if (endTimeInput && !endTimeInput.value) {
+                endTimeInput.value = `${laterHour}:${laterMinute}`;
+            }
+        });
+    } catch (error) {
+        console.error('Error in initializeDateTimeFields:', error);
     }
 };

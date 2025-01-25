@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-itunes-app" content="app-id=6738963683">
     <title>ICS Tools - Kalenderdateien einfach erstellen</title>
     <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self' ws://127.0.0.1:* ws://localhost:*; 
+        default-src 'self' ws://127.0.0.1:* ws://localhost:* wss://ics-generator.com:*; 
         style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; 
-        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net 'unsafe-eval'; 
+        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdn.socket.io 'unsafe-eval'; 
         font-src 'self' https://cdnjs.cloudflare.com;
         img-src 'self' data:;
         connect-src 'self' ws: wss: http: https:;">
@@ -25,7 +26,20 @@
 </head>
 
 <body>
-    <header id="header" class="sticky-top"></header>
+    <header id="header" class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html">ICS Generator</a>
+                <div class="d-flex align-items-center">
+                    <span class="text-light me-3">
+                        <i class="fas fa-users"></i> Online: <span id="userCount">0</span>
+                    </span>
+                    <a href="generator.html" class="btn btn-outline-light">Generator</a>
+                    <a href="validator.html" class="btn btn-outline-light ms-2">Validator</a>
+                </div>
+            </div>
+        </nav>
+    </header>
     <div class="container mt-5">
         <div class="header">
             <div>
@@ -41,10 +55,6 @@
                     <a href="validator.html" class="btn btn-outline-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s">
                         <i class="fas fa-check-circle"></i> ICS validieren
                     </a>
-                    <label class="btn btn-outline-secondary btn-lg animate__animated animate__fadeInLeft animate__delay-1s mb-0">
-                        <i class="fas fa-file-import"></i> ICS importieren
-                        <input type="file" id="importFile" accept=".ics" style="display: none" onchange="importAndRedirect(this)">
-                    </label>
                 </div>
             </div>
         </div>
@@ -74,7 +84,7 @@
                                             <li>Einmalige Erstellung aller Termine</li>
                                             <li>Export als eine ICS-Datei</li>
                                             <li>Einfache Verteilung an alle Eltern</li>
-                                            <li>Keine technische Infrastruktur nötig</li>
+                                            <li>Keine technischen Vorkenntnisse nötig</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -160,6 +170,12 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/components.js"></script>
     <script src="script.js" type="module"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script type="module" src="js/modules/userCounter.js"></script>
+    <script type="module">
+        import { initializeUserCounter } from './js/modules/userCounter.js';
+        document.addEventListener('DOMContentLoaded', initializeUserCounter);
+    </script>
     
 </body>
 

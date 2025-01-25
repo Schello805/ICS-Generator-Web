@@ -1,14 +1,4 @@
 <script>
-function importAndRedirect(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            localStorage.setItem('importedICS', e.target.result);
-            window.location.href = 'generator.html?import=true';
-        };
-        reader.readAsText(input.files[0]);
-    }
-}
 </script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
     <div class="container">
@@ -31,19 +21,6 @@ function importAndRedirect(input) {
                     <a class="nav-link" href="validator.html">ICS Validator</a>
                 </li>
             </ul>
-            <!-- Import Button -->
-            <div class="ml-auto">
-                <label class="btn btn-outline-light mb-0" role="button">
-                    <i class="fas fa-file-import" aria-hidden="true"></i> 
-                    <span>ICS Datei importieren</span>
-                    <input type="file" 
-                           id="importFile" 
-                           accept=".ics" 
-                           class="sr-only"
-                           aria-label="Bestehende ICS-Datei zum Bearbeiten importieren" 
-                           onchange="importAndRedirect(this)">
-                </label>
-            </div>
         </div>
     </div>
 </nav> 

@@ -80,14 +80,43 @@ function setActiveNavItem() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Komponenten laden
-    Promise.all([
-        loadComponent('header', 'components/header.html'),
-        loadComponent('footer', 'components/footer.html')
-    ]).catch(error => {
-        console.error('Error loading components:', error);
-    });
+    // Lade Header
+    fetch('components/header.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading header:', error));
+
+    // Lade Footer
+    fetch('components/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading footer:', error));
 });
+
+// Funktion zum Warten auf ein Element
+window.waitForElement = function(selector) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(selector)) {
+                observer.disconnect();
+                resolve(document.querySelector(selector));
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+};
 
 try {
     if (typeof module !== 'undefined' && module.exports) {
@@ -101,20 +130,6 @@ try {
     // Ignorieren im Browser-Kontext
 }
 
-// Import-Funktion für den Header
-window.importAndRedirect = function(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            // Speichere den Inhalt temporär im localStorage
-            localStorage.setItem('importedICS', e.target.result);
-            // Weiterleitung zum Generator mit Import-Flag
-            window.location.href = 'generator.html?import=true';
-        };
-        reader.readAsText(input.files[0]);
-    }
-} 
-
 function toggleDateTimeFields(event) {
     console.log("toggleDateTimeFields aufgerufen"); // Debug-Ausgabe
     const checkbox = event.target;
@@ -126,4 +141,3 @@ function toggleDateTimeFields(event) {
         });
     }
 }
-
