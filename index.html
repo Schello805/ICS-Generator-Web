@@ -21,7 +21,7 @@
     <meta name="description" content="Erstellen und validieren Sie einfach iCalendar (ICS) Dateien für Ihre Termine und Veranstaltungen">
     <meta name="keywords" content="ICS, iCalendar, Kalender, Termine, Generator, Validator">
     <link rel="preload" href="styles.css" as="style">
-    <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -33,12 +33,23 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="index.html">ICS Generator</a>
-                <div class="d-flex align-items-center">
-                    <span class="text-light me-3">
-                        <i class="fas fa-users"></i> Online: <span id="userCount">0</span>
-                    </span>
-                    <a href="generator.html" class="btn btn-outline-light">Generator</a>
-                    <a href="validator.html" class="btn btn-outline-light ms-2">Validator</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <span class="nav-link text-light">
+                                <i class="fas fa-users"></i> Online: <span id="userCount">0</span>
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="generator.html">Generator</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="validator.html">Validator</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>
