@@ -9,10 +9,10 @@
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         connect-src 'self' https://ics-generator.com wss://ics-generator.com ws://localhost:* wss://localhost:*;
-        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
         script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdn.socket.io;
         font-src 'self' https://cdnjs.cloudflare.com;
-        img-src 'self' data:">
+        img-src 'self' data: https:">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -21,6 +21,9 @@
     <meta name="description" content="Erstellen und validieren Sie einfach iCalendar (ICS) Dateien für Ihre Termine und Veranstaltungen">
     <meta name="keywords" content="ICS, iCalendar, Kalender, Termine, Generator, Validator">
     <link rel="preload" href="styles.css" as="style">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
     
 </head>
