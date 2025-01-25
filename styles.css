@@ -245,6 +245,27 @@
     z-index: 1000; /* Stelle sicher, dass die Navigation über anderen Elementen liegt */
 }
 
+/* Sticky Navigation */
+.navbar {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+/* Sticky Header */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--bs-primary);
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 76px; /* Höhe der Navbar + etwas Padding */
+}
+
 /* User Counter */
 #userCount {
     font-weight: bold;
