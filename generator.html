@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Erstellen Sie einzelne oder wiederkehrende Kalenderereignisse und exportieren Sie diese als ICS-Datei">
     <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self' ws://127.0.0.1:* ws://localhost:* wss://ics-generator.com:*; 
-        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; 
-        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdn.socket.io 'unsafe-eval';
-        script-src-elem 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net;
+        default-src 'self';
+        connect-src 'self' https://ics-generator.com wss://ics-generator.com ws://localhost:* wss://localhost:*;
+        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com;
+        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdn.socket.io;
         font-src 'self' https://cdnjs.cloudflare.com;
-        img-src 'self' data:;
-        connect-src 'self' ws: wss: http: https:;">
+        img-src 'self' data:">
     <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://code.jquery.com">

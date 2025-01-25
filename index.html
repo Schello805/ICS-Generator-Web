@@ -7,12 +7,12 @@
     <meta name="apple-itunes-app" content="app-id=6738963683">
     <title>ICS Tools - Kalenderdateien einfach erstellen</title>
     <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self' ws://127.0.0.1:* ws://localhost:* wss://ics-generator.com:*; 
-        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; 
-        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdn.socket.io 'unsafe-eval'; 
+        default-src 'self';
+        connect-src 'self' https://ics-generator.com wss://ics-generator.com ws://localhost:* wss://localhost:*;
+        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com;
+        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdn.socket.io;
         font-src 'self' https://cdnjs.cloudflare.com;
-        img-src 'self' data:;
-        connect-src 'self' ws: wss: http: https:;">
+        img-src 'self' data:">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
