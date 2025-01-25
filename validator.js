@@ -65,6 +65,68 @@ function isValidICSDate(dateString) {
            /^\d{8}T\d{6}(?:[+-]\d{4})?$/.test(datetime);
 }
 
+function validateICS(icsContent) {
+    const lines = icsContent.split(/\r\n|\n|\r/);
+    const errors = [];
+    const warnings = [];
+    
+    // Liste der erlaubten Properties
+    const validProperties = [
+        'BEGIN', 'END', 'VERSION', 'PRODID', 'UID', 'DTSTAMP',
+        'DTSTART', 'DTEND', 'SUMMARY', 'DESCRIPTION', 'LOCATION',
+        'RRULE', 'ACTION', 'TRIGGER', 'VALARM'
+    ];
+
+    lines.forEach((line, index) => {
+        const lineNumber = index + 1;
+        
+        // Leere Zeilen sind erlaubt
+        if (line.trim() === '') {
+            return;
+        }
+
+        // Prüfe die Property-Syntax
+        const parts = line.split(':');
+        if (parts.length < 2 && line.trim() !== '') {
+            errors.push(`Zeile ${lineNumber}: Ungültige Syntax in "${line}"`);
+            return;
+        }
+
+        // Extrahiere den Property-Namen (vor dem ersten ; oder :)
+        const propertyPart = parts[0];
+        const propertyName = propertyPart.split(';')[0].toUpperCase();
+
+        // Prüfe ob die Property erlaubt ist
+        if (!validProperties.includes(propertyName)) {
+            warnings.push(`Zeile ${lineNumber}: Unbekannte Property "${propertyName}"`);
+        }
+
+        // Spezielle Validierung für bestimmte Properties
+        switch (propertyName) {
+            case 'DTSTART':
+            case 'DTEND':
+                if (!isValidICSDate(line)) {
+                    errors.push(`Zeile ${lineNumber}: Ungültiges Datum in "${line}"`);
+                }
+                break;
+            case 'TRIGGER':
+                const triggerValue = parts[1];
+                if (!triggerValue.match(/^-?PT\d+[HMS]$/)) {
+                    errors.push(`Zeile ${lineNumber}: Ungültiger TRIGGER-Wert in "${line}"`);
+                }
+                break;
+            case 'ACTION':
+                const actionValue = parts[1];
+                if (!['DISPLAY', 'AUDIO', 'EMAIL'].includes(actionValue)) {
+                    errors.push(`Zeile ${lineNumber}: Ungültiger ACTION-Wert in "${line}"`);
+                }
+                break;
+        }
+    });
+    
+    return { errors, warnings };
+}
+
 function displayValidationResults(errors, warnings) {
     const resultsDiv = document.getElementById('validationResults');
     let html = '';

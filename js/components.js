@@ -114,3 +114,16 @@ window.importAndRedirect = function(input) {
         reader.readAsText(input.files[0]);
     }
 } 
+
+function toggleDateTimeFields(event) {
+    console.log("toggleDateTimeFields aufgerufen"); // Debug-Ausgabe
+    const checkbox = event.target;
+    const formGroup = checkbox.closest('.form-group').nextElementSibling;
+    if (formGroup) {
+        const inputs = formGroup.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.disabled = checkbox.checked;
+        });
+    }
+}
+

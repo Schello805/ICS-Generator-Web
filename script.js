@@ -1,60 +1,13 @@
-// Entferne diese Funktionen:
-function validateICS(icsContent) {
-    const lines = icsContent.split(/\r\n|\n|\r/);
-    const errors = [];
-    const warnings = [];
-    
-    lines.forEach((line, index) => {
-        const lineNumber = index + 1;
-        const validation = validateICSLine(line);
-        
-        if (validation === false) {
-            errors.push(`Zeile ${lineNumber}: Ungültige Property-Syntax in "${line}"`);
-        } else if (typeof validation === 'object' && validation.isValid && !validation.isKnown) {
-            warnings.push(`Zeile ${lineNumber}: Unbekannte Property "${line.split(/[;:]/)[0]}"`);
-        }
-    });
-    
-    return { errors, warnings };
-}
+// Import modules
+import { initializeEventHandlers } from './js/modules/eventHandlers.js';
 
-function validateICSLine(line) {
-    // Ignoriere Google-spezifische Zeilen
-    if (line.includes('hangouts.google.com') || 
-        line.includes('~:~:~:~:~:~') ||
-        line.includes('calendar/') ||
-        /[a-zA-Z0-9]{20,}/.test(line)) {
-        return true;
+// Initialize all event handlers when the document is ready
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Document ready, initializing handlers...');
+    try {
+        initializeEventHandlers();
+        console.log('Event handlers initialized successfully');
+    } catch (error) {
+        console.error('Error initializing event handlers:', error);
     }
-    
-    // Liste der Kern-Properties nach RFC 5545
-    const coreProperties = [
-        'BEGIN', 'END', 'SUMMARY', 'DTSTART', 'DTEND', 'DTSTAMP',
-        'UID', 'VERSION', 'PRODID'
-    ];
-    
-    // Liste der erweiterten Properties
-    const extendedProperties = [
-        'CREATED', 'DESCRIPTION', 'LAST-MODIFIED', 'LOCATION',
-        'SEQUENCE', 'STATUS', 'RRULE', 'CATEGORIES', 'CLASS',
-        'COMMENT', 'GEO', 'PRIORITY', 'RESOURCES', 'TRANSP',
-        'URL', 'ATTACH', 'ATTENDEE', 'ORGANIZER', 'RELATED-TO',
-        'EXDATE', 'RDATE', 'RECURRENCE-ID', 'VCALENDAR', 'VEVENT'
-    ];
-    
-    // Prüfe ob die Zeile mit einer gültigen Property beginnt
-    const property = line.split(/[;:]/, 1)[0].toUpperCase();
-    
-    // Wenn es eine Kern-Property ist, direkt true zurückgeben
-    if (coreProperties.includes(property)) {
-        return true;
-    }
-    
-    // Wenn es eine erweiterte Property ist, als "bekannt" markieren
-    if (extendedProperties.includes(property)) {
-        return { isValid: true, isKnown: true };
-    }
-    
-    // Unbekannte Property
-    return false;
-}
+});
