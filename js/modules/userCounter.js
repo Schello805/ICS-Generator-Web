@@ -2,8 +2,11 @@
 
 // Konfiguration für den WebSocket-Server
 const config = {
-    // Verwende die aktuelle URL des Webservers
-    serverUrl: window.location.origin
+    // Verwende die aktuelle URL des Webservers für Entwicklung
+    // oder die feste Produktions-URL
+    serverUrl: window.location.hostname === 'ics-generator.com' 
+        ? 'https://ics-generator.com' 
+        : window.location.origin
 };
 
 /**
@@ -31,8 +34,8 @@ export const initializeUserCounter = () => {
         const socket = io(config.serverUrl, {
             reconnectionAttempts: 3,
             reconnectionDelay: 1000,
-            timeout: 3000,
-            transports: ['websocket', 'polling'],  // Erlaube Fallback auf Polling
+            timeout: 5000,
+            transports: ['websocket', 'polling'],
             path: '/socket.io/',
             autoConnect: true,
             forceNew: true
@@ -61,20 +64,6 @@ export const initializeUserCounter = () => {
             console.error('WebSocket connection error:', error);
             userCountElement.textContent = '-';
             userCountElement.style.color = '#6c757d'; // Grau bei Fehler
-
-            // Versuche erneut zu verbinden
-            setTimeout(() => {
-                if (!socket.connected) {
-                    socket.connect();
-                }
-            }, 2000);
-        });
-
-        // Timeout
-        socket.on('connect_timeout', () => {
-            console.error('WebSocket connection timeout');
-            userCountElement.textContent = '-';
-            userCountElement.style.color = '#6c757d';
         });
 
         // Cleanup bei Seitenverlassen

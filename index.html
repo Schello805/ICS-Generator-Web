@@ -21,10 +21,10 @@
     <meta name="description" content="Erstellen und validieren Sie einfach iCalendar (ICS) Dateien für Ihre Termine und Veranstaltungen">
     <meta name="keywords" content="ICS, iCalendar, Kalender, Termine, Generator, Validator">
     <link rel="preload" href="styles.css" as="style">
+    <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
     
 </head>
 
@@ -177,9 +177,8 @@
     <script type="module" src="js/modules/userCounter.js"></script>
     <script type="module">
         import { initializeUserCounter } from './js/modules/userCounter.js';
-        document.addEventListener('DOMContentLoaded', initializeUserCounter);
+        initializeUserCounter();
     </script>
-    
 </body>
 
 </html>
