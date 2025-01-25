@@ -23,33 +23,8 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
-    <header id="header" class="sticky-top">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="index.html">ICS Generator</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <span class="nav-link text-light">
-                                <i class="fas fa-users"></i> Online: <span id="userCount">0</span>
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="generator.html">Generator</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="validator.html">Validator</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <main class="container mt-5">
+    <div id="header"></div>
+    <div class="container mt-5">
         <div class="header">
             <div>
                 <h1 class="h2 mb-4" id="page-title">Termine erstellen</h1>
@@ -397,42 +372,20 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <div id="footer"></div>
 
-    <!-- Strukturierte Daten für SEO -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "ICS Generator",
-        "description": "Erstellen Sie einzelne oder wiederkehrende Kalenderereignisse und exportieren Sie diese als ICS-Datei",
-        "url": "https://ics-generator.com",
-        "applicationCategory": "Calendar",
-        "operatingSystem": "Any",
-        "browserRequirements": "Requires JavaScript"
-    }
-    </script>
-
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="js/modules/userCounter.js"></script>
-    <script type="module">
-        import { initializeUserCounter } from './js/modules/userCounter.js';
-        initializeUserCounter();
-    </script>
     <script src="js/components.js" type="module"></script>
     <script src="js/modules/eventHandlers.js" type="module"></script>
     <script src="js/modules/eventManager.js" type="module"></script>
     <script src="js/modules/dateTimeManager.js" type="module"></script>
+    <script src="js/modules/formManager.js" type="module"></script>
     <script src="js/modules/icsGenerator.js" type="module"></script>
-    <script src="js/modules/icsFormatter.js" type="module"></script>
-    <script type="module">
-        import { initializeEventHandlers } from './js/modules/eventHandlers.js';
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeEventHandlers();
-        });
-    </script>
+    <script src="js/modules/validationManager.js" type="module"></script>
+    <script src="js/modules/fileManager.js" type="module"></script>
 </body>
+
 </html>

@@ -93,6 +93,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.text())
         .then(data => {
             document.getElementById('footer').innerHTML = data;
+            // Initialisiere den Besucherzähler nach dem Laden des Footers
+            import('./modules/userCounter.js')
+                .then(module => module.initializeUserCounter())
+                .catch(error => console.error('Error initializing user counter:', error));
         })
         .catch(error => console.error('Error loading footer:', error));
 });

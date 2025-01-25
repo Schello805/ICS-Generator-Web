@@ -1,0 +1,14 @@
+[Unit]
+Description=ICS Generator User Counter
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/ICS-Generator-Web/server
+ExecStart=/usr/bin/node server.js
+Restart=always
+Environment=PORT=3000
+
+[Install]
+WantedBy=multi-user.target
