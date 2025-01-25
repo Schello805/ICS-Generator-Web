@@ -79,26 +79,24 @@ function setActiveNavItem() {
     }
 }
 
+import { initializeUserCounter } from './modules/userCounter.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Lade Header
     fetch('components/header.html')
         .then(response => response.text())
         .then(data => {
             document.getElementById('header').innerHTML = data;
-        })
-        .catch(error => console.error('Error loading header:', error));
+        });
 
     // Lade Footer
     fetch('components/footer.html')
         .then(response => response.text())
         .then(data => {
             document.getElementById('footer').innerHTML = data;
-            // Initialisiere den Besucherzähler nach dem Laden des Footers
-            import('./modules/userCounter.js')
-                .then(module => module.initializeUserCounter())
-                .catch(error => console.error('Error initializing user counter:', error));
-        })
-        .catch(error => console.error('Error loading footer:', error));
+            // Initialisiere den UserCounter nach dem Laden des Footers
+            initializeUserCounter();
+        });
 });
 
 // Funktion zum Warten auf ein Element

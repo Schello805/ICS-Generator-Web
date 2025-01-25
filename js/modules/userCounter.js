@@ -2,11 +2,9 @@
 
 // Konfiguration für den WebSocket-Server
 const config = {
-    // Verwende die aktuelle URL des Webservers für Entwicklung
-    // oder die feste Produktions-URL
     serverUrl: window.location.hostname === 'ics-generator.com' 
         ? 'https://ics-generator.com' 
-        : 'http://localhost:5500'
+        : 'http://localhost:3000'
 };
 
 /**
@@ -15,84 +13,64 @@ const config = {
 export const initializeUserCounter = () => {
     console.log('Initializing user counter...');
     
-    // Warte auf das DOM-Element
-    const waitForElement = () => {
-        const userCountElement = document.getElementById('userCount');
-        if (!userCountElement) {
-            console.log('User count element not found, waiting...');
-            setTimeout(waitForElement, 100);
-            return;
-        }
+    const userCountElement = document.getElementById('userCount');
+    if (!userCountElement) {
+        console.error('User count element not found!');
+        return;
+    }
 
-        // Prüfe ob wir in Produktion sind
-        const isProduction = window.location.hostname === 'ics-generator.com';
-        console.log('Environment:', isProduction ? 'Production' : 'Development');
+    // Setze initiale Anzeige
+    userCountElement.textContent = '1';
+
+    try {
+        console.log('Connecting to WebSocket server at:', config.serverUrl);
         
-        if (!isProduction) {
-            console.log('Development mode: hiding counter');
-            userCountElement.style.display = 'none';
-            return;
-        }
+        // Socket.IO Konfiguration
+        const socket = io(config.serverUrl, {
+            reconnectionAttempts: 3,
+            reconnectionDelay: 1000,
+            timeout: 5000,
+            transports: ['websocket', 'polling']
+        });
 
-        // Setze initiale Anzeige
-        userCountElement.textContent = '-';
-        userCountElement.style.color = '#6c757d'; // Grau
+        // Verbindungsaufbau
+        socket.on('connect', () => {
+            console.log('Connected to WebSocket server');
+            userCountElement.style.color = '#198754'; // Bootstrap success color
+        });
 
-        try {
-            console.log('Connecting to WebSocket server at:', config.serverUrl);
-            
-            // Socket.IO Konfiguration
-            const socket = io(config.serverUrl, {
-                reconnectionAttempts: 3,
-                reconnectionDelay: 1000,
-                timeout: 5000,
-                transports: ['websocket', 'polling'],
-                path: '/socket.io/',
-                autoConnect: true,
-                forceNew: true
-            });
+        // Empfange Benutzeranzahl
+        socket.on('userCount', (count) => {
+            console.log('Received user count:', count);
+            // Stelle sicher, dass count eine Zahl ist und mindestens 1
+            const safeCount = Math.max(1, parseInt(count) || 1);
+            userCountElement.textContent = safeCount;
+        });
 
-            // Verbindungsaufbau
-            socket.on('connect', () => {
-                console.log('Connected to WebSocket server');
-                userCountElement.style.color = '#28a745'; // Grün wenn verbunden
-            });
+        // Verbindung getrennt
+        socket.on('disconnect', (reason) => {
+            console.log('Disconnected from WebSocket server:', reason);
+            userCountElement.textContent = '1';
+            userCountElement.style.color = '#6c757d'; // Bootstrap secondary color
+        });
 
-            // Empfange Benutzeranzahl
-            socket.on('userCount', (count) => {
-                console.log('Received user count:', count);
-                userCountElement.textContent = count;
-            });
+        // Verbindungsfehler
+        socket.on('connect_error', (error) => {
+            console.error('WebSocket connection error:', error);
+            userCountElement.textContent = '1';
+            userCountElement.style.color = '#6c757d'; // Bootstrap secondary color
+        });
 
-            // Verbindung getrennt
-            socket.on('disconnect', (reason) => {
-                console.log('Disconnected from WebSocket server:', reason);
-                userCountElement.textContent = '-';
-                userCountElement.style.color = '#6c757d'; // Grau wenn getrennt
-            });
-
-            // Verbindungsfehler
-            socket.on('connect_error', (error) => {
-                console.error('WebSocket connection error:', error);
-                userCountElement.textContent = '-';
-                userCountElement.style.color = '#6c757d'; // Grau bei Fehler
-            });
-
-            // Cleanup bei Seitenverlassen
-            window.addEventListener('beforeunload', () => {
-                if (socket.connected) {
-                    socket.disconnect();
-                }
-            });
-
-        } catch (error) {
-            console.error('Error initializing user counter:', error);
-            if (userCountElement) {
-                userCountElement.textContent = '-';
-                userCountElement.style.color = '#6c757d';
+        // Cleanup bei Seitenverlassen
+        window.addEventListener('beforeunload', () => {
+            if (socket.connected) {
+                socket.disconnect();
             }
-        }
-    };
+        });
 
-    waitForElement();
+    } catch (error) {
+        console.error('Error initializing user counter:', error);
+        userCountElement.textContent = '1';
+        userCountElement.style.color = '#6c757d';
+    }
 };
