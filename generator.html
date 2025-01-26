@@ -382,10 +382,13 @@
     <script src="js/modules/eventHandlers.js" type="module"></script>
     <script src="js/modules/eventManager.js" type="module"></script>
     <script src="js/modules/dateTimeManager.js" type="module"></script>
-    <script src="js/modules/formManager.js" type="module"></script>
     <script src="js/modules/icsGenerator.js" type="module"></script>
-    <script src="js/modules/validationManager.js" type="module"></script>
-    <script src="js/modules/fileManager.js" type="module"></script>
+    <script type="module">
+        import { initializeEventHandlers } from './js/modules/eventHandlers.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEventHandlers();
+        });
+    </script>
 </body>
 
 </html>

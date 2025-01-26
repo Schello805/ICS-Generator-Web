@@ -31,66 +31,57 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title" id="upload-title">Datei hochladen</h5>
-                <div class="custom-file">
+                <div class="mb-3">
                     <input type="file" 
-                           class="custom-file-input" 
+                           class="form-control" 
                            id="icsFile" 
                            accept=".ics"
                            aria-labelledby="upload-title"
                            aria-describedby="file-format-info">
-                    <label class="custom-file-label" for="icsFile">ICS-Datei auswählen...</label>
+                    <small id="file-format-info" class="form-text text-muted">
+                        Unterstützte Dateiformate: .ics (iCalendar)
+                    </small>
                 </div>
-                <small id="file-format-info" class="form-text text-muted">
-                    Unterstützte Dateiformate: .ics (iCalendar)
-                </small>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6">
                 <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title" id="validation-results-title">Validierungsergebnisse</h5>
-                        <div id="validationResults" role="alert" aria-live="polite" aria-labelledby="validation-results-title">
-                            <div class="alert alert-info">
-                                Laden Sie eine ICS-Datei hoch, um die Validierung zu starten.
-                            </div>
-                        </div>
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Dateiinhalt</h5>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">Dateiinhalt</h5>
-                        <pre id="fileContent" class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;">
+                        <pre class="mb-0" id="fileContent">
 Hier wird der Inhalt der ICS-Datei angezeigt...
                         </pre>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Prüfkriterien nach RFC 5545</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>Grundlegende Struktur</h6>
-                        <ul>
-                            <li>BEGIN:VCALENDAR und END:VCALENDAR vorhanden</li>
-                            <li>VERSION Property (muss 2.0 sein)</li>
-                            <li>PRODID Property vorhanden</li>
-                            <li>Korrekte Verschachtelung der Komponenten</li>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Validierungsergebnisse</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group" id="validationResults">
+                            <li class="list-group-item text-muted">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Laden Sie eine ICS-Datei hoch, um sie zu validieren
+                            </li>
                         </ul>
                     </div>
-                    <div class="col-md-6">
-                        <h6>Event-Validierung</h6>
-                        <ul>
-                            <li>Pflichtfelder in VEVENT (UID, DTSTAMP, DTSTART)</li>
-                            <li>Korrekte Datums- und Zeitformate</li>
-                            <li>Gültige Zeitzonen</li>
-                            <li>Zeilenumbrüche nach RFC-Standard</li>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Validierungskriterien</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Erforderliche Felder (VEVENT, DTSTART, etc.)</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Korrekte Datums- und Zeitformate</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Gültige Zeitzonen</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Zeilenumbrüche nach RFC-Standard</li>
                         </ul>
                     </div>
                 </div>

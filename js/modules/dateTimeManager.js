@@ -26,27 +26,27 @@ export const toggleDateTimeFields = (form) => {
         }
 
         const checkbox = form.querySelector('.allDay');
-        const timeFields = form.querySelectorAll('.time-field');
-        
-        if (!checkbox || timeFields.length === 0) {
-            console.error('Required elements not found');
+        if (!checkbox) {
+            console.error('Checkbox not found');
             return;
         }
 
-        console.log('Checkbox checked:', checkbox.checked);
-        console.log('Found time fields:', timeFields.length);
-
-        timeFields.forEach(field => {
-            field.style.display = checkbox.checked ? 'none' : '';
-            // Deaktiviere auch die Eingabefelder
-            const inputs = field.querySelectorAll('input');
-            inputs.forEach(input => {
+        // Finde den Container mit den Zeitfeldern
+        const timeContainer = form.querySelector('.time-field').closest('.row');
+        
+        if (timeContainer) {
+            // Toggle Sichtbarkeit des gesamten Containers
+            timeContainer.style.display = checkbox.checked ? 'none' : '';
+            
+            // Deaktiviere die Zeitfelder
+            const timeInputs = timeContainer.querySelectorAll('input[type="time"]');
+            timeInputs.forEach(input => {
                 input.disabled = checkbox.checked;
                 if (checkbox.checked) {
-                    input.value = '';  // Leere die Zeitfelder wenn ganztägig
+                    input.value = '';
                 }
             });
-        });
+        }
     } catch (error) {
         console.error('Error in toggleDateTimeFields:', error);
     }
@@ -54,36 +54,34 @@ export const toggleDateTimeFields = (form) => {
 
 export const initializeDateTimeFields = () => {
     try {
+        // Setze Standardwerte für neue Datums- und Zeitfelder
         document.querySelectorAll('.eventForm').forEach(form => {
-            // Setze das aktuelle Datum für alle Datumsfelder
+            // Initialisiere Datumswerte
             const today = new Date().toISOString().split('T')[0];
-            const dateInputs = form.querySelectorAll('input[type="date"]');
-            dateInputs.forEach(dateInput => {
-                if (!dateInput.value) {
-                    dateInput.value = today;
-                }
-            });
+            const startDate = form.querySelector('.startDate');
+            const endDate = form.querySelector('.endDate');
+            
+            if (startDate && !startDate.value) {
+                startDate.value = today;
+            }
+            if (endDate && !endDate.value) {
+                endDate.value = today;
+            }
 
-            // Initialisiere die Aktualisierung des Enddatums
+            // Initialisiere "Ganztägig" Checkbox und Zeitfelder
+            const allDayCheckbox = form.querySelector('.allDay');
+            if (allDayCheckbox) {
+                // Initialer Status der Zeitfelder basierend auf Checkbox
+                toggleDateTimeFields(form);
+                
+                // Event-Listener für Checkbox-Änderungen
+                allDayCheckbox.addEventListener('change', () => {
+                    toggleDateTimeFields(form);
+                });
+            }
+
+            // Aktualisiere Enddatum wenn Startdatum sich ändert
             updateEndDate(form);
-
-            // Setze die aktuelle Zeit für Startzeit-Felder
-            const now = new Date();
-            const currentHour = String(now.getHours()).padStart(2, '0');
-            const currentMinute = String(now.getMinutes()).padStart(2, '0');
-            const startTimeInput = form.querySelector('.startTime');
-            if (startTimeInput && !startTimeInput.value) {
-                startTimeInput.value = `${currentHour}:${currentMinute}`;
-            }
-
-            // Setze die Zeit eine Stunde später für Endzeit-Felder
-            const later = new Date(now.getTime() + 60 * 60 * 1000);
-            const laterHour = String(later.getHours()).padStart(2, '0');
-            const laterMinute = String(later.getMinutes()).padStart(2, '0');
-            const endTimeInput = form.querySelector('.endTime');
-            if (endTimeInput && !endTimeInput.value) {
-                endTimeInput.value = `${laterHour}:${laterMinute}`;
-            }
         });
     } catch (error) {
         console.error('Error in initializeDateTimeFields:', error);
