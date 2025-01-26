@@ -350,12 +350,18 @@ export const initializeEventHandlers = () => {
             }
         });
 
+        // Event-Handler für "Termin kopieren" Buttons
+        document.addEventListener('click', (event) => {
+            if (event.target.closest('.copyEvent')) {
+                duplicateEvent(event.target);
+            }
+        });
+
         // Event-Handler für "Termin hinzufügen" Button
         const addEventButton = document.getElementById('addEvent');
         if (addEventButton) {
             addEventButton.addEventListener('click', () => {
-                duplicateEvent();
-                initializeDateTimeFields();
+                duplicateEvent(); // Kein Parameter bedeutet: Erstelle einen neuen, leeren Termin
             });
         }
 

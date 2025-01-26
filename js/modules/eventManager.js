@@ -4,24 +4,20 @@ import { initializeDateTimeFields } from './dateTimeManager.js';
 let eventCounter = 1;
 
 /**
- * WICHTIGER HINWEIS: Diese Funktion dient zum KOPIEREN eines BESTEHENDEN Termins.
- * Sie ist NICHT für das Hinzufügen eines neuen, leeren Termins gedacht.
- * Für das Hinzufügen eines neuen, leeren Termins wird stattdessen der "Weiterer Termin hinzufügen" Button verwendet.
+ * Diese Funktion kann sowohl zum Kopieren eines bestehenden Termins als auch zum Erstellen eines neuen Termins verwendet werden.
  * 
- * Die Funktion wird durch den "Kopieren" Button (Symbol: Kopieren-Icon) neben jedem Termin ausgelöst.
- * Sie erstellt eine exakte Kopie des ausgewählten Termins mit allen Eingaben und fügt diese direkt
- * nach dem Original-Termin ein.
+ * Wenn ein Event-Element übergeben wird:
+ * - Kopiert alle Formularwerte vom Original-Termin
+ * - Fügt den neuen Termin direkt nach dem Original ein
  * 
- * Funktionsweise:
- * 1. Kopiert alle Formularwerte vom Original-Termin (Titel, Beschreibung, Datum, Zeit, etc.)
- * 2. Erstellt einen neuen Termin direkt nach dem Original
- * 3. Fügt alle kopierten Werte in den neuen Termin ein
- * 4. Aktualisiert die Nummerierung aller Termine
+ * Wenn kein Event-Element übergeben wird:
+ * - Erstellt einen neuen, leeren Termin
+ * - Fügt ihn am Ende der Liste hinzu
  * 
- * @param {HTMLElement} event - Das Event-Element, das den Kopier-Button enthält
+ * @param {HTMLElement} [event] - Optional: Das Event-Element, das kopiert werden soll
  * @throws {Error} Wenn das Template nicht gefunden wird oder beim Kopieren ein Fehler auftritt
  */
-export const duplicateEvent = (event) => {
+export const duplicateEvent = (event = null) => {
     try {
         const template = document.getElementById('eventTemplate');
         if (!template) {
@@ -29,129 +25,207 @@ export const duplicateEvent = (event) => {
             return;
         }
 
-        // Finde das Event-Formular und den Container
-        const eventContainer = event.closest('.card');
-        const originalForm = eventContainer.querySelector('.eventForm');
-        if (!eventContainer || !originalForm) {
-            console.error('Event container or form not found');
-            return;
-        }
-
         // Erstelle neuen Event-Container
         const newEvent = template.content.cloneNode(true);
-        const newCard = newEvent.querySelector('.card');
-        
-        // Füge den neuen Event nach dem aktuellen ein
-        eventContainer.parentNode.insertBefore(newEvent, eventContainer.nextSibling);
-        
-        // Finde das neue Formular
-        const newForm = eventContainer.nextElementSibling.querySelector('.eventForm');
-        if (!newForm) {
-            console.error('New form not found');
-            return;
-        }
 
-        // Kopiere alle Eingabefelder
-        const inputs = originalForm.querySelectorAll('input, textarea, select');
-        inputs.forEach(input => {
-            const newInput = newForm.querySelector(`[name="${input.name}"], [class="${input.className}"]`);
-            if (newInput) {
-                if (input.type === 'checkbox' || input.type === 'radio') {
-                    newInput.checked = input.checked;
-                } else {
-                    newInput.value = input.value;
-                }
+        if (event) {
+            // Kopiere einen bestehenden Termin
+            const eventContainer = event.closest('.card');
+            const originalForm = eventContainer.querySelector('.eventForm');
+            if (!eventContainer || !originalForm) {
+                console.error('Event container or form not found');
+                return;
             }
-        });
 
-        // Aktualisiere den Titel
-        const events = document.querySelectorAll('.card');
-        const eventNumber = events.length;
-        const title = eventContainer.nextElementSibling.querySelector('.card-title');
-        if (title) {
-            title.textContent = `Termin ${eventNumber}`;
+            // Füge den neuen Event nach dem aktuellen ein
+            eventContainer.parentNode.insertBefore(newEvent, eventContainer.nextSibling);
+
+            // Kopiere die Werte vom Original-Formular
+            const newForm = eventContainer.nextElementSibling.querySelector('.eventForm');
+            if (!newForm) {
+                console.error('New form not found');
+                return;
+            }
+
+            // Kopiere alle Input-, Select- und Textarea-Werte
+            copyFormFields(originalForm, newForm);
+
+            // Kopiere die Wiederholungseinstellungen
+            copyRepeatSettings(originalForm, newForm);
+
+        } else {
+            // Füge einen neuen, leeren Termin am Ende hinzu
+            const eventsContainer = document.querySelector('#eventsContainer');
+            if (!eventsContainer) {
+                console.error('Events container not found');
+                return;
+            }
+            eventsContainer.appendChild(newEvent);
         }
 
-        // Initialisiere Event-Handler für den neuen Termin
-        initializeEventHandlers();
+        // Initialisiere die Datums- und Zeitfelder für den neuen Event
+        initializeDateTimeFields();
 
-        // Zeige Erfolgsmeldung
-        showSuccess('Termin wurde erfolgreich kopiert');
+        // Aktualisiere die Event-Nummerierung
+        updateEventNumbers();
 
     } catch (error) {
         console.error('Error duplicating event:', error);
-        showError('Fehler beim Kopieren des Termins');
+        throw error;
     }
 };
 
 /**
+ * Kopiert alle Formularfelder von einem Formular zum anderen
+ * @param {HTMLFormElement} sourceForm - Das Quellformular
+ * @param {HTMLFormElement} targetForm - Das Zielformular
+ */
+function copyFormFields(sourceForm, targetForm) {
+    // Kopiere alle Eingabefelder
+    sourceForm.querySelectorAll('input, select, textarea').forEach(sourceInput => {
+        // Versuche das entsprechende Feld im Zielformular zu finden
+        // Suche nach verschiedenen Attributen in dieser Reihenfolge
+        const selectors = [
+            `[name="${sourceInput.name}"]`,
+            `[id="${sourceInput.id}"]`,
+            `[data-field="${sourceInput.getAttribute('data-field')}"]`,
+            `[class="${sourceInput.className}"]`
+        ].join(', ');
+
+        const targetInput = targetForm.querySelector(selectors);
+        
+        if (targetInput) {
+            // Kopiere den Wert basierend auf dem Feldtyp
+            if (sourceInput.type === 'checkbox' || sourceInput.type === 'radio') {
+                targetInput.checked = sourceInput.checked;
+            } else if (sourceInput.type === 'select-multiple') {
+                // Für Multi-Select Felder
+                Array.from(sourceInput.options).forEach((option, index) => {
+                    targetInput.options[index].selected = option.selected;
+                });
+            } else {
+                targetInput.value = sourceInput.value;
+            }
+
+            // Kopiere alle data-* Attribute
+            Array.from(sourceInput.attributes)
+                .filter(attr => attr.name.startsWith('data-'))
+                .forEach(attr => {
+                    targetInput.setAttribute(attr.name, attr.value);
+                });
+
+            // Kopiere den disabled Status
+            targetInput.disabled = sourceInput.disabled;
+        }
+    });
+}
+
+/**
+ * Kopiert die Wiederholungseinstellungen von einem Formular zum anderen
+ * @param {HTMLFormElement} sourceForm - Das Quellformular
+ * @param {HTMLFormElement} targetForm - Das Zielformular
+ */
+function copyRepeatSettings(sourceForm, targetForm) {
+    // Kopiere die Wiederholungsart
+    const sourceRepeatType = sourceForm.querySelector('.repeatType');
+    const targetRepeatType = targetForm.querySelector('.repeatType');
+    if (sourceRepeatType && targetRepeatType) {
+        targetRepeatType.value = sourceRepeatType.value;
+
+        // Je nach Wiederholungsart weitere Einstellungen kopieren
+        switch (sourceRepeatType.value) {
+            case 'weekly':
+                // Kopiere die ausgewählten Wochentage
+                sourceForm.querySelectorAll('input[name^="weekday"]').forEach(sourceWeekday => {
+                    const weekdayNumber = sourceWeekday.name.replace('weekday', '');
+                    const targetWeekday = targetForm.querySelector(`input[name="weekday${weekdayNumber}"]`);
+                    if (targetWeekday) {
+                        targetWeekday.checked = sourceWeekday.checked;
+                    }
+                });
+                break;
+
+            case 'monthly':
+                // Kopiere die monatlichen Einstellungen
+                const sourceMonthlyType = sourceForm.querySelector('input[name="monthlyType"]:checked');
+                if (sourceMonthlyType) {
+                    const targetMonthlyType = targetForm.querySelector(`input[name="monthlyType"][value="${sourceMonthlyType.value}"]`);
+                    if (targetMonthlyType) {
+                        targetMonthlyType.checked = true;
+                    }
+                }
+                break;
+
+            case 'yearly':
+                // Kopiere die jährlichen Einstellungen
+                const sourceYearlyMonth = sourceForm.querySelector('select[name="yearlyMonth"]');
+                const targetYearlyMonth = targetForm.querySelector('select[name="yearlyMonth"]');
+                if (sourceYearlyMonth && targetYearlyMonth) {
+                    targetYearlyMonth.value = sourceYearlyMonth.value;
+                }
+                break;
+        }
+
+        // Kopiere das Enddatum der Wiederholung
+        const sourceEndDate = sourceForm.querySelector('input[name="repeatEndDate"]');
+        const targetEndDate = targetForm.querySelector('input[name="repeatEndDate"]');
+        if (sourceEndDate && targetEndDate) {
+            targetEndDate.value = sourceEndDate.value;
+        }
+    }
+}
+
+/**
+ * Aktualisiert die Nummerierung aller Events
+ */
+function updateEventNumbers() {
+    const events = document.querySelectorAll('.card');
+    events.forEach((event, index) => {
+        // Aktualisiere die Überschrift
+        const title = event.querySelector('.card-title');
+        if (title) {
+            title.textContent = `Termin ${index + 1}`;
+        }
+
+        // Aktualisiere die ID des Formulars
+        const form = event.querySelector('.eventForm');
+        if (form) {
+            form.id = `eventForm${index + 1}`;
+        }
+
+        // Aktualisiere die IDs und Labels der Formularelemente
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            const oldId = input.id;
+            if (oldId) {
+                const baseName = oldId.replace(/\d+$/, ''); // Entferne die alte Nummer
+                input.id = `${baseName}${index + 1}`;
+
+                // Aktualisiere auch das zugehörige Label
+                const label = form.querySelector(`label[for="${oldId}"]`);
+                if (label) {
+                    label.setAttribute('for', input.id);
+                }
+            }
+        });
+    });
+}
+
+/**
  * Entfernt einen Termin
+ * @param {HTMLElement} event - Das zu entfernende Event-Element
  */
 export const removeEvent = (event) => {
-    try {
-        const card = event.closest('.card');
-        if (!card) return;
-
-        // Wenn es der letzte Termin ist, nicht löschen
-        const remainingEvents = document.querySelectorAll('.eventForm');
+    const card = event.closest('.card');
+    if (card) {
+        // Prüfe, ob es der letzte Termin ist
+        const remainingEvents = document.querySelectorAll('.card');
         if (remainingEvents.length <= 1) {
-            showError('Es muss mindestens ein Termin vorhanden sein');
+            alert('Es muss mindestens ein Termin vorhanden sein');
             return;
         }
 
         card.remove();
-        
-        // Aktualisiere die Nummerierung der verbleibenden Termine
-        const events = document.querySelectorAll('.card');
-        events.forEach((event, index) => {
-            const title = event.querySelector('.card-title');
-            if (title) {
-                title.textContent = `Termin ${index + 1}`;
-            }
-        });
-
-        showSuccess('Termin wurde erfolgreich gelöscht');
-
-    } catch (error) {
-        console.error('Error removing event:', error);
-        showError('Fehler beim Löschen des Termins');
+        updateEventNumbers();
     }
 };
-
-// Hilfsfunktionen für Benachrichtigungen
-function showSuccess(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
-    alertDiv.setAttribute('role', 'alert');
-    alertDiv.innerHTML = `
-        <strong>Erfolg:</strong> ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schließen"></button>
-    `;
-    document.querySelector('#eventsContainer').insertAdjacentElement('beforebegin', alertDiv);
-
-    setTimeout(() => {
-        alertDiv.classList.remove('show');
-        setTimeout(() => alertDiv.remove(), 150);
-    }, 3000);
-}
-
-function showError(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
-    alertDiv.setAttribute('role', 'alert');
-    alertDiv.innerHTML = `
-        <strong>Fehler:</strong> ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schließen"></button>
-    `;
-    document.querySelector('#eventsContainer').insertAdjacentElement('beforebegin', alertDiv);
-
-    setTimeout(() => {
-        alertDiv.classList.remove('show');
-        setTimeout(() => alertDiv.remove(), 150);
-    }, 5000);
-}
-
-// Initialisiere die Datums- und Zeitfelder für den neuen Event
-function initializeEventHandlers() {
-    initializeDateTimeFields();
-}
