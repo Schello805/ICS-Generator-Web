@@ -1,3 +1,4 @@
+// Test Kommentar
 /**
  * Komponenten-System für ICS Tools
  * Lädt Header und Footer dynamisch in alle Seiten
@@ -79,8 +80,6 @@ function setActiveNavItem() {
     }
 }
 
-import { initializeUserCounter } from './modules/userCounter.js';
-
 document.addEventListener('DOMContentLoaded', function() {
     // Lade Header
     fetch('components/header.html')
@@ -94,8 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.text())
         .then(data => {
             document.getElementById('footer').innerHTML = data;
-            // Initialisiere den UserCounter nach dem Laden des Footers
-            initializeUserCounter();
         });
 });
 
@@ -130,16 +127,4 @@ try {
     }
 } catch (e) {
     // Ignorieren im Browser-Kontext
-}
-
-function toggleDateTimeFields(event) {
-    console.log("toggleDateTimeFields aufgerufen"); // Debug-Ausgabe
-    const checkbox = event.target;
-    const formGroup = checkbox.closest('.form-group').nextElementSibling;
-    if (formGroup) {
-        const inputs = formGroup.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            input.disabled = checkbox.checked;
-        });
-    }
 }

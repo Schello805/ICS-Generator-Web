@@ -12,9 +12,15 @@ function validateEventForm(event) {
     const startDate = form.querySelector('.startDate').value;
     const endDate = form.querySelector('.endDate').value;
     const allDay = form.querySelector('.allDay').checked;
+    const title = form.querySelector('.summary').value.trim();
+
+    if (!title) {
+        showErrorMessage('Bitte geben Sie einen Titel ein');
+        return false;
+    }
 
     if (!startDate || !endDate) {
-        alert('Bitte Start- und Enddatum auswählen');
+        showErrorMessage('Bitte Start- und Enddatum auswählen');
         return false;
     }
 
@@ -22,7 +28,7 @@ function validateEventForm(event) {
         const startTime = form.querySelector('.startTime').value;
         const endTime = form.querySelector('.endTime').value;
         if (!startTime || !endTime) {
-            alert('Bitte Start- und Endzeit auswählen');
+            showErrorMessage('Bitte Start- und Endzeit auswählen');
             return false;
         }
     }
@@ -30,62 +36,44 @@ function validateEventForm(event) {
     return true;
 }
 
-// Funktion zur Validierung der Formulardaten
-function validateEventFormOriginal(event) {
-    const errors = [];
-    const summary = event.querySelector('input[id^="summary"]')?.value;
-    const startDate = event.querySelector('.startDate')?.value;
-    const isAllDay = event.querySelector('.allDay')?.checked;
-    const startTime = event.querySelector('.startTime')?.value;
+// Funktion zum Anzeigen einer Erfolgsmeldung
+function showSuccessMessage(message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
     
-    console.log('Validiere Event:', {
-        summary,
-        startDate,
-        isAllDay,
-        startTime
-    });
-    
-    if (!summary?.trim()) {
-        errors.push('Bitte geben Sie einen Titel ein');
+    const container = document.querySelector('main') || document.querySelector('.container');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+        // Automatisch nach 3 Sekunden ausblenden
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);
+        }, 3000);
     }
-    
-    if (!startDate) {
-        errors.push('Bitte wählen Sie ein Startdatum');
-    }
-    
-    if (!isAllDay && !startTime) {
-        errors.push('Bitte wählen Sie eine Startzeit');
-    }
-    
-    console.log('Validierungsfehler:', errors);
-    return errors;
 }
 
-// Funktion zum Anzeigen der Fehlermeldungen
-function showValidationErrors(errors, eventNumber) {
+// Funktion zum Anzeigen einer Fehlermeldung
+function showErrorMessage(message) {
     const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
-    alertDiv.setAttribute('role', 'alert');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
     
-    let errorHtml = `<strong>Fehler in Termin ${eventNumber}:</strong><ul class="mb-0">`;
-    errors.forEach(error => {
-        errorHtml += `<li>${error}</li>`;
-    });
-    errorHtml += '</ul>';
-    errorHtml += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schließen"></button>';
-    
-    alertDiv.innerHTML = errorHtml;
-    
-    const eventForm = document.querySelector(`#eventForm${eventNumber}`);
-    if (eventForm) {
-        eventForm.insertAdjacentElement('beforebegin', alertDiv);
+    const container = document.querySelector('main') || document.querySelector('.container');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+        // Automatisch nach 5 Sekunden ausblenden
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);
+        }, 5000);
     }
-    
-    // Automatisch nach 5 Sekunden ausblenden
-    setTimeout(() => {
-        alertDiv.classList.remove('show');
-        setTimeout(() => alertDiv.remove(), 150);
-    }, 5000);
 }
 
 // Funktion zum Formatieren des Datums
@@ -149,146 +137,25 @@ function extractTimeFromDate(dateStr) {
     }
 }
 
-// Funktion zum Anzeigen einer Erfolgsmeldung
-function showSuccessMessage(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-success alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    document.querySelector('main').insertBefore(alertDiv, document.querySelector('main').firstChild);
-}
-
-// Funktion zum Anzeigen einer Fehlermeldung
-function showErrorMessage(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    document.querySelector('main').insertBefore(alertDiv, document.querySelector('main').firstChild);
-}
-
-// Funktion zum Warten auf ein Element
-function waitForElement(selector, timeout = 5000) {
-    return new Promise((resolve, reject) => {
-        const element = document.querySelector(selector);
-        if (element) {
-            resolve(element);
-            return;
-        }
-
-        const observer = new MutationObserver((mutations) => {
-            const element = document.querySelector(selector);
-            if (element) {
-                observer.disconnect();
-                resolve(element);
-            }
-        });
-
-        // Starte Beobachtung
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-
-        // Timeout nach der angegebenen Zeit
-        setTimeout(() => {
-            observer.disconnect();
-            reject(new Error(`Element ${selector} not found after timeout`));
-        }, timeout);
-    });
-}
-
-const handleRepeatTypeChange = (event) => {
-    const form = event.target.closest('.eventForm');
-    const repeatType = event.target.value;
-    const repeatDetails = form.querySelector('.repeatDetails');
-    const weeklySelector = form.querySelector('.weeklySelector');
-    const intervalLabel = form.querySelector('.repeatIntervalLabel');
-
-    // Verstecke/Zeige die Wiederholungsoptionen
-    repeatDetails.style.display = repeatType === 'none' ? 'none' : 'block';
-    
-    // Verstecke alle spezifischen Wiederholungsoptionen
-    if (weeklySelector) {
-        weeklySelector.style.display = 'none';
-    }
-
-    // Zeige die spezifischen Optionen basierend auf dem Typ
-    switch (repeatType) {
-        case 'DAILY':
-            intervalLabel.textContent = 'Tage';
-            break;
-        case 'WEEKLY':
-            intervalLabel.textContent = 'Wochen';
-            if (weeklySelector) {
-                weeklySelector.style.display = 'block';
-            }
-            break;
-        case 'MONTHLY':
-            intervalLabel.textContent = 'Monate';
-            break;
-        case 'YEARLY':
-            intervalLabel.textContent = 'Jahre';
-            break;
-    }
-};
-
-const handleMonthlyTypeChange = (event) => {
-    const form = event.target.closest('.eventForm');
-    const monthlyType = event.target.value;
-    const monthlyByDay = form.querySelector('.monthlyByDay');
-    const monthlyByWeekday = form.querySelector('.monthlyByWeekday');
-
-    monthlyByDay.style.display = monthlyType === 'BYMONTHDAY' ? 'block' : 'none';
-    monthlyByWeekday.style.display = monthlyType === 'BYDAY' ? 'block' : 'none';
-};
-
 // Funktion zum Erstellen der Vorschau
 function createEventPreview(event) {
-    const summary = event.querySelector('input[id^="summary"]')?.value?.trim() || '';
-    const description = event.querySelector('textarea[id^="description"]')?.value?.trim() || '';
-    const location = event.querySelector('input[id^="location"]')?.value?.trim() || '';
-    const startDate = event.querySelector('.startDate')?.value || '';
-    const endDate = event.querySelector('.endDate')?.value || '';
-    const startTime = event.querySelector('.startTime')?.value || '';
-    const endTime = event.querySelector('.endTime')?.value || '';
-    const allDay = event.querySelector('.allDay')?.checked || false;
-    const repeatType = event.querySelector('.repeatType')?.value || 'none';
+    const summary = event.querySelector('.summary').value.trim();
+    const location = event.querySelector('.location').value.trim();
+    const description = event.querySelector('.description').value.trim();
+    const startDate = event.querySelector('.startDate').value;
+    const endDate = event.querySelector('.endDate').value;
+    const allDay = event.querySelector('.allDay').checked;
+    const startTime = event.querySelector('.startTime').value;
+    const endTime = event.querySelector('.endTime').value;
+    const repeatType = event.querySelector('.repeatType').value;
 
     let previewHtml = `
-        <div class="preview-event mb-4">
-            <h6 class="preview-title">${escapeText(summary)}</h6>
-            <div class="preview-details">
-                <p class="mb-2">
-                    <i class="fas fa-calendar-alt me-2"></i>
-                    ${formatPreviewDate(startDate)}
-                    ${!allDay ? `${startTime}` : '(Ganztägig)'}
-                    ${endDate !== startDate ? ` - ${formatPreviewDate(endDate)}` : ''}
-                    ${!allDay && endTime ? ` ${endTime}` : ''}
-                </p>
-                ${location ? `
-                    <p class="mb-2">
-                        <i class="fas fa-map-marker-alt me-2"></i>
-                        ${escapeText(location)}
-                    </p>
-                ` : ''}
-                ${description ? `
-                    <p class="mb-2">
-                        <i class="fas fa-align-left me-2"></i>
-                        ${escapeText(description)}
-                    </p>
-                ` : ''}
-                ${repeatType !== 'none' ? `
-                    <p class="mb-2">
-                        <i class="fas fa-redo me-2"></i>
-                        Wiederholung: ${getRepeatTypeText(repeatType)}
-                    </p>
-                ` : ''}
-            </div>
+        <div class="preview-item">
+            <h5>${summary || 'Ohne Titel'}</h5>
+            ${location ? `<p><strong>Ort:</strong> ${location}</p>` : ''}
+            <p><strong>Datum:</strong> ${formatPreviewDate(startDate)}${!allDay ? ` ${startTime}` : ''} bis ${formatPreviewDate(endDate)}${!allDay ? ` ${endTime}` : ''}</p>
+            ${description ? `<p><strong>Beschreibung:</strong> ${description}</p>` : ''}
+            ${repeatType !== 'none' ? `<p><strong>Wiederholung:</strong> ${getRepeatTypeText(repeatType)}</p>` : ''}
         </div>
     `;
 
@@ -298,148 +165,265 @@ function createEventPreview(event) {
 // Funktion zum Anzeigen des Vorschau-Modals
 function showPreview() {
     const events = document.querySelectorAll('.eventForm');
-    let previewHtml = '';
+    let previewContent = '';
     
     events.forEach((event, index) => {
-        previewHtml += createEventPreview(event);
-        if (index < events.length - 1) {
-            previewHtml += '<hr>';
-        }
+        previewContent += `<h4>Termin ${index + 1}</h4>`;
+        previewContent += createEventPreview(event);
     });
-    
-    document.getElementById('previewContent').innerHTML = previewHtml;
-    const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
-    previewModal.show();
+
+    document.getElementById('previewContent').innerHTML = previewContent;
+    new bootstrap.Modal(document.getElementById('previewModal')).show();
 }
 
 // Funktion zum Konvertieren des Wiederholungstyps in lesbaren Text
 function getRepeatTypeText(repeatType) {
-    const types = {
-        'daily': 'Täglich',
-        'weekly': 'Wöchentlich',
-        'monthly': 'Monatlich',
-        'yearly': 'Jährlich'
+    const repeatTypes = {
+        'none': 'Keine Wiederholung',
+        'DAILY': 'Täglich',
+        'WEEKLY': 'Wöchentlich',
+        'MONTHLY': 'Monatlich',
+        'YEARLY': 'Jährlich'
     };
-    return types[repeatType] || repeatType;
+    return repeatTypes[repeatType] || repeatType;
 }
 
-export const initializeEventHandlers = () => {
+// Funktion zum Behandeln von Änderungen im Wiederholungstyp
+function handleRepeatTypeChange(event) {
     try {
-        // Initialisiere Datums- und Zeitfelder
-        initializeDateTimeFields();
+        const form = event.target.closest('.eventForm');
+        if (!form) {
+            console.error('Formular nicht gefunden');
+            return;
+        }
 
-        // Event-Handler für "Ganztägig" Checkbox
-        document.addEventListener('change', (event) => {
-            if (event.target.classList.contains('allDay')) {
-                const form = event.target.closest('.eventForm');
-                toggleDateTimeFields(form);
+        const repeatType = event.target.value;
+        const repeatDetails = form.querySelector('.repeatDetails');
+        const weeklySelector = form.querySelector('.weeklySelector');
+        const monthlySelector = form.querySelector('.monthlySelector');
+        
+        // Zeige/Verstecke den Wiederholungs-Details-Bereich
+        if (repeatDetails) {
+            repeatDetails.style.display = repeatType === 'none' ? 'none' : 'block';
+        }
+
+        // Aktualisiere den Intervall-Label-Text
+        const intervalLabel = form.querySelector('.repeatIntervalLabel');
+        if (intervalLabel) {
+            switch (repeatType) {
+                case 'DAILY':
+                    intervalLabel.textContent = 'Tage';
+                    break;
+                case 'WEEKLY':
+                    intervalLabel.textContent = 'Wochen';
+                    break;
+                case 'MONTHLY':
+                    intervalLabel.textContent = 'Monate';
+                    break;
+                case 'YEARLY':
+                    intervalLabel.textContent = 'Jahre';
+                    break;
+                default:
+                    intervalLabel.textContent = 'Intervall';
+            }
+        }
+
+        // Zeige/Verstecke die wöchentliche Auswahl
+        if (weeklySelector) {
+            weeklySelector.style.display = repeatType === 'WEEKLY' ? 'block' : 'none';
+        }
+
+        // Zeige/Verstecke die monatliche Auswahl
+        if (monthlySelector) {
+            monthlySelector.style.display = repeatType === 'MONTHLY' ? 'block' : 'none';
+        }
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren der Wiederholungsoptionen:', error);
+    }
+}
+
+// Funktion zur Validierung des Formulars
+function validateForm(form) {
+    const errors = [];
+    
+    // Pflichtfelder prüfen
+    const summary = form.querySelector('.summary')?.value?.trim();
+    if (!summary) {
+        errors.push('Bitte geben Sie einen Titel ein');
+        form.querySelector('.summary').classList.add('is-invalid');
+    }
+
+    const startDate = form.querySelector('.startDate')?.value;
+    if (!startDate) {
+        errors.push('Bitte wählen Sie ein Startdatum');
+        form.querySelector('.startDate').classList.add('is-invalid');
+    }
+
+    const endDate = form.querySelector('.endDate')?.value;
+    if (!endDate) {
+        errors.push('Bitte wählen Sie ein Enddatum');
+        form.querySelector('.endDate').classList.add('is-invalid');
+    }
+
+    // Prüfe ob Enddatum nach Startdatum liegt
+    if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+        errors.push('Das Enddatum muss nach dem Startdatum liegen');
+        form.querySelector('.endDate').classList.add('is-invalid');
+    }
+
+    // Prüfe Zeitfelder nur wenn nicht ganztägig
+    const allDay = form.querySelector('.allDay')?.checked;
+    if (!allDay) {
+        const startTime = form.querySelector('.startTime')?.value;
+        const endTime = form.querySelector('.endTime')?.value;
+
+        if (!startTime) {
+            errors.push('Bitte wählen Sie eine Startzeit');
+            form.querySelector('.startTime').classList.add('is-invalid');
+        }
+
+        if (!endTime) {
+            errors.push('Bitte wählen Sie eine Endzeit');
+            form.querySelector('.endTime').classList.add('is-invalid');
+        }
+
+        // Prüfe ob Endzeit nach Startzeit liegt am selben Tag
+        if (startTime && endTime && startDate === endDate) {
+            const start = new Date(`${startDate}T${startTime}`);
+            const end = new Date(`${endDate}T${endTime}`);
+            if (end <= start) {
+                errors.push('Die Endzeit muss nach der Startzeit liegen');
+                form.querySelector('.endTime').classList.add('is-invalid');
+            }
+        }
+    }
+
+    // Entferne is-invalid Klasse bei Änderungen
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => {
+            input.classList.remove('is-invalid');
+            const errorDiv = input.nextElementSibling;
+            if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+                errorDiv.remove();
+            }
+        });
+    });
+
+    return errors;
+}
+
+// Event Handler Initialisierung
+export function initializeEventHandlers() {
+    try {
+        // Event-Handler für "Termin hinzufügen" Button
+        const addEventBtn = document.getElementById('addEvent');
+        if (addEventBtn) {
+            addEventBtn.addEventListener('click', () => duplicateEvent());
+        }
+
+        // Event-Handler für "ICS herunterladen" Button
+        const downloadICSBtn = document.getElementById('downloadICS');
+        if (downloadICSBtn) {
+            downloadICSBtn.addEventListener('click', () => {
+                const events = document.querySelectorAll('.eventForm');
+                if (events.length === 0) {
+                    showErrorMessage('Bitte fügen Sie mindestens einen Termin hinzu.');
+                    return;
+                }
+
+                // Validiere alle Formulare
+                let hasErrors = false;
+                events.forEach(form => {
+                    const errors = validateForm(form);
+                    if (errors.length > 0) {
+                        hasErrors = true;
+                        errors.forEach(error => {
+                            showErrorMessage(error);
+                        });
+                    }
+                });
+
+                if (hasErrors) {
+                    return;
+                }
+
+                try {
+                    const success = createICSCalendar(events);
+                    if (success) {
+                        showSuccessMessage('ICS-Datei wurde erfolgreich erstellt.');
+                        // Entferne alle Fehlermarkierungen
+                        document.querySelectorAll('.is-invalid').forEach(el => {
+                            el.classList.remove('is-invalid');
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error creating ICS file:', error);
+                    showErrorMessage(error.message || 'Fehler beim Erstellen der ICS-Datei.');
+                }
+            });
+        }
+
+        // Event-Handler für "Vorschau" Button
+        const previewBtn = document.getElementById('previewEvents');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', showPreview);
+        }
+
+        // Event-Handler für dynamisch hinzugefügte Events
+        document.addEventListener('click', (event) => {
+            // Kopieren-Button
+            if (event.target.closest('.copyEvent')) {
+                event.preventDefault();
+                const eventElement = event.target.closest('.card');
+                if (eventElement) {
+                    duplicateEvent(eventElement);
+                }
+            }
+
+            // Löschen-Button
+            if (event.target.closest('.removeEvent')) {
+                event.preventDefault();
+                const eventElement = event.target.closest('.card');
+                if (eventElement) {
+                    removeEvent(eventElement);
+                }
             }
         });
 
         // Event-Handler für Wiederholungstyp
         document.addEventListener('change', (event) => {
-            if (event.target.classList.contains('repeatType')) {
+            if (event.target.matches('.repeatType')) {
                 handleRepeatTypeChange(event);
             }
         });
 
-        // Event-Handler für monatliche Wiederholungsart
+        // Event-Handler für ganztägige Events
         document.addEventListener('change', (event) => {
-            if (event.target.classList.contains('monthlyType')) {
-                handleMonthlyTypeChange(event);
-            }
-        });
-
-        // Event-Handler für "Termin kopieren" Buttons
-        document.addEventListener('click', (event) => {
-            if (event.target.closest('.copyEvent')) {
-                duplicateEvent(event.target);
-            }
-        });
-
-        // Event-Handler für "Termin hinzufügen" Button
-        const addEventButton = document.getElementById('addEvent');
-        if (addEventButton) {
-            addEventButton.addEventListener('click', () => {
-                duplicateEvent(); // Kein Parameter bedeutet: Erstelle einen neuen, leeren Termin
-            });
-        }
-
-        // Event-Handler für "Termin löschen" Buttons
-        document.addEventListener('click', (event) => {
-            if (event.target.closest('.removeEvent')) {
-                const card = event.target.closest('.card');
-                if (card) {
-                    card.remove();
+            if (event.target.matches('.allDay')) {
+                const form = event.target.closest('.eventForm');
+                if (form) {
+                    toggleDateTimeFields(form);
                 }
             }
         });
 
-        // Event-Handler für ICS-Generierung
-        const generateButton = document.getElementById('generateICS');
-        if (generateButton) {
-            generateButton.addEventListener('click', () => {
-                try {
-                    const events = document.querySelectorAll('.eventForm');
-                    const icsContent = createICSCalendar(events);
-                    
-                    // Erstelle und lade die ICS-Datei
-                    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'calendar.ics';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } catch (error) {
-                    console.error('Fehler beim Generieren der ICS-Datei:', error);
-                    alert('Fehler beim Generieren der ICS-Datei. Bitte überprüfen Sie Ihre Eingaben.');
-                }
-            });
-        }
-
-        // Event-Listener für Löschen-Buttons
-        document.querySelectorAll('.removeEvent').forEach(button => {
-            button.addEventListener('click', (e) => {
-                removeEvent(e.target);
-            });
-        });
-
-        // Event-Listener für Kopieren-Buttons
-        document.querySelectorAll('.copyEvent').forEach(button => {
-            button.addEventListener('click', (e) => {
-                duplicateEvent(e.target);
-            });
-        });
-
-        // Preview Event Handler
-        const previewButton = document.getElementById('previewEvents');
-        const previewModal = document.getElementById('previewModal');
-        
-        if (previewButton && previewModal) {  // Nur auf der Generator-Seite
-            previewButton.addEventListener('click', () => {
-                showPreview();
-            });
-        }
-
-        // Initialisiere Tooltips
-        const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        tooltips.forEach(tooltip => {
-            new bootstrap.Tooltip(tooltip);
-        });
+        // Initialisiere die Datums- und Zeitfelder für alle Events
+        initializeDateTimeFields();
 
     } catch (error) {
-        console.error('Fehler beim Initialisieren der Event-Handler:', error);
+        console.error('Error initializing event handlers:', error);
+        showErrorMessage('Fehler beim Initialisieren der Event-Handler.');
     }
-};
+}
 
 // Event Handler für das Löschen eines Events
-export const handleDeleteEvent = (eventNumber) => {
-    const form = document.querySelector(`#eventForm${eventNumber}`);
-    if (form) {
-        const card = form.closest('.card');
+function handleDeleteEvent(eventNumber) {
+    const event = document.querySelector(`#eventForm${eventNumber}`);
+    if (event) {
+        const card = event.closest('.card');
         if (card) {
             card.remove();
+            showSuccessMessage(`Termin ${eventNumber} wurde gelöscht.`);
         }
     }
-};
+}

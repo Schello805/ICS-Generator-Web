@@ -8,6 +8,75 @@
  * Er validiert die Syntax jeder Zeile und erkennt ungültige oder unbekannte Properties.
  */
 
+export function initializeValidator() {
+    console.log('Initialisiere Validator...');
+    
+    const fileInput = document.getElementById('icsFileInput');
+    const validateButton = document.getElementById('validateButton');
+    const resultDiv = document.getElementById('validationResult');
+
+    console.log('Gefundene Elemente:', { fileInput, validateButton, resultDiv });
+
+    if (!fileInput || !validateButton || !resultDiv) {
+        console.error('Erforderliche Elemente nicht gefunden:', {
+            fileInput: !!fileInput,
+            validateButton: !!validateButton,
+            resultDiv: !!resultDiv
+        });
+        return;
+    }
+
+    validateButton.addEventListener('click', () => {
+        console.log('Validierungs-Button geklickt');
+        
+        const file = fileInput.files[0];
+        if (!file) {
+            showValidationMessage('Bitte wählen Sie eine ICS-Datei aus.', 'warning');
+            return;
+        }
+
+        console.log('Datei ausgewählt:', file.name);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            console.log('Datei gelesen, validiere...');
+            const content = e.target.result;
+            const result = validateICS(content);
+            
+            if (result.errors.length === 0 && result.warnings.length === 0) {
+                showValidationMessage('Die ICS-Datei ist gültig!', 'success');
+            } else {
+                let message = '';
+                if (result.errors.length > 0) {
+                    message += '<h5>Fehler:</h5><ul>';
+                    result.errors.forEach(error => {
+                        message += `<li>${error}</li>`;
+                    });
+                    message += '</ul>';
+                }
+                if (result.warnings.length > 0) {
+                    message += '<h5>Warnungen:</h5><ul>';
+                    result.warnings.forEach(warning => {
+                        message += `<li>${warning}</li>`;
+                    });
+                    message += '</ul>';
+                }
+                showValidationMessage(message, result.errors.length > 0 ? 'danger' : 'warning');
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    console.log('Validator initialisiert');
+}
+
+function showValidationMessage(message, type) {
+    console.log('Zeige Validierungsnachricht:', { message, type });
+    const resultDiv = document.getElementById('validationResult');
+    resultDiv.className = `alert alert-${type} mt-3`;
+    resultDiv.innerHTML = message;
+}
+
 export function validateICS(icsContent) {
     const lines = icsContent.split(/\r\n|\n|\r/);
     const errors = [];

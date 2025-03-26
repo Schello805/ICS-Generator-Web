@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="apple-itunes-app" content="app-id=6738963683">
+    <meta name="description" content="Validieren Sie Ihre ICS-Dateien und stellen Sie sicher, dass sie dem iCalendar-Standard entsprechen">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        connect-src 'self' https://ics-generator.com wss://ics-generator.com ws://localhost:* wss://localhost:*;
         style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdn.socket.io;
+        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net;
         font-src 'self' https://cdnjs.cloudflare.com;
         img-src 'self' data: https:">
     <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
@@ -34,7 +33,7 @@
                 <div class="mb-3">
                     <input type="file" 
                            class="form-control" 
-                           id="icsFile" 
+                           id="icsFileInput" 
                            accept=".ics"
                            aria-labelledby="upload-title"
                            aria-describedby="file-format-info">
@@ -42,8 +41,13 @@
                         Unterstützte Dateiformate: .ics (iCalendar)
                     </small>
                 </div>
+                <button class="btn btn-primary" id="validateButton">
+                    <i class="fas fa-check-circle me-2"></i>Datei validieren
+                </button>
             </div>
         </div>
+
+        <div id="validationResult"></div>
 
         <div class="row">
             <div class="col-md-6">
@@ -93,9 +97,13 @@ Hier wird der Inhalt der ICS-Datei angezeigt...
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <script src="js/components.js" type="module"></script>
-    <script src="js/modules/validatorHandlers.js" type="module"></script>
+    <script type="module" src="js/components.js"></script>
+    <script type="module">
+        import { initializeValidator } from './js/modules/icsValidator.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeValidator();
+        });
+    </script>
 </body>
 
 </html>

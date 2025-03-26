@@ -196,15 +196,17 @@ function updateEventNumbers() {
         // Aktualisiere die IDs und Labels der Formularelemente
         const inputs = form.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
-            const oldId = input.id;
-            if (oldId) {
-                const baseName = oldId.replace(/\d+$/, ''); // Entferne die alte Nummer
-                input.id = `${baseName}${index + 1}`;
-
-                // Aktualisiere auch das zugehörige Label
-                const label = form.querySelector(`label[for="${oldId}"]`);
+            if (input.id) {
+                const baseName = input.id.replace(/\d+$/, '');
+                const newId = `${baseName}${index + 1}`;
+                
+                // Aktualisiere die ID
+                input.id = newId;
+                
+                // Aktualisiere das zugehörige Label
+                const label = form.querySelector(`label[for="${input.id}"]`);
                 if (label) {
-                    label.setAttribute('for', input.id);
+                    label.setAttribute('for', newId);
                 }
             }
         });
@@ -216,16 +218,21 @@ function updateEventNumbers() {
  * @param {HTMLElement} event - Das zu entfernende Event-Element
  */
 export const removeEvent = (event) => {
-    const card = event.closest('.card');
-    if (card) {
-        // Prüfe, ob es der letzte Termin ist
-        const remainingEvents = document.querySelectorAll('.card');
-        if (remainingEvents.length <= 1) {
-            alert('Es muss mindestens ein Termin vorhanden sein');
+    try {
+        const eventContainer = event.closest('.card');
+        if (!eventContainer) {
+            console.error('Event container not found');
             return;
         }
 
-        card.remove();
+        // Entferne das Event
+        eventContainer.remove();
+
+        // Aktualisiere die Event-Nummerierung
         updateEventNumbers();
+
+    } catch (error) {
+        console.error('Error removing event:', error);
+        throw error;
     }
 };
