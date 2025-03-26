@@ -77,21 +77,135 @@ function showValidationMessage(message, type) {
     resultDiv.innerHTML = message;
 }
 
+function updateValidationStatus(section, status) {
+    const statusElement = document.querySelector(`[data-target="#${section}Collapse"] .validation-status`);
+    if (statusElement) {
+        statusElement.className = 'validation-status ' + status;
+    }
+}
+
+function resetValidationStatus() {
+    document.querySelectorAll('.validation-status').forEach(element => {
+        element.className = 'validation-status';
+    });
+}
+
+function showSectionMessage(section, message, type) {
+    const messagesContainer = document.querySelector(`#${section}Collapse .validation-messages`);
+    if (messagesContainer) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `validation-message ${type}`;
+        messageDiv.innerHTML = message;
+        messagesContainer.appendChild(messageDiv);
+    }
+}
+
+function clearSectionMessages() {
+    document.querySelectorAll('.validation-messages').forEach(container => {
+        container.innerHTML = '';
+    });
+}
+
 export function validateICS(icsContent) {
     const lines = icsContent.split(/\r\n|\n|\r/);
     const errors = [];
     const warnings = [];
     
+    // Reset validation status and messages
+    resetValidationStatus();
+    clearSectionMessages();
+    
+    // Validate core properties
+    let hasCore = false;
+    let coreValid = true;
+    let coreMessages = [];
+    lines.forEach((line, index) => {
+        if (line.startsWith('BEGIN:') || line.startsWith('END:') || line.startsWith('VERSION:')) {
+            hasCore = true;
+            if (!validateICSLine(line)) {
+                coreValid = false;
+                coreMessages.push(`Zeile ${index + 1}: Ungültige Syntax in "${line}"`);
+            }
+        }
+    });
+    if (!hasCore) {
+        showSectionMessage('coreProperties', 'Keine Kern-Properties gefunden', 'warning');
+    } else if (!coreValid) {
+        coreMessages.forEach(msg => showSectionMessage('coreProperties', msg, 'error'));
+    } else {
+        showSectionMessage('coreProperties', 'Alle Kern-Properties sind gültig', 'success');
+    }
+    updateValidationStatus('coreProperties', hasCore ? (coreValid ? 'success' : 'error') : 'warning');
+    
+    // Validate extended properties
+    let hasExtended = false;
+    let extendedValid = true;
+    let extendedMessages = [];
+    lines.forEach((line, index) => {
+        if (line.startsWith('DESCRIPTION:') || line.startsWith('LOCATION:') || line.startsWith('URL:') || line.startsWith('RRULE:') || line.startsWith('ATTACH:') || line.startsWith('TRIGGER;') || line.startsWith('ACTION:')) {
+            hasExtended = true;
+            if (!validateICSLine(line)) {
+                extendedValid = false;
+                extendedMessages.push(`Zeile ${index + 1}: Ungültige Syntax in "${line}"`);
+            }
+        }
+    });
+    if (!hasExtended) {
+        showSectionMessage('extendedProperties', 'Keine erweiterten Properties gefunden', 'warning');
+    } else if (!extendedValid) {
+        extendedMessages.forEach(msg => showSectionMessage('extendedProperties', msg, 'error'));
+    } else {
+        showSectionMessage('extendedProperties', 'Alle erweiterten Properties sind gültig', 'success');
+    }
+    updateValidationStatus('extendedProperties', hasExtended ? (extendedValid ? 'success' : 'error') : 'warning');
+    
+    // Validate special properties
+    let hasSpecial = false;
+    let specialValid = true;
+    let specialMessages = [];
+    lines.forEach((line, index) => {
+        if (line.startsWith('TRIGGER;') || line.startsWith('ACTION:')) {
+            hasSpecial = true;
+            if (!validateICSLine(line)) {
+                specialValid = false;
+                specialMessages.push(`Zeile ${index + 1}: Ungültige Syntax in "${line}"`);
+            }
+        }
+    });
+    if (!hasSpecial) {
+        showSectionMessage('specialValidation', 'Keine speziellen Properties gefunden', 'warning');
+    } else if (!specialValid) {
+        specialMessages.forEach(msg => showSectionMessage('specialValidation', msg, 'error'));
+    } else {
+        showSectionMessage('specialValidation', 'Alle speziellen Properties sind gültig', 'success');
+    }
+    updateValidationStatus('specialValidation', hasSpecial ? (specialValid ? 'success' : 'error') : 'warning');
+    
+    // Additional checks
+    let additionalValid = true;
+    let additionalMessages = [];
     lines.forEach((line, index) => {
         const lineNumber = index + 1;
         const validation = validateICSLine(line);
         
         if (validation === false) {
             errors.push(`Zeile ${lineNumber}: Ungültige Property-Syntax in "${line}"`);
+            additionalValid = false;
+            additionalMessages.push(`Zeile ${lineNumber}: Ungültige Property-Syntax in "${line}"`);
         } else if (typeof validation === 'object' && validation.isValid && !validation.isKnown) {
             warnings.push(`Zeile ${lineNumber}: Unbekannte Property "${line.split(/[;:]/)[0]}"`);
+            additionalMessages.push(`Zeile ${lineNumber}: Unbekannte Property "${line.split(/[;:]/)[0]}"`);
         }
     });
+    
+    if (additionalMessages.length > 0) {
+        additionalMessages.forEach(msg => {
+            showSectionMessage('additionalChecks', msg, additionalValid ? 'warning' : 'error');
+        });
+    } else {
+        showSectionMessage('additionalChecks', 'Keine zusätzlichen Probleme gefunden', 'success');
+    }
+    updateValidationStatus('additionalChecks', additionalValid ? 'success' : (warnings.length > 0 ? 'warning' : 'error'));
     
     return { errors, warnings };
 }
@@ -117,18 +231,28 @@ function validateICSLine(line) {
     
     // Liste der Kern-Properties nach RFC 5545
     const coreProperties = [
-        'BEGIN', 'END', 'SUMMARY', 'DTSTART', 'DTEND', 'DTSTAMP',
-        'UID', 'VERSION', 'PRODID', 'CALSCALE', 'METHOD'
+        'BEGIN:VCALENDAR',
+        'VERSION',
+        'PRODID',
+        'BEGIN:VEVENT',
+        'UID',
+        'DTSTAMP',
+        'DTSTART',
+        'DTEND',
+        'SUMMARY',
+        'END:VEVENT',
+        'END:VCALENDAR'
     ];
     
     // Liste der erweiterten Properties
     const extendedProperties = [
-        'CREATED', 'DESCRIPTION', 'LAST-MODIFIED', 'LOCATION',
-        'SEQUENCE', 'STATUS', 'RRULE', 'CATEGORIES', 'CLASS',
-        'COMMENT', 'GEO', 'PRIORITY', 'RESOURCES', 'TRANSP',
-        'URL', 'ATTACH', 'ATTENDEE', 'ORGANIZER', 'RELATED-TO',
-        'EXDATE', 'RDATE', 'RECURRENCE-ID', 'VCALENDAR', 'VEVENT',
-        'VALARM', 'ACTION', 'TRIGGER', 'DURATION', 'REPEAT'
+        'DESCRIPTION',
+        'LOCATION',
+        'URL',
+        'RRULE',
+        'ATTACH',
+        'TRIGGER',
+        'ACTION'
     ];
     
     // Prüfe ob die Zeile mit einer gültigen Property beginnt

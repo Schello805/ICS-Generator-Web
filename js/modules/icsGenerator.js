@@ -54,10 +54,30 @@ const generateRRule = (repeatType, repeatInterval, repeatUntil, weekdays, monthT
     }
 };
 
+function processAttachment(file) {
+    return new Promise((resolve) => {
+        if (!file) {
+            resolve(null);
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Data = e.target.result.split(',')[1];
+            resolve({
+                filename: file.name,
+                mime: file.type || 'application/octet-stream',
+                data: base64Data
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 /**
  * Funktion zum Erstellen der ICS-Datei
  */
-export const createICSCalendar = (events) => {
+export async function createICSCalendar(events) {
     try {
         const eventList = Array.from(events);
         let hasValidEvents = false;
@@ -107,7 +127,7 @@ export const createICSCalendar = (events) => {
         icsContent += 'PRODID:-//ICS Generator//NONSGML ICS Generator//DE\r\n';
 
         // Verarbeite Events nur wenn die Validierung erfolgreich war
-        eventList.forEach(event => {
+        for (const event of eventList) {
             try {
                 const eventData = {
                     summary: event.querySelector('.summary')?.value?.trim() || '',
@@ -150,6 +170,19 @@ export const createICSCalendar = (events) => {
                     icsContent += `LOCATION:${escapeText(eventData.location)}\r\n`;
                 }
 
+                // URL hinzufügen, wenn vorhanden
+                const url = event.querySelector('.url')?.value;
+                if (url) icsContent += `URL:${url}\r\n`;
+
+                // Verarbeite den Anhang
+                const attachmentFile = event.querySelector('.attachment').files[0];
+                const attachment = await processAttachment(attachmentFile);
+
+                // Füge den Anhang hinzu, wenn vorhanden
+                if (attachment) {
+                    icsContent += `ATTACH;FMTTYPE=${attachment.mime};ENCODING=BASE64;VALUE=BINARY;X-FILENAME=${attachment.filename}:${attachment.data}\r\n`;
+                }
+
                 // Füge Wiederholungsregel hinzu
                 if (eventData.repeatType !== 'none') {
                     const weekdays = Array.from(event.querySelectorAll('.weekday:checked')).map(cb => cb.value);
@@ -190,7 +223,7 @@ export const createICSCalendar = (events) => {
             } catch (error) {
                 console.error('Error processing event:', error);
             }
-        });
+        }
 
         icsContent += 'END:VCALENDAR\r\n';
 

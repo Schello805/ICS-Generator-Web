@@ -35,7 +35,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h2 class="h5 card-title mb-0" id="event-title-1">Termin 1</h2>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-outline-primary btn-sm copyEvent" title="Termin kopieren">
+                            <button type="button" class="btn btn-outline-primary btn-sm copyEvent me-1" title="Termin kopieren">
                                 <i class="fas fa-copy"></i>
                             </button>
                             <button type="button" class="btn btn-outline-danger btn-sm removeEvent" title="Termin löschen">
@@ -78,7 +78,7 @@
                                     data-error="Bitte wählen Sie ein Startdatum">
                                 <div class="form-check mt-2">
                                     <input type="checkbox" class="form-check-input allDay" id="allDay1" name="allDay">
-                                    <label class="form-check-label" for="allDay1">Ganztägig</label>
+                                    <label class="form-check-label">Ganztägig</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -218,6 +218,29 @@
                                 </select>
                             </div>
                         </div>
+
+                        <!-- URL -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <label class="form-label">URL</label>
+                                <input type="url" class="form-control form-control-sm url" id="url1" name="url" placeholder="https://example.com">
+                                <small class="text-muted">Link zur Veranstaltung oder Meeting (z.B. Zoom, Teams)</small>
+                            </div>
+                        </div>
+
+                        <!-- Anhang -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <label class="form-label">Anhang</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control form-control-sm attachment" id="attachment1" name="attachment" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm clearAttachment" title="Anhang entfernen">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Unterstützte Formate: PDF, DOC, DOCX, TXT, PNG, JPG</small>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -229,7 +252,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h2 class="h5 card-title mb-0">Termin</h2>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-outline-primary btn-sm copyEvent" title="Termin kopieren">
+                            <button type="button" class="btn btn-outline-primary btn-sm copyEvent me-1" title="Termin kopieren">
                                 <i class="fas fa-copy"></i>
                             </button>
                             <button type="button" class="btn btn-outline-danger btn-sm removeEvent" title="Termin löschen">
@@ -407,6 +430,29 @@
                                     <option value="1440">1 Tag vorher</option>
                                     <option value="10080">1 Woche vorher</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <!-- URL -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <label class="form-label">URL</label>
+                                <input type="url" class="form-control form-control-sm url" name="url" placeholder="https://example.com">
+                                <small class="text-muted">Link zur Veranstaltung oder Meeting (z.B. Zoom, Teams)</small>
+                            </div>
+                        </div>
+
+                        <!-- Anhang -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <label class="form-label">Anhang</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control form-control-sm attachment" name="attachment" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm clearAttachment" title="Anhang entfernen">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Unterstützte Formate: PDF, DOC, DOCX, TXT, PNG, JPG</small>
                             </div>
                         </div>
                     </form>

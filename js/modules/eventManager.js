@@ -3,6 +3,15 @@ import { initializeDateTimeFields } from './dateTimeManager.js';
 
 let eventCounter = 1;
 
+// Event-Handler für das Löschen von Anhängen
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.clearAttachment')) {
+        const btn = e.target.closest('.clearAttachment');
+        const fileInput = btn.closest('.input-group').querySelector('.attachment');
+        fileInput.value = ''; // Lösche den ausgewählten Dateinamen
+    }
+});
+
 /**
  * Diese Funktion kann sowohl zum Kopieren eines bestehenden Termins als auch zum Erstellen eines neuen Termins verwendet werden.
  * 
