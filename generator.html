@@ -21,12 +21,20 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-    <div id="header"></div>
+    <header id="header" class="sticky-top"></header>
     <main class="container mt-5">
         <div class="header">
             <div>
                 <h1 class="h2 mb-4" id="page-title">Termine erstellen</h1>
             </div>
+        </div>
+
+        <!-- ICS Import Button und Modal -->
+        <div class="d-flex gap-2 mb-3">
+          <button id="importICSBtn" class="btn btn-secondary" type="button">
+            <i class="fas fa-file-import me-1"></i> ICS importieren
+          </button>
+          <input type="file" id="icsFileInput" accept=".ics" style="display:none;" />
         </div>
 
         <div id="eventsContainer" role="region" aria-label="Termine">
@@ -460,10 +468,31 @@
             </div>
         </template>
 
+        <!-- Modal für Validierung und Import -->
+        <div class="modal fade" id="icsImportModal" tabindex="-1" aria-labelledby="icsImportModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="icsImportModalLabel">ICS-Datei importieren</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <input type="file" id="icsFileInputModal" accept=".ics" class="form-control mb-3" />
+                <div id="icsValidationResult"></div>
+                <div id="importSuccess" class="alert alert-success d-none mt-3"></div>
+                <div id="icsMappingResult" class="alert alert-info d-none mt-3"></div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-success" id="confirmICSImportBtn" disabled>Importieren</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="btn-group mb-4">
-            <button class="btn btn-secondary me-2" id="previewEvents" data-bs-toggle="tooltip" data-bs-placement="top" title="Zeigt eine Vorschau der Termine an">
-                <i class="fas fa-eye" aria-hidden="true"></i> Vorschau
-            </button>
             <button class="btn btn-primary me-2" id="downloadICS" data-bs-toggle="tooltip" data-bs-placement="top" title="Lädt die ICS-Datei herunter">
                 <i class="fas fa-download" aria-hidden="true"></i> ICS herunterladen
             </button>
@@ -477,11 +506,15 @@
 
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/headerLoader.js"></script>
     <script type="module">
         import { initializeGenerator } from './js/modules/generatorInit.js';
         initializeGenerator();
     </script>
     <script type="module" src="js/components.js"></script>
+    <script type="module" src="js/icsImportInit.js"></script>
 </body>
 </html>

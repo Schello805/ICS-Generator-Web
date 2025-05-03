@@ -105,17 +105,6 @@ function formatDate(dateStr) {
     }
 }
 
-// Funktion zum Formatieren des Datums für die Vorschau
-function formatPreviewDate(dateStr) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
-}
-
 // Funktion zum Extrahieren der Zeit aus einem ICS-Datum
 function extractTimeFromDate(dateStr) {
     if (!dateStr) return '';
@@ -135,45 +124,6 @@ function extractTimeFromDate(dateStr) {
         console.error('Error extracting time:', dateStr, error);
         return '';
     }
-}
-
-// Funktion zum Erstellen der Vorschau
-function createEventPreview(event) {
-    const summary = event.querySelector('.summary').value.trim();
-    const location = event.querySelector('.location').value.trim();
-    const description = event.querySelector('.description').value.trim();
-    const startDate = event.querySelector('.startDate').value;
-    const endDate = event.querySelector('.endDate').value;
-    const allDay = event.querySelector('.allDay').checked;
-    const startTime = event.querySelector('.startTime').value;
-    const endTime = event.querySelector('.endTime').value;
-    const repeatType = event.querySelector('.repeatType').value;
-
-    let previewHtml = `
-        <div class="preview-item">
-            <h5>${summary || 'Ohne Titel'}</h5>
-            ${location ? `<p><strong>Ort:</strong> ${location}</p>` : ''}
-            <p><strong>Datum:</strong> ${formatPreviewDate(startDate)}${!allDay ? ` ${startTime}` : ''} bis ${formatPreviewDate(endDate)}${!allDay ? ` ${endTime}` : ''}</p>
-            ${description ? `<p><strong>Beschreibung:</strong> ${description}</p>` : ''}
-            ${repeatType !== 'none' ? `<p><strong>Wiederholung:</strong> ${getRepeatTypeText(repeatType)}</p>` : ''}
-        </div>
-    `;
-
-    return previewHtml;
-}
-
-// Funktion zum Anzeigen des Vorschau-Modals
-function showPreview() {
-    const events = document.querySelectorAll('.eventForm');
-    let previewContent = '';
-    
-    events.forEach((event, index) => {
-        previewContent += `<h4>Termin ${index + 1}</h4>`;
-        previewContent += createEventPreview(event);
-    });
-
-    document.getElementById('previewContent').innerHTML = previewContent;
-    new bootstrap.Modal(document.getElementById('previewModal')).show();
 }
 
 // Funktion zum Konvertieren des Wiederholungstyps in lesbaren Text
@@ -298,8 +248,22 @@ function validateForm(form) {
         }
     }
 
+    // URL Validierung (optional, aber wenn ausgefüllt, dann prüfen)
+    const urlInput = form.querySelector('.url');
+    if (urlInput) {
+        const urlValue = urlInput.value.trim();
+        if (urlValue.length > 0) {
+            // Einfache URL-Validierung mit Regex
+            const urlPattern = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-.,@?^=%&:/~+#]*)?$/i;
+            if (!urlPattern.test(urlValue)) {
+                errors.push('Bitte geben Sie eine gültige URL ein (z. B. https://beispiel.de)');
+                urlInput.classList.add('is-invalid');
+            }
+        }
+    }
+
     // Entferne is-invalid Klasse bei Änderungen
-    form.querySelectorAll('input').forEach(input => {
+    form.querySelectorAll('input, select, textarea').forEach(input => {
         input.addEventListener('input', () => {
             input.classList.remove('is-invalid');
             const errorDiv = input.nextElementSibling;
@@ -324,49 +288,38 @@ export function initializeEventHandlers() {
         // Event-Handler für "ICS herunterladen" Button
         const downloadICSBtn = document.getElementById('downloadICS');
         if (downloadICSBtn) {
-            downloadICSBtn.addEventListener('click', () => {
+            downloadICSBtn.addEventListener('click', async () => {
                 const events = document.querySelectorAll('.eventForm');
-                if (events.length === 0) {
-                    showErrorMessage('Bitte fügen Sie mindestens einen Termin hinzu.');
-                    return;
-                }
-
-                // Validiere alle Formulare
-                let hasErrors = false;
-                events.forEach(form => {
+                let hasError = false;
+                for (const form of events) {
                     const errors = validateForm(form);
                     if (errors.length > 0) {
-                        hasErrors = true;
-                        errors.forEach(error => {
-                            showErrorMessage(error);
-                        });
+                        hasError = true;
+                        showErrorMessage(errors.join('<br>'));
+                        form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        break;
                     }
-                });
-
-                if (hasErrors) {
-                    return;
                 }
-
+                if (hasError) return;
+                // Erstelle ICS nur wenn alles valide
                 try {
-                    const success = createICSCalendar(events);
-                    if (success) {
-                        showSuccessMessage('ICS-Datei wurde erfolgreich erstellt.');
-                        // Entferne alle Fehlermarkierungen
-                        document.querySelectorAll('.is-invalid').forEach(el => {
-                            el.classList.remove('is-invalid');
-                        });
-                    }
+                    const icsContent = await createICSCalendar(events);
+                    // Download auslösen
+                    const blob = new Blob([icsContent], { type: 'text/calendar' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'termine.ics';
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }, 100);
                 } catch (error) {
-                    console.error('Error creating ICS file:', error);
-                    showErrorMessage(error.message || 'Fehler beim Erstellen der ICS-Datei.');
+                    // Fehler werden bereits in createICSCalendar angezeigt
                 }
             });
-        }
-
-        // Event-Handler für "Vorschau" Button
-        const previewBtn = document.getElementById('previewEvents');
-        if (previewBtn) {
-            previewBtn.addEventListener('click', showPreview);
         }
 
         // Event-Handler für dynamisch hinzugefügte Events
@@ -409,6 +362,32 @@ export function initializeEventHandlers() {
 
         // Initialisiere die Datums- und Zeitfelder für alle Events
         initializeDateTimeFields();
+
+        // --- URL Live-Validierung direkt bei Eingabe ---
+        document.addEventListener('input', function(event) {
+            if (event.target.classList.contains('url')) {
+                const urlInput = event.target;
+                const urlValue = urlInput.value.trim();
+                const urlPattern = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-.,@?^=%&:/~+#]*)?$/i;
+                // Entferne alte Fehlermeldung
+                urlInput.classList.remove('is-invalid');
+                // Suche nach bereits existierender Fehlermeldung NUR im eigenen Parent
+                let feedback = Array.from(urlInput.parentNode.querySelectorAll('.invalid-feedback'))[0];
+                if (feedback) {
+                    feedback.remove();
+                }
+                if (urlValue.length > 0 && !urlPattern.test(urlValue)) {
+                    urlInput.classList.add('is-invalid');
+                    // Feedback nur anzeigen, wenn noch keins existiert
+                    if (!urlInput.parentNode.querySelector('.invalid-feedback')) {
+                        feedback = document.createElement('div');
+                        feedback.className = 'invalid-feedback';
+                        feedback.textContent = 'Bitte geben Sie eine gültige URL ein (z. B. https://beispiel.de)';
+                        urlInput.parentNode.appendChild(feedback);
+                    }
+                }
+            }
+        });
 
     } catch (error) {
         console.error('Error initializing event handlers:', error);

@@ -14,14 +14,16 @@ export function initializeValidator() {
     const fileInput = document.getElementById('icsFileInput');
     const validateButton = document.getElementById('validateButton');
     const resultDiv = document.getElementById('validationResult');
+    const fileContentPre = document.getElementById('fileContent');
 
-    console.log('Gefundene Elemente:', { fileInput, validateButton, resultDiv });
+    console.log('Gefundene Elemente:', { fileInput, validateButton, resultDiv, fileContentPre });
 
-    if (!fileInput || !validateButton || !resultDiv) {
+    if (!fileInput || !validateButton || !resultDiv || !fileContentPre) {
         console.error('Erforderliche Elemente nicht gefunden:', {
             fileInput: !!fileInput,
             validateButton: !!validateButton,
-            resultDiv: !!resultDiv
+            resultDiv: !!resultDiv,
+            fileContentPre: !!fileContentPre
         });
         return;
     }
@@ -41,8 +43,26 @@ export function initializeValidator() {
         reader.onload = (e) => {
             console.log('Datei gelesen, validiere...');
             const content = e.target.result;
+            // Zeige den Dateiinhalt im Validator an
+            fileContentPre.textContent = content;
+
+            // Schritt-für-Schritt-Validierung mit Normbezug anzeigen
+            const lines = content.split(/\r\n|\n|\r/);
+            let stepsHtml = '<h5>Prüfschritte nach <a href="https://datatracker.ietf.org/doc/html/rfc5545" target="_blank">RFC 5545</a>:</h5><ol>';
+            lines.forEach((line, idx) => {
+                const { stepDesc, normUrl } = getNormReference(line);
+                let stepResult = validateICSLine(line) ? '✅' : '❌';
+                stepsHtml += `<li><code>${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code> ${stepResult}`;
+                if (stepDesc) {
+                    stepsHtml += ` <small><a href="${normUrl}" target="_blank">${stepDesc}</a></small>`;
+                }
+                stepsHtml += '</li>';
+            });
+            stepsHtml += '</ol>';
+            resultDiv.innerHTML = stepsHtml;
+
+            // Normale Validierungsergebnisse anzeigen
             const result = validateICS(content);
-            
             if (result.errors.length === 0 && result.warnings.length === 0) {
                 showValidationMessage('Die ICS-Datei ist gültig!', 'success');
             } else {
@@ -212,11 +232,24 @@ export function validateICS(icsContent) {
 
 function validateICSLine(line) {
     // Debug: Zeige die zu validierende Zeile
-    console.log('Validiere Zeile:', line);
+    // console.log('Validiere Zeile:', line);
 
     // Erlaube leere Zeilen
     if (line.trim() === '') {
-        console.log('Leere Zeile erkannt');
+        // console.log('Leere Zeile erkannt');
+        return true;
+    }
+
+    // Erlaube explizit alle BEGIN/END-Zeilen ohne Value
+    const beginEndPatterns = [
+        /^BEGIN:VCALENDAR$/,
+        /^END:VCALENDAR$/,
+        /^BEGIN:VEVENT$/,
+        /^END:VEVENT$/,
+        /^BEGIN:VALARM$/,
+        /^END:VALARM$/
+    ];
+    if (beginEndPatterns.some(re => re.test(line.trim()))) {
         return true;
     }
 
@@ -225,7 +258,7 @@ function validateICSLine(line) {
         line.includes('~:~:~:~:~:~') ||
         line.includes('calendar/') ||
         /[a-zA-Z0-9]{20,}/.test(line)) {
-        console.log('Google-spezifische Zeile ignoriert');
+        // console.log('Google-spezifische Zeile ignoriert');
         return true;
     }
     
@@ -260,22 +293,16 @@ function validateICSLine(line) {
     const propertyPart = parts[0];
     const valuePart = parts[1];
     
-    console.log('Property Teil:', propertyPart);
-    console.log('Wert Teil:', valuePart);
-    
     // Extrahiere den Property-Namen (vor dem ersten ; oder :)
     const propertyName = propertyPart.split(';')[0].toUpperCase();
-    console.log('Property Name:', propertyName);
     
     // Wenn es eine Kern-Property ist
     if (coreProperties.includes(propertyName)) {
-        console.log('Kern-Property erkannt:', propertyName);
         return true;
     }
     
     // Wenn es eine erweiterte Property ist
     if (extendedProperties.includes(propertyName)) {
-        console.log('Erweiterte Property erkannt:', propertyName);
         return { isValid: true, isKnown: true };
     }
     
@@ -283,7 +310,6 @@ function validateICSLine(line) {
     if (propertyName === 'TRIGGER') {
         const durationPattern = /^-?PT\d+[HMS]$/;
         const isValid = durationPattern.test(valuePart);
-        console.log('TRIGGER Validierung:', { valuePart, isValid });
         return isValid;
     }
     
@@ -291,11 +317,49 @@ function validateICSLine(line) {
     if (propertyName === 'ACTION') {
         const validActions = ['DISPLAY', 'AUDIO', 'EMAIL'];
         const isValid = validActions.includes(valuePart);
-        console.log('ACTION Validierung:', { valuePart, isValid });
         return isValid;
     }
     
     // Unbekannte Property
-    console.log('Unbekannte Property:', propertyName);
     return false;
+}
+
+// --- Hilfsfunktion für Norm-Referenz ---
+function getNormReference(line) {
+    // Mapping: Property -> Abschnitt im RFC
+    const rfcBase = 'https://datatracker.ietf.org/doc/html/rfc5545';
+    const property = line.split(':')[0].split(';')[0].toUpperCase();
+    switch(property) {
+        case 'BEGIN':
+        case 'END':
+            return { stepDesc: 'Abschnitt 3.6', normUrl: rfcBase + '#section-3.6' };
+        case 'VERSION':
+            return { stepDesc: 'Abschnitt 3.7.4', normUrl: rfcBase + '#section-3.7.4' };
+        case 'PRODID':
+            return { stepDesc: 'Abschnitt 3.7.3', normUrl: rfcBase + '#section-3.7.3' };
+        case 'UID':
+            return { stepDesc: 'Abschnitt 3.8.4.7', normUrl: rfcBase + '#section-3.8.4.7' };
+        case 'DTSTAMP':
+            return { stepDesc: 'Abschnitt 3.8.7.2', normUrl: rfcBase + '#section-3.8.7.2' };
+        case 'DTSTART':
+            return { stepDesc: 'Abschnitt 3.8.2.4', normUrl: rfcBase + '#section-3.8.2.4' };
+        case 'DTEND':
+            return { stepDesc: 'Abschnitt 3.8.2.2', normUrl: rfcBase + '#section-3.8.2.2' };
+        case 'SUMMARY':
+            return { stepDesc: 'Abschnitt 3.8.1.12', normUrl: rfcBase + '#section-3.8.1.12' };
+        case 'DESCRIPTION':
+            return { stepDesc: 'Abschnitt 3.8.1.5', normUrl: rfcBase + '#section-3.8.1.5' };
+        case 'LOCATION':
+            return { stepDesc: 'Abschnitt 3.8.1.7', normUrl: rfcBase + '#section-3.8.1.7' };
+        case 'URL':
+            return { stepDesc: 'Abschnitt 3.8.4.6', normUrl: rfcBase + '#section-3.8.4.6' };
+        case 'RRULE':
+            return { stepDesc: 'Abschnitt 3.8.5.3', normUrl: rfcBase + '#section-3.8.5.3' };
+        case 'ACTION':
+            return { stepDesc: 'Abschnitt 3.8.6.1', normUrl: rfcBase + '#section-3.8.6.1' };
+        case 'TRIGGER':
+            return { stepDesc: 'Abschnitt 3.8.6.3', normUrl: rfcBase + '#section-3.8.6.3' };
+        default:
+            return { stepDesc: '', normUrl: '' };
+    }
 }

@@ -14,6 +14,8 @@ Ein webbasiertes Tool zur Erstellung und Validierung von iCalendar-Dateien.
   - Verschiedene Endbedingungen (nach X Wiederholungen, bis Datum)
 - Erinnerungsfunktionen (10 Min. bis 1 Woche vorher)
 - Export als standardkonforme ICS-Datei
+- URLs für Online-Meetings (z.B. Zoom, Teams)
+- Dateianhänge (PDF, DOC, DOCX, TXT, PNG, JPG)
 
 ## Struktur
 
@@ -94,6 +96,16 @@ Jeder Termin wird in einer Bootstrap-Card dargestellt mit:
 5. **Erinnerung** (`reminderTime`)
    - Select-Feld
    - Bootstrap-Klassen: `col-md-4`
+
+6. **URL und Anhänge**
+   - URL (`url`)
+     - Optional
+     - Typ: `url`
+     - Bootstrap-Klassen: `col-12`
+   - Anhänge (`attachments`)
+     - Optional
+     - Typ: `file`
+     - Bootstrap-Klassen: `col-12`
 
 #### Template
 - `#eventTemplate` enthält die Vorlage für neue Termine
@@ -285,3 +297,9 @@ Bei Fragen oder Problemen können Sie mich erreichen unter:
 - Verbesserung der Entwicklerdokumentation
 - Einführung von Code-Coverage-Metriken
 - Implementation von Performance-Monitoring
+
+## Geplante Features
+
+- **ICS-Import**
+  - Möglichkeit, bestehende ICS-Dateien zu importieren
+  - Automatische Übernahme von Terminen und Serien

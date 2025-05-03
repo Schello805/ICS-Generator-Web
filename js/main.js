@@ -1,6 +1,7 @@
 import { initializeEventHandlers } from './modules/eventHandlers.js';
 import { initializeDateTimeFields } from './modules/dateTimeManager.js';
 import { initializeValidator } from './modules/icsValidator.js';
+import { initializeICSImportModal } from './modules/icsImport.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentPage.includes('generator.html')) {
             initializeEventHandlers();
             initializeDateTimeFields();
+            initializeICSImportModal();
         }
         
         // Validator-spezifische Initialisierung

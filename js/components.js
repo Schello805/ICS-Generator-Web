@@ -14,6 +14,8 @@
  * 3. Automatische Initialisierung beim DOMContentLoaded
  */
 
+// Komponenten-Initialisierung
+
 // Konfigurationsobjekt für die Navigation
 const NAV_CONFIG = {
     'index.html': { id: 'nav-home', label: 'Startseite' },
@@ -34,14 +36,14 @@ function handleComponentError(componentName, error) {
 async function loadComponent(elementId, path) {
     const element = document.getElementById(elementId);
     if (!element) {
-        console.warn(`Element with id "${elementId}" not found`);
+        console.warn(`[ICS Tools] Element with id "${elementId}" not found in DOM!`);
         return;
     }
 
     try {
         const response = await fetch(path);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`[ICS Tools] HTTP error! status: ${response.status} for ${path}`);
         }
         const html = await response.text();
         element.innerHTML = html;
@@ -56,8 +58,10 @@ async function loadComponent(elementId, path) {
                 logo.alt = 'ICS Generator Logo';
             }
         }
+        console.info(`[ICS Tools] Komponente ${elementId} erfolgreich geladen.`);
     } catch (error) {
         element.innerHTML = handleComponentError(elementId, error);
+        console.error(`[ICS Tools] Fehler beim Laden der Komponente ${elementId}:`, error);
     }
 }
 
@@ -80,20 +84,40 @@ function setActiveNavItem() {
     }
 }
 
+// Modal-Initialisierung nachladen, falls vorhanden
+function tryInitICSImportModal() {
+    if (typeof initializeICSImportModal === 'function') {
+        initializeICSImportModal();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Lade Header
-    fetch('components/header.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('header').innerHTML = data;
-        });
-
+    loadComponent('header', 'components/header.html');
     // Lade Footer
-    fetch('components/footer.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('footer').innerHTML = data;
-        });
+    loadComponent('footer', 'components/footer.html');
+
+    // Nach dem Nachladen des Headers das Modal initialisieren!
+    window.waitForElement('#icsImportModal').then(() => {
+        tryInitICSImportModal();
+        // Workaround: Menüpunkt immer korrekt initialisieren, auch wenn Modal noch nicht im DOM ist
+        const navBtn = document.getElementById('nav-import-ics');
+        if (navBtn) {
+            navBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Suche das <a>-Element im Menüpunkt
+                const link = navBtn.querySelector('a');
+                if (document.getElementById('icsImportModal')) {
+                    // Modal existiert, öffne es
+                    link && link.setAttribute('data-toggle', 'modal');
+                    link && link.setAttribute('data-target', '#icsImportModal');
+                    link && link.click();
+                } else {
+                    window.location.href = 'generator.html#icsImport';
+                }
+            });
+        }
+    });
 });
 
 // Funktion zum Warten auf ein Element

@@ -1,6 +1,7 @@
 // ICS Generator Module
 
 import { formatDate, formatDateTime, generateUID, escapeText, generateDTStamp } from './icsFormatter.js';
+import { validateICS } from './icsValidator.js';
 
 /**
  * Generiert die RRULE gemäß RFC 5545
@@ -85,164 +86,154 @@ export async function createICSCalendar(events) {
         
         // Prüfe ob mindestens ein Event vorhanden ist
         if (eventList.length === 0) {
-            throw new Error('Keine Events vorhanden');
+            throw new Error('Es wurde kein Termin gefunden.');
         }
-
-        // Validiere zuerst alle Events
+        
+        // Validiere und sammle alle Events
+        const usedUIDs = new Set();
         for (const event of eventList) {
+            // Pflichtfelder prüfen
             const summary = event.querySelector('.summary')?.value?.trim();
             const startDate = event.querySelector('.startDate')?.value;
             const endDate = event.querySelector('.endDate')?.value;
+            const allDay = event.querySelector('.allDay')?.checked;
             const startTime = event.querySelector('.startTime')?.value;
             const endTime = event.querySelector('.endTime')?.value;
-            const allDay = event.querySelector('.allDay')?.checked;
+            const location = event.querySelector('.location')?.value?.trim();
+            const description = event.querySelector('.description')?.value?.trim();
+            const url = event.querySelector('.url')?.value?.trim();
+            const repeatType = event.querySelector('.repeatType')?.value;
+            const repeatInterval = event.querySelector('.repeatInterval')?.value;
+            const repeatUntil = event.querySelector('.repeatUntil')?.value;
+            const reminderTime = event.querySelector('.reminderTime')?.value;
             
+            // UID prüfen/erzeugen
+            let uid = event.getAttribute('data-uid');
+            if (!uid) {
+                uid = generateUID();
+                event.setAttribute('data-uid', uid);
+            }
+            if (usedUIDs.has(uid)) {
+                throw new Error('Doppelter Termin erkannt! Bitte ändern Sie einen der Termine.');
+            }
+            usedUIDs.add(uid);
+            
+            // Pflichtfeld-Validierung
             if (!summary) {
-                throw new Error('Titel fehlt');
+                throw new Error('Bitte geben Sie einen Titel ein!');
             }
             
             if (!startDate) {
-                throw new Error('Startdatum fehlt');
+                throw new Error('Bitte wählen Sie ein Startdatum!');
             }
-
+            
             if (!endDate) {
-                throw new Error('Enddatum fehlt');
+                throw new Error('Bitte wählen Sie ein Enddatum!');
             }
-
+            
             if (!allDay && (!startTime || !endTime)) {
-                throw new Error('Zeitangaben fehlen');
+                throw new Error('Bitte wählen Sie Start- und Endzeit!');
             }
-
-            // Prüfe ob Enddatum nach Startdatum liegt
-            const start = new Date(startDate + (allDay ? '' : 'T' + startTime));
-            const end = new Date(endDate + (allDay ? '' : 'T' + endTime));
-            if (end < start) {
-                throw new Error('Das Enddatum muss nach dem Startdatum liegen');
+            
+            // ICS-Event-Block aufbauen
+            icsContent += 'BEGIN:VEVENT\r\n';
+            icsContent += `UID:${uid}\r\n`;
+            icsContent += `DTSTAMP:${generateDTStamp()}\r\n`;
+            
+            // Ganztägig: DTEND auf Folgetag setzen (RFC 5545)
+            if (allDay) {
+                icsContent += `DTSTART;VALUE=DATE:${startDate.replace(/-/g, '')}\r\n`;
+                // Folgetag berechnen
+                const start = new Date(startDate);
+                const nextDay = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+                const yyyy = nextDay.getFullYear();
+                const mm = String(nextDay.getMonth() + 1).padStart(2, '0');
+                const dd = String(nextDay.getDate()).padStart(2, '0');
+                icsContent += `DTEND;VALUE=DATE:${yyyy}${mm}${dd}\r\n`;
+            } else {
+                icsContent += `DTSTART:${startDate.replace(/-/g, '')}T${startTime.replace(':', '')}00\r\n`;
+                icsContent += `DTEND:${endDate.replace(/-/g, '')}T${endTime.replace(':', '')}00\r\n`;
             }
-        }
-
-        // RFC 5545 konforme Header
-        icsContent = 'BEGIN:VCALENDAR\r\n';
-        icsContent += 'VERSION:2.0\r\n';
-        icsContent += 'PRODID:-//ICS Generator//NONSGML ICS Generator//DE\r\n';
-
-        // Verarbeite Events nur wenn die Validierung erfolgreich war
-        for (const event of eventList) {
-            try {
-                const eventData = {
-                    summary: event.querySelector('.summary')?.value?.trim() || '',
-                    description: event.querySelector('.description')?.value?.trim() || '',
-                    location: event.querySelector('.location')?.value?.trim() || '',
-                    startDate: event.querySelector('.startDate')?.value || '',
-                    endDate: event.querySelector('.endDate')?.value || '',
-                    startTime: event.querySelector('.startTime')?.value || '00:00',
-                    endTime: event.querySelector('.endTime')?.value || '23:59',
-                    allDay: event.querySelector('.allDay')?.checked || false,
-                    repeatType: event.querySelector('.repeatType')?.value || 'none',
-                    repeatInterval: event.querySelector('.repeatInterval')?.value || '1',
-                    repeatUntil: event.querySelector('.repeatUntil')?.value || '',
-                    reminderTime: event.querySelector('.reminderTime')?.value || '0'
-                };
-
-                icsContent += 'BEGIN:VEVENT\r\n';
-                icsContent += `UID:${generateUID()}\r\n`;
-                icsContent += `DTSTAMP:${generateDTStamp()}\r\n`;
-                icsContent += `SUMMARY:${escapeText(eventData.summary)}\r\n`;
-
-                if (eventData.allDay) {
-                    // Für ganztägige Events: VALUE=DATE ohne Zeitangabe
-                    icsContent += `DTSTART;VALUE=DATE:${formatDate(eventData.startDate)}\r\n`;
-                    // Bei ganztägigen Events muss das Enddatum auf den nächsten Tag gesetzt werden
-                    const endDate = new Date(eventData.endDate);
-                    endDate.setDate(endDate.getDate() + 1);
-                    icsContent += `DTEND;VALUE=DATE:${formatDate(endDate.toISOString().split('T')[0])}\r\n`;
+            
+            icsContent += `SUMMARY:${escapeText(summary)}\r\n`;
+            if (description) icsContent += `DESCRIPTION:${escapeText(description)}\r\n`;
+            if (location) icsContent += `LOCATION:${escapeText(location)}\r\n`;
+            if (url) {
+                // Ergänze Protokoll, falls es fehlt
+                let urlOut = url;
+                if (!/^https?:\/\//i.test(urlOut)) {
+                    urlOut = 'https://' + urlOut;
+                }
+                icsContent += `URL:${urlOut}\r\n`;
+            }
+            
+            // Wiederholung
+            if (repeatType && repeatType !== 'none') {
+                // --- Wöchentliche Wiederholung ---
+                let weekdays = [];
+                if (repeatType === 'WEEKLY') {
+                    // Sammle alle aktivierten Wochentage (Checkboxen)
+                    weekdays = Array.from(event.querySelectorAll('.weekday:checked')).map(cb => cb.value);
+                    if (weekdays.length === 0) {
+                        throw new Error('Bitte wählen Sie mindestens einen Wochentag für die wöchentliche Wiederholung aus.');
+                    }
                 } else {
-                    // Für Termine mit Uhrzeit: Mit Zeitzonenoffset
-                    icsContent += `DTSTART:${formatDateTime(eventData.startDate, eventData.startTime)}\r\n`;
-                    icsContent += `DTEND:${formatDateTime(eventData.endDate, eventData.endTime)}\r\n`;
+                    weekdays = Array.from(event.querySelectorAll('.weekday:checked')).map(cb => cb.value);
                 }
-
-                if (eventData.description) {
-                    icsContent += `DESCRIPTION:${escapeText(eventData.description)}\r\n`;
-                }
-
-                if (eventData.location) {
-                    icsContent += `LOCATION:${escapeText(eventData.location)}\r\n`;
-                }
-
-                // URL hinzufügen, wenn vorhanden
-                const url = event.querySelector('.url')?.value;
-                if (url) icsContent += `URL:${url}\r\n`;
-
-                // Verarbeite den Anhang
-                const attachmentFile = event.querySelector('.attachment').files[0];
-                const attachment = await processAttachment(attachmentFile);
-
-                // Füge den Anhang hinzu, wenn vorhanden
-                if (attachment) {
-                    icsContent += `ATTACH;FMTTYPE=${attachment.mime};ENCODING=BASE64;VALUE=BINARY;X-FILENAME=${attachment.filename}:${attachment.data}\r\n`;
-                }
-
-                // Füge Wiederholungsregel hinzu
-                if (eventData.repeatType !== 'none') {
-                    const weekdays = Array.from(event.querySelectorAll('.weekday:checked')).map(cb => cb.value);
-                    const monthlyType = event.querySelector('.monthlyType')?.value;
-                    const repeatEndType = event.querySelector('.repeatEndType:checked')?.value;
-                    let repeatUntil = '';
-                    
-                    if (repeatEndType === 'until') {
-                        repeatUntil = event.querySelector('.repeatUntil')?.value;
-                    }
-
-                    const rrule = generateRRule(
-                        eventData.repeatType,
-                        eventData.repeatInterval,
-                        repeatUntil,
-                        weekdays,
-                        monthlyType,
-                        '', // monthDay wird automatisch aus dem Startdatum ermittelt
-                        '', // weekNumber wird automatisch aus dem Startdatum ermittelt
-                        ''  // weekDay wird automatisch aus dem Startdatum ermittelt
-                    );
-                    if (rrule) {
-                        icsContent += rrule + '\r\n';
-                    }
-                }
-
-                // Füge Erinnerung hinzu
-                if (eventData.reminderTime && eventData.reminderTime !== '0') {
-                    icsContent += 'BEGIN:VALARM\r\n';
-                    icsContent += 'ACTION:DISPLAY\r\n';
-                    icsContent += `TRIGGER:-PT${eventData.reminderTime}M\r\n`;
-                    icsContent += 'DESCRIPTION:Reminder\r\n';
-                    icsContent += 'END:VALARM\r\n';
-                }
-
-                icsContent += 'END:VEVENT\r\n';
-                hasValidEvents = true;
-            } catch (error) {
-                console.error('Error processing event:', error);
+                const monthType = event.querySelector('.monthlyType')?.value;
+                const weekNumber = event.querySelector('.monthlyType')?.value === 'BYDAY' ? event.querySelector('.monthlyWeekNumber')?.value : undefined;
+                const weekDay = event.querySelector('.monthlyType')?.value === 'BYDAY' ? event.querySelector('.monthlyWeekDay')?.value : undefined;
+                const monthDay = event.querySelector('.monthlyType')?.value === 'BYMONTHDAY' ? event.querySelector('.monthlyMonthDay')?.value : undefined;
+                const rrule = generateRRule(repeatType, repeatInterval, repeatUntil, weekdays, monthType, monthDay, weekNumber, weekDay);
+                if (rrule) icsContent += `${rrule}\r\n`;
             }
+            
+            // Reminder
+            if (reminderTime && parseInt(reminderTime) > 0) {
+                icsContent += 'BEGIN:VALARM\r\n';
+                icsContent += 'ACTION:DISPLAY\r\n';
+                icsContent += `TRIGGER:-PT${parseInt(reminderTime)}M\r\n`;
+                icsContent += 'DESCRIPTION:Reminder\r\n';
+                icsContent += 'END:VALARM\r\n';
+            }
+            
+            // Anhang
+            const attachmentFile = event.querySelector('.attachment')?.files?.[0];
+            if (attachmentFile) {
+                const attachment = await processAttachment(attachmentFile);
+                if (attachment) {
+                    icsContent += `ATTACH;FMTTYPE=${attachment.mime}:data:${attachment.mime};base64,${attachment.data}\r\n`;
+                }
+            }
+            
+            icsContent += 'END:VEVENT\r\n';
+            hasValidEvents = true;
         }
-
-        icsContent += 'END:VCALENDAR\r\n';
-
+        
         if (!hasValidEvents) {
-            throw new Error('Keine gültigen Events gefunden');
+            throw new Error('Kein gültiger Termin gefunden!');
         }
-
-        // Erstelle und lade die ICS-Datei
-        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'calendar.ics';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        return true;
+        
+        // ICS-Header/Footer
+        icsContent = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//ICS Generator//NONSGML ICS Generator//DE\r\n' + icsContent + 'END:VCALENDAR\r\n';
+        
+        // Nach dem Erstellen: ICS-Datei validieren
+        const validation = validateICS(icsContent.replace(/\r\n/g, '\n'));
+        if (validation.errors && validation.errors.length > 0) {
+            throw new Error('ICS-Fehler: ' + validation.errors.join('<br>'));
+        }
+        if (validation.warnings && validation.warnings.length > 0) {
+            // Optional: Warnungen können im aufrufenden Modul behandelt werden
+        }
+        return icsContent;
     } catch (error) {
-        console.error('Error creating ICS calendar:', error);
         throw error;
     }
-};
+}
+
+// --- Usability-Verbesserungen: Fokus und Scrollen ---
+document.addEventListener('focusin', (e) => {
+    if (e.target.classList.contains('is-invalid')) {
+        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
