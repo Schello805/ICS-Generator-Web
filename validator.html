@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Validieren Sie Ihre ICS-Dateien und stellen Sie sicher, dass sie dem iCalendar-Standard entsprechen">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://stackpath.bootstrapcdn.com;
+        font-src 'self' https://cdnjs.cloudflare.com;
+        img-src 'self' data: https:">
+    <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://code.jquery.com">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>ICS Validator - Kalender-Datei prüfen</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .btn-link {
+            color: #333;
+            text-decoration: none;
+        }
+        .btn-link:hover {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .accordion .card-header {
+            padding: 0;
+        }
+        .accordion .btn-link {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .accordion .btn-link::after {
+            content: '\f078';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 1rem;
+            transition: transform 0.2s ease-in-out;
+        }
+        .accordion .btn-link.collapsed::after {
+            transform: rotate(-90deg);
+        }
+        .validation-status {
+            margin-left: auto;
+            margin-right: 2rem;
+        }
+        .validation-status.success::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #28a745;
+        }
+        .validation-status.error::before {
+            content: '\f00d';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #dc3545;
+        }
+        .validation-status.warning::before {
+            content: '\f071';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #ffc107;
+        }
+        .validation-messages {
+            margin-bottom: 1rem;
+        }
+        .validation-message {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+        }
+        .validation-message.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .validation-message.warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+        }
+        .validation-message.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header" class="sticky-top"></header>
+    <div class="container mt-5">
+        <h1 class="mb-4">ICS Validator</h1>
+        <p class="lead">Prüfen Sie Ihre ICS-Datei auf Konformität mit dem RFC 5545 Standard</p>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title" id="upload-title">Datei hochladen</h5>
+                <div class="mb-3">
+                    <input type="file" 
+                           class="form-control" 
+                           id="icsFileInput" 
+                           accept=".ics"
+                           aria-labelledby="upload-title"
+                           aria-describedby="file-format-info">
+                    <small id="file-format-info" class="form-text text-muted">
+                        Unterstützte Dateiformate: .ics (iCalendar)
+                    </small>
+                </div>
+                <button class="btn btn-primary" id="validateButton">
+                    <i class="fas fa-check-circle me-2"></i>Datei validieren
+                </button>
+            </div>
+        </div>
+
+        <div id="validationResult"></div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Dateiinhalt</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre class="mb-0" id="fileContent">
+Hier wird der Inhalt der ICS-Datei angezeigt...
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="accordion" id="validationAccordion">
+                    <div class="card">
+                        <div class="card-header" id="corePropertiesHeading">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#corePropertiesCollapse" aria-expanded="false" aria-controls="corePropertiesCollapse">
+                                    <i class="fas fa-cube text-primary me-2"></i>Kern-Properties
+                                    <span class="validation-status"></span>
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="corePropertiesCollapse" class="collapse" aria-labelledby="corePropertiesHeading" data-parent="#validationAccordion">
+                            <div class="card-body">
+                                <div class="validation-messages"></div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><code>BEGIN/END</code> - Start/Ende</li>
+                                            <li><code>SUMMARY</code> - Titel</li>
+                                            <li><code>DTSTART/END</code> - Zeitraum</li>
+                                            <li><code>UID</code> - ID</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><code>VERSION</code> - Version</li>
+                                            <li><code>PRODID</code> - Produkt</li>
+                                            <li><code>CALSCALE</code> <span class="text-muted">(optional)</span></li>
+                                            <li><code>METHOD</code> <span class="text-muted">(optional)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" id="extendedPropertiesHeading">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#extendedPropertiesCollapse" aria-expanded="false" aria-controls="extendedPropertiesCollapse">
+                                    <i class="fas fa-puzzle-piece text-primary me-2"></i>Erweiterte Properties
+                                    <span class="validation-status"></span>
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="extendedPropertiesCollapse" class="collapse" aria-labelledby="extendedPropertiesHeading" data-parent="#validationAccordion">
+                            <div class="card-body">
+                                <div class="validation-messages"></div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <span class="text-muted">Basis-Info</span>
+                                        <ul class="list-unstyled mb-0">
+                                            <li><code>DESCRIPTION</code></li>
+                                            <li><code>LOCATION</code></li>
+                                            <li><code>CATEGORIES</code></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="text-muted">Zeitsteuerung</span>
+                                        <ul class="list-unstyled mb-0">
+                                            <li><code>RRULE</code></li>
+                                            <li><code>DURATION</code></li>
+                                            <li><code>VALARM</code></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="text-muted">Teilnehmer</span>
+                                        <ul class="list-unstyled mb-0">
+                                            <li><code>ORGANIZER</code></li>
+                                            <li><code>ATTENDEE</code></li>
+                                            <li><code>URL</code></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" id="specialValidationHeading">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#specialValidationCollapse" aria-expanded="false" aria-controls="specialValidationCollapse">
+                                    <i class="fas fa-cogs text-primary me-2"></i>Spezielle Validierungen
+                                    <span class="validation-status"></span>
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="specialValidationCollapse" class="collapse" aria-labelledby="specialValidationHeading" data-parent="#validationAccordion">
+                            <div class="card-body">
+                                <div class="validation-messages"></div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <span class="text-muted">TRIGGER Format</span>
+                                        <ul class="list-unstyled mb-0">
+                                            <li><code>PT30M</code> - 30min vorher</li>
+                                            <li><code>PT1H</code> - 1h vorher</li>
+                                            <li><code>P1D</code> - 1d vorher</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span class="text-muted">ACTION Typen</span>
+                                        <ul class="list-unstyled mb-0">
+                                            <li><code>DISPLAY</code> - Anzeige</li>
+                                            <li><code>AUDIO</code> - Ton</li>
+                                            <li><code>EMAIL</code> - Mail</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header" id="additionalChecksHeading">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#additionalChecksCollapse" aria-expanded="false" aria-controls="additionalChecksCollapse">
+                                    <i class="fas fa-tasks text-primary me-2"></i>Zusätzliche Checks
+                                    <span class="validation-status"></span>
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="additionalChecksCollapse" class="collapse" aria-labelledby="additionalChecksHeading" data-parent="#validationAccordion">
+                            <div class="card-body">
+                                <div class="validation-messages"></div>
+                                <ul class="list-unstyled row mb-0">
+                                    <li class="col-md-6"><i class="fas fa-check text-success"></i> Syntax (':' und ';')</li>
+                                    <li class="col-md-6"><i class="fas fa-check text-success"></i> Leere Zeilen</li>
+                                    <li class="col-md-6"><i class="fas fa-check text-success"></i> Google Calendar</li>
+                                    <li class="col-md-6"><i class="fas fa-check text-success"></i> RFC 5545</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/headerLoader.js"></script>
+    <script type="module" src="js/modules/icsValidator.js"></script>
+    <script type="module">
+        import { initializeValidator } from './js/modules/icsValidator.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeValidator();
+        });
+    </script>
+</body>
+
+</html>

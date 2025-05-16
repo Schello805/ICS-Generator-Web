@@ -1,0 +1,7 @@
+{
+    "liveServer.settings.CustomMimeTypes": {
+        "js": "application/javascript"
+    },
+    "files.autoSave": "afterDelay",
+    "windsurf.autoExecutionPolicy": "auto"
+} 

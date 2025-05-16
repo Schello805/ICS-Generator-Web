@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-itunes-app" content="app-id=6738963683">
+    <meta name="description" content="Datenschutzerklärung für ICS Tools - Informationen zur lokalen Datenverarbeitung und Datensicherheit">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com; script-src 'self' https://code.jquery.com https://cdn.jsdelivr.net; font-src 'self' https://cdnjs.cloudflare.com;">
+    <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://code.jquery.com">
+    <title>Datenschutz - ICS Tools</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header id="header" class="sticky-top"></header>
+
+    <main class="container mt-5">
+        <h1 class="mb-4" id="page-title">Datenschutzerklärung</h1>
+
+        <div class="card mb-4" role="region" aria-labelledby="section-overview">
+            <div class="card-body">
+                <h2 class="h4" id="section-overview">1. Datenschutz auf einen Blick</h2>
+                <h3 class="h5 mt-3">Allgemeine Hinweise</h3>
+                <p>Diese Datenschutzerklärung klärt Sie über die Art, den Umfang und Zweck der Verarbeitung von personenbezogenen Daten innerhalb unseres ICS Generators und Validators auf.</p>
+                
+                <h3 class="h5 mt-3">Datenverarbeitung im Browser</h3>
+                <p>Der ICS Generator und Validator verarbeiten alle Daten ausschließlich lokal in Ihrem Browser. Es werden keine Daten an Server übertragen oder extern gespeichert.</p>
+                
+                <h3 class="h5 mt-3">Cookies und Tracking</h3>
+                <p>Diese Website verwendet keine Cookies und keine Tracking-Mechanismen. Alle Funktionen werden ausschließlich clientseitig im Browser ausgeführt.</p>
+                
+                <h3 class="h5 mt-3">Externe Ressourcen</h3>
+                <p>Diese Website lädt folgende externe Ressourcen:</p>
+                <ul aria-label="Liste der verwendeten externen Ressourcen">
+                    <li>Bootstrap CSS und JavaScript von <span class="text-nowrap">stackpath.bootstrapcdn.com</span> und <span class="text-nowrap">cdn.jsdelivr.net</span></li>
+                    <li>Font Awesome Icons von <span class="text-nowrap">cdnjs.cloudflare.com</span></li>
+                    <li>jQuery von <span class="text-nowrap">code.jquery.com</span></li>
+                </ul>
+                <p>Diese Ressourcen werden nur zur Darstellung und Funktionalität der Website benötigt. Es werden keine Nutzerdaten an diese Dienste übermittelt.</p>
+            </div>
+        </div>
+
+        <div class="card mb-4" role="region" aria-labelledby="section-data">
+            <div class="card-body">
+                <h2 class="h4" id="section-data">2. Art der verarbeiteten Daten</h2>
+                <ul aria-label="Liste der verarbeiteten Datenkategorien">
+                    <li>Termindaten (Titel, Datum, Uhrzeit)</li>
+                    <li>Beschreibungen</li>
+                    <li>Ortsangaben</li>
+                    <li>URLs und Anhänge</li>
+                    <li>Erinnerungseinstellungen</li>
+                    <li>Wiederholungseinstellungen</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mb-4" role="region" aria-labelledby="section-purpose">
+            <div class="card-body">
+                <h2 class="h4" id="section-purpose">3. Zweck der Verarbeitung</h2>
+                <p>Die Verarbeitung der Daten erfolgt zum Zweck der:</p>
+                <ul aria-label="Liste der Verarbeitungszwecke">
+                    <li>Erstellung von ICS-Kalenderdateien</li>
+                    <li>Validierung von ICS-Dateien</li>
+                    <li>Temporäre Anzeige von Validierungsergebnissen</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mb-4" role="region" aria-labelledby="section-rights">
+            <div class="card-body">
+                <h2 class="h4" id="section-rights">4. Ihre Rechte</h2>
+                <p>Da keine personenbezogenen Daten gespeichert werden, entfallen die üblichen datenschutzrechtlichen Auskunfts- und Löschungsrechte. Alle eingegebenen Daten werden nur temporär in Ihrem Browser verarbeitet und mit dem Schließen der Seite gelöscht.</p>
+            </div>
+        </div>
+
+        <p class="text-muted small">Stand: Februar 2024</p>
+    </main>
+
+    <div id="footer"></div>
+
+    <!-- Strukturierte Daten für SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Datenschutzerklärung - ICS Tools",
+        "description": "Informationen zur Datenverarbeitung und Datensicherheit bei ICS Tools",
+        "dateModified": "2024-02-01",
+        "publisher": {
+            "@type": "Person",
+            "name": "Michael Schellenberger"
+        }
+    }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/headerLoader.js"></script>
+</body>
+
+</html>
