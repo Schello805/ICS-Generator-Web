@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net;
         font-src 'self' https://cdnjs.cloudflare.com;
         img-src 'self' data: https:">
     <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
@@ -230,7 +230,7 @@
                         <!-- URL -->
                         <div class="row mb-2">
                             <div class="col-12">
-                                <label class="form-label">Meeting-URL</label>
+                                <label class="form-label">URL</label>
                                 <input type="url" class="form-control form-control-sm url" id="url1" name="url" placeholder="https://example.com">
                                 <small class="text-muted">Link zur Veranstaltung oder Meeting (z.B. Zoom, Teams)</small>
                             </div>
@@ -239,9 +239,14 @@
                         <!-- Anhang -->
                         <div class="row mb-2">
                             <div class="col-12">
-                                <label class="form-label">Anhang-URL</label>
-                                <input type="url" class="form-control form-control-sm attachment-url" id="attachmentUrl1" name="attachmentUrl" placeholder="https://example.com/datei.pdf">
-                                <small class="text-muted">Gib hier die URL zu einer Datei an (z.B. PDF, DOCX, Bild, ...)</small>
+                                <label class="form-label">Anhang</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control form-control-sm attachment" id="attachment1" name="attachment" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm clearAttachment" title="Anhang entfernen">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Unterstützte Formate: PDF, DOC, DOCX, TXT, PNG, JPG</small>
                             </div>
                         </div>
                     </form>
@@ -439,7 +444,7 @@
                         <!-- URL -->
                         <div class="row mb-2">
                             <div class="col-12">
-                                <label class="form-label">Meeting-URL</label>
+                                <label class="form-label">URL</label>
                                 <input type="url" class="form-control form-control-sm url" name="url" placeholder="https://example.com">
                                 <small class="text-muted">Link zur Veranstaltung oder Meeting (z.B. Zoom, Teams)</small>
                             </div>
@@ -448,9 +453,14 @@
                         <!-- Anhang -->
                         <div class="row mb-2">
                             <div class="col-12">
-                                <label class="form-label">Anhang-URL</label>
-                                <input type="url" class="form-control form-control-sm attachment-url" name="attachmentUrl" placeholder="https://example.com/datei.pdf">
-                                <small class="text-muted">Gib hier die URL zu einer Datei an (z.B. PDF, DOCX, Bild, ...)</small>
+                                <label class="form-label">Anhang</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control form-control-sm attachment" name="attachment" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm clearAttachment" title="Anhang entfernen">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Unterstützte Formate: PDF, DOC, DOCX, TXT, PNG, JPG</small>
                             </div>
                         </div>
                     </form>
@@ -496,7 +506,7 @@
 
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
     <script src="js/components.js"></script>
     <script src="js/headerLoader.js"></script>

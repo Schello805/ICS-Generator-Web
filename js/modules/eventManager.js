@@ -62,9 +62,6 @@ export const duplicateEvent = (event = null) => {
             // Kopiere die Wiederholungseinstellungen
             copyRepeatSettings(originalForm, newForm);
 
-            // Nach dem Kopieren: Zeitfelder korrekt synchronisieren
-            if (typeof toggleDateTimeFields === 'function') toggleDateTimeFields(newForm);
-
         } else {
             // Füge einen neuen, leeren Termin am Ende hinzu
             const eventsContainer = document.querySelector('#eventsContainer');
@@ -76,11 +73,6 @@ export const duplicateEvent = (event = null) => {
         }
 
         // Initialisiere die Datums- und Zeitfelder für den neuen Event
-        const lastForm = document.querySelectorAll('.eventForm');
-        if (lastForm.length) {
-            const form = lastForm[lastForm.length - 1];
-            if (typeof toggleDateTimeFields === 'function') toggleDateTimeFields(form);
-        }
         initializeDateTimeFields();
 
         // Aktualisiere die Event-Nummerierung
@@ -211,10 +203,6 @@ function updateEventNumbers() {
         }
 
         // Aktualisiere die IDs und Labels der Formularelemente
-        if (!form) {
-            console.warn('Kein Formular im Event-Container gefunden – IDs und Labels werden übersprungen.');
-            return;
-        }
         const inputs = form.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
             if (input.id) {

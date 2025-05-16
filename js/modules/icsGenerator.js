@@ -55,7 +55,25 @@ const generateRRule = (repeatType, repeatInterval, repeatUntil, weekdays, monthT
     }
 };
 
+function processAttachment(file) {
+    return new Promise((resolve) => {
+        if (!file) {
+            resolve(null);
+            return;
+        }
 
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Data = e.target.result.split(',')[1];
+            resolve({
+                filename: file.name,
+                mime: file.type || 'application/octet-stream',
+                data: base64Data
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+}
 
 /**
  * Funktion zum Erstellen der ICS-Datei
@@ -84,7 +102,6 @@ export async function createICSCalendar(events) {
             const location = event.querySelector('.location')?.value?.trim();
             const description = event.querySelector('.description')?.value?.trim();
             const url = event.querySelector('.url')?.value?.trim();
-            const attachmentUrl = event.querySelector('.attachment-url')?.value?.trim();
             const repeatType = event.querySelector('.repeatType')?.value;
             const repeatInterval = event.querySelector('.repeatInterval')?.value;
             const repeatUntil = event.querySelector('.repeatUntil')?.value;
@@ -148,14 +165,6 @@ export async function createICSCalendar(events) {
                     urlOut = 'https://' + urlOut;
                 }
                 icsContent += `URL:${urlOut}\r\n`;
-            }
-            // Anhang-URL als ATTACH einfügen
-            if (attachmentUrl) {
-                let attachOut = attachmentUrl;
-                if (!/^https?:\/\//i.test(attachOut)) {
-                    attachOut = 'https://' + attachOut;
-                }
-                icsContent += `ATTACH:${attachOut}\r\n`;
             }
             
             // Wiederholung
@@ -228,5 +237,3 @@ document.addEventListener('focusin', (e) => {
         e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });
-
-// Entfernte processAttachment und Datei-Upload-Logik, da nur noch Anhang-URLs unterstützt werden.

@@ -365,44 +365,25 @@ export function initializeEventHandlers() {
 
         // --- URL Live-Validierung direkt bei Eingabe ---
         document.addEventListener('input', function(event) {
-            // Meeting-URL
             if (event.target.classList.contains('url')) {
                 const urlInput = event.target;
                 const urlValue = urlInput.value.trim();
                 const urlPattern = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-.,@?^=%&:/~+#]*)?$/i;
                 // Entferne alte Fehlermeldung
                 urlInput.classList.remove('is-invalid');
+                // Suche nach bereits existierender Fehlermeldung NUR im eigenen Parent
                 let feedback = Array.from(urlInput.parentNode.querySelectorAll('.invalid-feedback'))[0];
                 if (feedback) {
                     feedback.remove();
                 }
                 if (urlValue.length > 0 && !urlPattern.test(urlValue)) {
                     urlInput.classList.add('is-invalid');
+                    // Feedback nur anzeigen, wenn noch keins existiert
                     if (!urlInput.parentNode.querySelector('.invalid-feedback')) {
                         feedback = document.createElement('div');
                         feedback.className = 'invalid-feedback';
                         feedback.textContent = 'Bitte geben Sie eine gültige URL ein (z. B. https://beispiel.de)';
                         urlInput.parentNode.appendChild(feedback);
-                    }
-                }
-            }
-            // Anhang-URL
-            if (event.target.classList.contains('attachment-url')) {
-                const attachmentInput = event.target;
-                const attachmentValue = attachmentInput.value.trim();
-                const urlPattern = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-.,@?^=%&:/~+#]*)?$/i;
-                attachmentInput.classList.remove('is-invalid');
-                let feedback = Array.from(attachmentInput.parentNode.querySelectorAll('.invalid-feedback'))[0];
-                if (feedback) {
-                    feedback.remove();
-                }
-                if (attachmentValue.length > 0 && !urlPattern.test(attachmentValue)) {
-                    attachmentInput.classList.add('is-invalid');
-                    if (!attachmentInput.parentNode.querySelector('.invalid-feedback')) {
-                        feedback = document.createElement('div');
-                        feedback.className = 'invalid-feedback';
-                        feedback.textContent = 'Bitte geben Sie eine gültige URL ein (z. B. https://beispiel.de)';
-                        attachmentInput.parentNode.appendChild(feedback);
                     }
                 }
             }

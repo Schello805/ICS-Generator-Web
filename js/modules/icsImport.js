@@ -131,34 +131,16 @@ function importEventsToUI() {
         }
     }
     parsedEvents.forEach((eventObj, idx) => {
-        let newEvent = null;
-        // Für das erste Event: Wenn ein leeres Formular existiert, wiederverwenden
+        let newEvent = duplicateEvent();
         if (idx === 0) {
             const firstForm = eventsContainer.querySelector('.eventForm');
             if (firstForm && firstForm.querySelector('.summary').value === '') {
                 newEvent = firstForm.closest('.card');
-            } else {
-                newEvent = duplicateEvent();
-                // duplicateEvent gibt jetzt die neue Card zurück
-            }
-        } else {
-            // duplicateEvent gibt die neue Card zurück, wir hängen sie direkt ans eventsContainer an
-            newEvent = duplicateEvent();
-            // Falls duplicateEvent kein Element zurückgibt, versuchen wir das letzte Card-Element zu nehmen
-            if (!newEvent) {
-                const cards = eventsContainer.querySelectorAll('.card');
-                if (cards.length) newEvent = cards[cards.length - 1];
             }
         }
-        if (!newEvent) {
-            showValidationResult('Fehler beim Erstellen eines neuen Termins. Bitte Seite neu laden.', false);
-            return;
-        }
-        const form = newEvent.querySelector ? newEvent.querySelector('.eventForm') : null;
-        if (!form) {
-            showValidationResult('Fehler beim Initialisieren des Formulars für einen Termin. Bitte Seite neu laden.', false);
-            return;
-        }
+        if (!newEvent) return;
+        const form = newEvent.querySelector('.eventForm');
+        if (!form) return;
         // Standard-Felder
         if (eventObj['SUMMARY'] && form.querySelector('.summary')) form.querySelector('.summary').value = eventObj['SUMMARY'];
         if (eventObj['DESCRIPTION'] && form.querySelector('.description')) form.querySelector('.description').value = eventObj['DESCRIPTION'];
@@ -167,8 +149,9 @@ function importEventsToUI() {
         if (eventObj['DTSTART']) {
             const dt = parseICSDateTime(eventObj['DTSTART']);
             if (form.querySelector('.startDate')) form.querySelector('.startDate').value = dt.date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
-            if (form.querySelector('.allDay')) form.querySelector('.allDay').checked = !dt.time;
             if (form.querySelector('.startTime')) form.querySelector('.startTime').value = dt.time || '';
+            // Ganztägig-Checkbox setzen, wenn keine Zeit vorhanden
+            if (form.querySelector('.allDay')) form.querySelector('.allDay').checked = !dt.time;
         }
         if (eventObj['DTEND']) {
             const dt = parseICSDateTime(eventObj['DTEND']);
@@ -177,19 +160,9 @@ function importEventsToUI() {
         }
         // Erweiterte Felder
         if (eventObj['URL'] && form.querySelector('.url')) form.querySelector('.url').value = eventObj['URL'];
-        if (eventObj['ATTACH'] && form.querySelector('.attachment-url')) {
-            const attachmentInput = form.querySelector('.attachment-url');
-            attachmentInput.value = eventObj['ATTACH'];
-            attachmentInput.setAttribute('data-imported', eventObj['ATTACH']);
-            attachmentInput.classList.add('border-warning');
-        }
-        // Nach dem Setzen aller Felder: Zeitfelder synchronisieren
-        if (typeof toggleDateTimeFields === 'function') toggleDateTimeFields(form);
-        // Erzwinge das Auslösen des change-Events auf der Checkbox, damit alle UI-Listener reagieren
-        const allDayCheckbox = form.querySelector('.allDay');
-        if (allDayCheckbox) {
-            const event = new Event('change', { bubbles: true });
-            allDayCheckbox.dispatchEvent(event);
+        if (eventObj['ATTACH'] && form.querySelector('.attachment')) {
+            form.querySelector('.attachment').setAttribute('data-imported', eventObj['ATTACH']);
+            form.querySelector('.attachment').classList.add('border-warning');
         }
         // RRULE: Wiederholung korrekt auf Formularfelder mappen
         if (eventObj['RRULE']) {
