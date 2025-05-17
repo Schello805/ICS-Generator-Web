@@ -1,6 +1,7 @@
 // ICS Import Module für Modal in generator.html
 import { validateICS } from './icsValidator.js';
 import { duplicateEvent } from './eventManager.js';
+import { toggleDateTimeFields } from './dateTimeManager.js';
 
 let parsedEvents = [];
 
@@ -151,7 +152,11 @@ function importEventsToUI() {
             if (form.querySelector('.startDate')) form.querySelector('.startDate').value = dt.date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
             if (form.querySelector('.startTime')) form.querySelector('.startTime').value = dt.time || '';
             // Ganztägig-Checkbox setzen, wenn keine Zeit vorhanden
-            if (form.querySelector('.allDay')) form.querySelector('.allDay').checked = !dt.time;
+            if (form.querySelector('.allDay')) {
+                form.querySelector('.allDay').checked = !dt.time;
+            }
+            // Zeitfelder nach Checkbox-Status für dieses Formular immer aktualisieren
+            toggleDateTimeFields(form);
         }
         if (eventObj['DTEND']) {
             const dt = parseICSDateTime(eventObj['DTEND']);
@@ -161,9 +166,10 @@ function importEventsToUI() {
         // Erweiterte Felder
         if (eventObj['URL'] && form.querySelector('.url')) form.querySelector('.url').value = eventObj['URL'];
         if (eventObj['ATTACH'] && form.querySelector('.attachment')) {
-            form.querySelector('.attachment').setAttribute('data-imported', eventObj['ATTACH']);
-            form.querySelector('.attachment').classList.add('border-warning');
+            form.querySelector('.attachment').value = eventObj['ATTACH'];
         }
+        // Nach dem Setzen aller Felder: Zeitfelder je nach Ganztägig-Status aus-/einblenden
+        if (typeof toggleDateTimeFields === 'function') toggleDateTimeFields(form);
         // RRULE: Wiederholung korrekt auf Formularfelder mappen
         if (eventObj['RRULE']) {
             const rrule = eventObj['RRULE'];
@@ -204,47 +210,71 @@ function importEventsToUI() {
             form.querySelector('.reminderTime').value = eventObj['REMINDER'];
         }
     });
+    const importSuccessDiv = document.getElementById('importSuccess');
+    if (importSuccessDiv) {
+        importSuccessDiv.textContent = 'Import erfolgreich! Die Termine wurden übernommen.';
+        importSuccessDiv.classList.remove('d-none');
+    }
+    // OK-Button schließt Modal (Bootstrap 4 & 5 kompatibel)
     setTimeout(() => {
-        document.getElementById('importSuccess').innerHTML = 'Import erfolgreich! Die Termine wurden übernommen.<br><button id="closeICSImportModal" class="btn btn-success mt-2" data-dismiss="modal">OK</button>';
-        document.getElementById('importSuccess').classList.remove('d-none');
-        setTimeout(() => {
-            const okBtn = document.getElementById('closeICSImportModal');
-            if (okBtn) {
-                okBtn.addEventListener('click', function() {
-                    if (window.jQuery) window.jQuery('#icsImportModal').modal('hide');
-                });
-            }
-        }, 100);
-    }, 300);
+        const okBtn = document.getElementById('okICSImportBtn');
+        if (okBtn) {
+            okBtn.addEventListener('click', () => {
+                const modalEl = document.getElementById('icsImportModal');
+                if (window.$ && typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('hide');
+                } else if (window.bootstrap && bootstrap.Modal) {
+                    bootstrap.Modal.getInstance(modalEl)?.hide();
+                }
+                // Footer-Buttons wieder einblenden, wenn Modal geschlossen wird
+                const modalFooter = document.querySelector('.modal-footer');
+                if (modalFooter) setTimeout(() => modalFooter.classList.remove('d-none'), 400);
+            });
+        }
+    }, 100);
     // Mapping-Feedback ins Modal schreiben
+    // Nach erfolgreichem Import: Zeige nur noch OK-Button in Modal-Footer
+    const modalFooter = document.querySelector('.modal-footer');
+    if (modalFooter) {
+        modalFooter.innerHTML = `<button type="button" class="btn btn-success ms-auto" data-dismiss="modal" id="okICSImportBtn">OK</button>`;
+    }
     const mappingDiv = document.getElementById('icsMappingResult');
     if (mappingDiv) {
-        let html = `
-        <div class="accordion" id="icsMappingAccordion">
-          <div class="card">
-            <div class="card-header p-0" id="headingMapping">
-              <h2 class="mb-0">
-                <button class="btn btn-link btn-block text-left collapsed w-100" type="button" data-toggle="collapse" data-target="#collapseMapping" aria-expanded="false" aria-controls="collapseMapping">
-                  Feld-Mapping & Prüfung (Details anzeigen)
-                </button>
-              </h2>
-            </div>
-            <div id="collapseMapping" class="collapse" aria-labelledby="headingMapping" data-parent="#icsMappingAccordion">
-              <div class="card-body">
-                <ul>`;
+        let html = `<div class='mapping-explanation mb-2'>Hier sehen Sie, welche Felder aus der ICS-Datei ins Formular übernommen wurden:</div>`;
+        html += '<ul class="list-group">';
+        // Akkordeon einblenden
+        const acc = document.getElementById('mappingAccordion');
+        if (acc) acc.classList.remove('d-none');
         parsedEvents.forEach((eventObj, idx) => {
-            html += `<li><b>Event ${idx+1}</b>:`;
-            html += '<ul>';
-            Object.entries(eventObj).forEach(([key, value]) => {
-                html += `<li><code>${key}</code>: <span>${value}</span></li>`;
-            });
+            // Finde das zugehörige Formular
+            const forms = document.querySelectorAll('.eventForm');
+            const form = forms[idx];
+            html += `<li class="list-group-item">
+                <b>Event ${idx+1}</b>:
+                <ul class="mb-1">`;
+            // Prüfe relevante Felder
+            html += checkFieldMapping(form, '.summary', eventObj['SUMMARY'], 'SUMMARY');
+            html += checkFieldMapping(form, '.description', eventObj['DESCRIPTION'], 'DESCRIPTION');
+            html += checkFieldMapping(form, '.location', eventObj['LOCATION'], 'LOCATION');
+            html += checkFieldMapping(form, '.startDate', eventObj['DTSTART'] ? parseICSDateTime(eventObj['DTSTART']).date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') : '', 'DTSTART (Datum)');
+            html += checkFieldMapping(form, '.startTime', eventObj['DTSTART'] ? parseICSDateTime(eventObj['DTSTART']).time : '', 'DTSTART (Zeit)');
+            html += checkFieldMapping(form, '.endDate', eventObj['DTEND'] ? parseICSDateTime(eventObj['DTEND']).date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') : '', 'DTEND (Datum)');
+            html += checkFieldMapping(form, '.endTime', eventObj['DTEND'] ? parseICSDateTime(eventObj['DTEND']).time : '', 'DTEND (Zeit)');
+            html += checkFieldMapping(form, '.url', eventObj['URL'], 'URL');
+            html += checkFieldMapping(form, '.attachment', eventObj['ATTACH'], 'ATTACH');
+            html += checkFieldMapping(form, '.reminderTime', eventObj['REMINDER'], 'REMINDER');
+            // Ganztägig-Feld prüfen
+            let allDayExpected = '';
+            if (eventObj['DTSTART']) {
+                const dt = parseICSDateTime(eventObj['DTSTART']);
+                allDayExpected = dt.time ? false : true;
+            }
+            const allDayInput = form ? form.querySelector('.allDay') : null;
+            let allDayActual = allDayInput ? allDayInput.checked : false;
+            html += `<li>${(allDayActual === allDayExpected) ? "<span class='text-success'><i class='bi bi-check-circle-fill'></i></span>" : "<span class='text-danger'><i class='bi bi-x-circle-fill'></i></span>"} <code>Ganztägiger Termin</code>: <b>${allDayExpected ? 'Ja' : 'Nein'}</b></li>`;
             html += '</ul></li>';
         });
-        html += `</ul>
-              </div>
-            </div>
-          </div>
-        </div>`;
+        html += '</ul>';
         mappingDiv.innerHTML = html;
         mappingDiv.classList.remove('d-none');
     }
@@ -253,11 +283,15 @@ function importEventsToUI() {
 
 function checkFieldMapping(form, selector, expected, icsKey) {
     const input = form.querySelector(selector);
-    if (!input) return `<li><code>${icsKey}</code>: Kein passendes Feld gefunden <span style='color:red'>&#10060;</span></li>`;
-    const val = input.value;
-    const match = val == expected;
-    return `<li><code>${icsKey}</code> → <code>${selector}</code>: <b>${expected || '(leer)'}</b> ${match ? "<span style='color:green'>&#10004;</span>" : "<span style='color:red'>&#10060;</span>"}</li>`;
+    let val = input ? input.value : '';
+    // Für Checkboxen wie .allDay: checked statt value
+    if (input && input.type === 'checkbox') val = input.checked;
+    const match = (val == expected);
+    return `<li>${match ? "<span class='text-success'><i class='bi bi-check-circle-fill'></i></span>" : "<span class='text-danger'><i class='bi bi-x-circle-fill'></i></span>"} <code>${icsKey}</code> → <code>${selector}</code>: <b>${expected !== undefined && expected !== null && expected !== '' ? expected : '(leer)'}</b></li>`;
 }
+
+// Optional: Mapping-Erklärung als Hilfetext einfügen, z.B. beim Anzeigen des Mapping-Resultats:
+// document.getElementById('icsMappingResult').innerHTML = `<div class='mapping-explanation'>Hier sehen Sie, wie die Felder aus Ihrer ICS-Datei auf das Formular gemappt wurden.</div>` + mappingHtml;
 
 export function initializeICSImportModal() {
     const openBtn = document.getElementById('importICSBtn');
@@ -270,6 +304,9 @@ export function initializeICSImportModal() {
         modalEl.querySelector('#icsValidationResult').innerHTML = '';
         modalEl.querySelector('#importSuccess').classList.add('d-none');
         modalEl.querySelector('#confirmICSImportBtn').disabled = true;
+        // Footer-Buttons wieder einblenden, falls sie ausgeblendet waren
+        const modalFooter = modalEl.querySelector('.modal-footer');
+        if (modalFooter) modalFooter.classList.remove('d-none');
         fileInput.value = '';
         // Bootstrap 4-kompatibles Öffnen des Modals
         if (window.$ && typeof $(modalEl).modal === 'function') {

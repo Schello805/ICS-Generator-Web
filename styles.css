@@ -1,4 +1,39 @@
 /* Basis-Styles */
+
+/* Mapping-Akkordeon & Mapping-Result Styles */
+#icsMappingResult ul {
+  list-style: none;
+  padding-left: 0;
+}
+#icsMappingResult li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+#icsMappingResult code {
+  background: #f8f9fa;
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.95em;
+}
+#icsMappingResult .text-success {
+  color: #198754 !important;
+}
+#icsMappingResult .text-danger {
+  color: #dc3545 !important;
+}
+#icsMappingResult .bi {
+  font-size: 1.1em;
+  vertical-align: -0.1em;
+}
+#icsMappingResult .mapping-explanation {
+  font-size: 0.97em;
+  color: #666;
+  margin-bottom: 0.5em;
+}
+
 :root {
     --primary-color: #0d6efd;
     --primary-hover: #0b5ed7;

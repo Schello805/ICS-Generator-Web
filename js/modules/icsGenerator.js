@@ -198,12 +198,20 @@ export async function createICSCalendar(events) {
             }
             
             // Anhang
-            const attachmentFile = event.querySelector('.attachment')?.files?.[0];
+            const attachmentInput = event.querySelector('.attachment');
+            const attachmentFile = attachmentInput?.files?.[0];
             if (attachmentFile) {
                 const attachment = await processAttachment(attachmentFile);
                 if (attachment) {
                     icsContent += `ATTACH;FMTTYPE=${attachment.mime}:data:${attachment.mime};base64,${attachment.data}\r\n`;
                 }
+            } else if (attachmentInput && attachmentInput.value) {
+                // Wenn eine URL eingegeben wurde, als ATTACH exportieren
+                let url = attachmentInput.value.trim();
+                if (!/^https?:\/\//i.test(url)) {
+                    url = 'https://' + url;
+                }
+                icsContent += `ATTACH:${url}\r\n`;
             }
             
             icsContent += 'END:VEVENT\r\n';

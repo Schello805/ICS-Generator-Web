@@ -66,7 +66,7 @@ export const generateUID = () => {
     try {
         const timestamp = new Date().getTime();
         const random = Math.random().toString(36).substring(2, 9);
-        return `${timestamp}-${random}@icsgenerator.local`;
+        return `${timestamp}-${random}?@ics-generator.de`;
     } catch (error) {
         console.error('Error generating UID:', error);
         throw error;
