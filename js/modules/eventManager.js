@@ -14,16 +14,14 @@ document.addEventListener('click', (e) => {
 
 /**
  * Diese Funktion kann sowohl zum Kopieren eines bestehenden Termins als auch zum Erstellen eines neuen Termins verwendet werden.
- * 
- * Wenn ein Event-Element übergeben wird:
+ * * Wenn ein Event-Element übergeben wird:
  * - Kopiert alle Formularwerte vom Original-Termin
  * - Fügt den neuen Termin direkt nach dem Original ein
- * 
- * Wenn kein Event-Element übergeben wird:
+ * * Wenn kein Event-Element übergeben wird:
  * - Erstellt einen neuen, leeren Termin
  * - Fügt ihn am Ende der Liste hinzu
- * 
- * @param {HTMLElement} [event] - Optional: Das Event-Element, das kopiert werden soll
+ * * @param {HTMLElement} [event] - Optional: Das Event-Element, das kopiert werden soll
+ * @returns {HTMLElement} Die neu erstellte .card-Element
  * @throws {Error} Wenn das Template nicht gefunden wird oder beim Kopieren ein Fehler auftritt
  */
 export const duplicateEvent = (event = null) => {
@@ -35,7 +33,8 @@ export const duplicateEvent = (event = null) => {
         }
 
         // Erstelle neuen Event-Container
-        const newEvent = template.content.cloneNode(true);
+        const newEventFragment = template.content.cloneNode(true);
+        let newCard; // Variable für die neue Karte, die zurückgegeben wird
 
         if (event) {
             // Kopiere einen bestehenden Termin
@@ -47,13 +46,14 @@ export const duplicateEvent = (event = null) => {
             }
 
             // Füge den neuen Event nach dem aktuellen ein
-            eventContainer.parentNode.insertBefore(newEvent, eventContainer.nextSibling);
+            eventContainer.parentNode.insertBefore(newEventFragment, eventContainer.nextSibling);
+            newCard = eventContainer.nextElementSibling; // Die neue Karte ist der nächste Geschwister
 
             // Kopiere die Werte vom Original-Formular
-            const newForm = eventContainer.nextElementSibling.querySelector('.eventForm');
+            const newForm = newCard.querySelector('.eventForm');
             if (!newForm) {
                 console.error('New form not found');
-                return;
+                return; // newCard kann nicht verarbeitet werden
             }
 
             // Kopiere alle Input-, Select- und Textarea-Werte
@@ -69,7 +69,8 @@ export const duplicateEvent = (event = null) => {
                 console.error('Events container not found');
                 return;
             }
-            eventsContainer.appendChild(newEvent);
+            eventsContainer.appendChild(newEventFragment);
+            newCard = eventsContainer.lastElementChild; // Die neue Karte ist das letzte Element
         }
 
         // Initialisiere die Datums- und Zeitfelder für den neuen Event
@@ -77,6 +78,8 @@ export const duplicateEvent = (event = null) => {
 
         // Aktualisiere die Event-Nummerierung
         updateEventNumbers();
+
+        return newCard; // <-- KORREKTUR: Gib die neu erstellte Karte zurück
 
     } catch (error) {
         console.error('Error duplicating event:', error);
