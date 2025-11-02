@@ -116,36 +116,36 @@ function handleICSFile(e) {
 
 function importEventsToUI() {
     if (!parsedEvents.length) return;
+    
+    // KORREKTUR: Alle bestehenden Formulare entfernen
     document.querySelectorAll('.eventForm').forEach(form => {
         const card = form.closest('.card');
         if (card) card.remove();
     });
+    
     const eventsContainer = document.getElementById('eventsContainer');
-    if (!eventsContainer.querySelector('.eventForm')) {
-        const tpl = document.getElementById('eventTemplate');
-        if (tpl && 'content' in tpl) {
-            const clone = document.importNode(tpl.content, true);
-            eventsContainer.appendChild(clone);
-        } else {
-            const addBtn = document.getElementById('addEvent');
-            if (addBtn) addBtn.click();
-        }
-    }
+
+    // KORREKTUR: Schleife durch alle geparsten Events
     parsedEvents.forEach((eventObj, idx) => {
-        let newEvent = duplicateEvent();
-        if (idx === 0) {
-            const firstForm = eventsContainer.querySelector('.eventForm');
-            if (firstForm && firstForm.querySelector('.summary').value === '') {
-                newEvent = firstForm.closest('.card');
-            }
+        
+        // KORREKTUR: Erstelle eine neue Karte. 'newEventCard' ist jetzt das HTML-Element
+        let newEventCard = duplicateEvent();
+        
+        if (!newEventCard) {
+            console.error(`Konnte Karte für Termin ${idx + 1} nicht erstellen.`);
+            return; // Gehe zum nächsten Termin in der Schleife
         }
-        if (!newEvent) return;
-        const form = newEvent.querySelector('.eventForm');
+        
+        const form = newEventCard.querySelector('.eventForm');
         if (!form) return;
+        
+        // --- Ab hier deine bestehende Mapping-Logik ---
+        
         // Standard-Felder
         if (eventObj['SUMMARY'] && form.querySelector('.summary')) form.querySelector('.summary').value = eventObj['SUMMARY'];
         if (eventObj['DESCRIPTION'] && form.querySelector('.description')) form.querySelector('.description').value = eventObj['DESCRIPTION'];
         if (eventObj['LOCATION'] && form.querySelector('.location')) form.querySelector('.location').value = eventObj['LOCATION'];
+        
         // DTSTART und DTEND aufteilen in Datum und Uhrzeit, Zeitzone berücksichtigen
         if (eventObj['DTSTART']) {
             const dt = parseICSDateTime(eventObj['DTSTART']);
@@ -170,6 +170,7 @@ function importEventsToUI() {
         }
         // Nach dem Setzen aller Felder: Zeitfelder je nach Ganztägig-Status aus-/einblenden
         if (typeof toggleDateTimeFields === 'function') toggleDateTimeFields(form);
+        
         // RRULE: Wiederholung korrekt auf Formularfelder mappen
         if (eventObj['RRULE']) {
             const rrule = eventObj['RRULE'];
@@ -210,6 +211,9 @@ function importEventsToUI() {
             form.querySelector('.reminderTime').value = eventObj['REMINDER'];
         }
     });
+    
+    // --- Ab hier deine Logik zur Erfolgsmeldung und Mapping-Anzeige ---
+    
     const importSuccessDiv = document.getElementById('importSuccess');
     if (importSuccessDiv) {
         importSuccessDiv.textContent = 'Import erfolgreich! Die Termine wurden übernommen.';
@@ -245,10 +249,15 @@ function importEventsToUI() {
         // Akkordeon einblenden
         const acc = document.getElementById('mappingAccordion');
         if (acc) acc.classList.remove('d-none');
+        
+        // KORREKTUR: Verwende die neu erstellten Formulare im DOM für die Überprüfung
+        const formsInDOM = document.querySelectorAll('.eventForm');
+        
         parsedEvents.forEach((eventObj, idx) => {
             // Finde das zugehörige Formular
-            const forms = document.querySelectorAll('.eventForm');
-            const form = forms[idx];
+            const form = formsInDOM[idx]; // Greife auf das Formular im DOM zu
+            if (!form) return; // Sicherheitshalber
+            
             html += `<li class="list-group-item">
                 <b>Event ${idx+1}</b>:
                 <ul class="mb-1">`;
@@ -280,6 +289,7 @@ function importEventsToUI() {
     }
     // Kein zusätzliches Timeout oder manuelles Entfernen von Klassen/Backdrops nötig, da Bootstrap 4 dies übernimmt
 }
+
 
 function checkFieldMapping(form, selector, expected, icsKey) {
     const input = form.querySelector(selector);
