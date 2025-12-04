@@ -76,8 +76,8 @@
     --bg-body: #121212;
     --bg-card: #1e1e1e;
     --bg-input: #2d2d2d;
-    --text-main: #e0e0e0;
-    --text-muted: #a0a0a0;
+    --text-main: #f0f0f0;
+    --text-muted: #adb5bd;
     --border-color: #404040;
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
@@ -98,6 +98,36 @@ body {
     background-color: var(--bg-body);
     color: var(--text-main);
     transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--text-main);
+}
+
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* Placeholder Contrast */
+::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 1;
+}
+
+/* Input Text Contrast */
+input,
+select,
+textarea {
+    color: var(--text-main) !important;
 }
 
 /* Card-Styling */

@@ -103,6 +103,7 @@ function initializeTheme() {
 
     function setTheme(theme) {
         html.setAttribute('data-theme', theme);
+        html.setAttribute('data-bs-theme', theme);
         localStorage.setItem('theme', theme);
 
         // Icon aktualisieren
