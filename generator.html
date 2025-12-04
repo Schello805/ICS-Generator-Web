@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Erstellen Sie ICS-Kalender-Dateien für Ihre Veranstaltungen">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net;
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
         font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
         img-src 'self' data: https:">
     <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://code.jquery.com">
-    
+
+
     <title>ICS Generator - Kalenderdateien einfach erstellen</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
+
 <body>
     <header id="header" class="sticky-top"></header>
     <main class="container mt-5">
@@ -33,10 +35,10 @@
 
         <!-- ICS Import Button und Modal -->
         <div class="d-flex gap-2 mb-3">
-          <button id="importICSBtn" class="btn btn-secondary" type="button">
-            <i class="fas fa-file-import me-1"></i> ICS importieren
-          </button>
-          <input type="file" id="icsFileInput" accept=".ics" style="display:none;" />
+            <button id="importICSBtn" class="btn btn-secondary" type="button">
+                <i class="fas fa-file-import me-1"></i> ICS importieren
+            </button>
+            <input type="file" id="icsFileInput" accept=".ics" style="display:none;" />
         </div>
 
         <div id="eventsContainer" role="region" aria-label="Termine">
@@ -45,10 +47,12 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h2 class="h5 card-title mb-0" id="event-title-1">Termin 1</h2>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-outline-primary btn-sm copyEvent me-1" title="Termin kopieren">
+                            <button type="button" class="btn btn-outline-primary btn-sm copyEvent me-1"
+                                title="Termin kopieren">
                                 <i class="fas fa-copy"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-danger btn-sm removeEvent" title="Termin löschen">
+                            <button type="button" class="btn btn-outline-danger btn-sm removeEvent"
+                                title="Termin löschen">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -62,9 +66,8 @@
                                     <span class="text-danger" aria-label="Pflichtfeld">*</span>
                                     <small class="text-muted ms-2">(Pflichtfeld)</small>
                                 </label>
-                                <input type="text" class="form-control form-control-sm summary" required 
-                                    id="summary1" name="summary" 
-                                    data-error="Bitte geben Sie einen Titel ein">
+                                <input type="text" class="form-control form-control-sm summary" required id="summary1"
+                                    name="summary" data-error="Bitte geben Sie einen Titel ein">
                             </div>
                         </div>
 
@@ -72,7 +75,8 @@
                         <div class="row mb-2">
                             <div class="col-12">
                                 <label class="form-label">Ort</label>
-                                <input type="text" class="form-control form-control-sm location" id="location1" name="location">
+                                <input type="text" class="form-control form-control-sm location" id="location1"
+                                    name="location">
                             </div>
                         </div>
 
@@ -83,9 +87,8 @@
                                     Startdatum
                                     <span class="text-danger" aria-label="Pflichtfeld">*</span>
                                 </label>
-                                <input type="date" class="form-control form-control-sm startDate" required 
-                                    id="startDate1" name="startDate"
-                                    data-error="Bitte wählen Sie ein Startdatum">
+                                <input type="date" class="form-control form-control-sm startDate" required
+                                    id="startDate1" name="startDate" data-error="Bitte wählen Sie ein Startdatum">
                                 <div class="form-check mt-2">
                                     <input type="checkbox" class="form-check-input allDay" id="allDay1" name="allDay">
                                     <label class="form-check-label">Ganztägig</label>
@@ -96,9 +99,8 @@
                                     Enddatum
                                     <span class="text-danger" aria-label="Pflichtfeld">*</span>
                                 </label>
-                                <input type="date" class="form-control form-control-sm endDate" required 
-                                    id="endDate1" name="endDate"
-                                    data-error="Bitte wählen Sie ein Enddatum">
+                                <input type="date" class="form-control form-control-sm endDate" required id="endDate1"
+                                    name="endDate" data-error="Bitte wählen Sie ein Enddatum">
                             </div>
                         </div>
 
@@ -107,20 +109,20 @@
                             <div class="col-md-6 time-field">
                                 <label class="form-label">
                                     Startzeit
-                                    <span class="text-danger time-required" aria-label="Pflichtfeld bei Terminen mit Uhrzeit">*</span>
+                                    <span class="text-danger time-required"
+                                        aria-label="Pflichtfeld bei Terminen mit Uhrzeit">*</span>
                                 </label>
-                                <input type="time" class="form-control form-control-sm startTime" 
-                                    id="startTime1" name="startTime"
-                                    data-error="Bitte wählen Sie eine Startzeit">
+                                <input type="time" class="form-control form-control-sm startTime" id="startTime1"
+                                    name="startTime" data-error="Bitte wählen Sie eine Startzeit">
                             </div>
                             <div class="col-md-6 time-field">
                                 <label class="form-label">
                                     Endzeit
-                                    <span class="text-danger time-required" aria-label="Pflichtfeld bei Terminen mit Uhrzeit">*</span>
+                                    <span class="text-danger time-required"
+                                        aria-label="Pflichtfeld bei Terminen mit Uhrzeit">*</span>
                                 </label>
-                                <input type="time" class="form-control form-control-sm endTime" 
-                                    id="endTime1" name="endTime"
-                                    data-error="Bitte wählen Sie eine Endzeit">
+                                <input type="time" class="form-control form-control-sm endTime" id="endTime1"
+                                    name="endTime" data-error="Bitte wählen Sie eine Endzeit">
                             </div>
                             <div class="col-12">
                                 <small class="text-muted">* Pflichtfeld bei Terminen mit Uhrzeit</small>
@@ -131,7 +133,8 @@
                         <div class="row mb-2">
                             <div class="col-12">
                                 <label class="form-label">Beschreibung</label>
-                                <textarea class="form-control form-control-sm description" rows="2" id="description1" name="description"></textarea>
+                                <textarea class="form-control form-control-sm description" rows="2" id="description1"
+                                    name="description"></textarea>
                             </div>
                         </div>
 
@@ -152,7 +155,8 @@
                                         <div class="col-md-6">
                                             <label class="form-label">Intervall</label>
                                             <div class="input-group">
-                                                <input type="number" class="form-control repeatInterval" value="1" min="1" id="repeatInterval1" name="repeatInterval">
+                                                <input type="number" class="form-control repeatInterval" value="1"
+                                                    min="1" id="repeatInterval1" name="repeatInterval">
                                                 <span class="input-group-text repeatIntervalLabel">Intervall</span>
                                             </div>
                                         </div>
@@ -162,26 +166,40 @@
                                     <div class="weeklySelector mb-2" style="display: none;">
                                         <label class="form-label">Wochentage</label>
                                         <div class="btn-group d-flex flex-wrap" role="group">
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-mo-1" value="MO" autocomplete="off" name="weekday-mo">
-                                            <label class="form-label btn btn-outline-primary" for="weekday-mo-1">Mo</label>
+                                            <input type="checkbox" class="btn-check weekday" id="weekday-mo-1"
+                                                value="MO" autocomplete="off" name="weekday-mo">
+                                            <label class="form-label btn btn-outline-primary"
+                                                for="weekday-mo-1">Mo</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-tu-1" value="TU" autocomplete="off" name="weekday-tu">
-                                            <label class="form-label btn btn-outline-primary" for="weekday-tu-1">Di</label>
+                                            <input type="checkbox" class="btn-check weekday" id="weekday-tu-1"
+                                                value="TU" autocomplete="off" name="weekday-tu">
+                                            <label class="form-label btn btn-outline-primary"
+                                                for="weekday-tu-1">Di</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-we-1" value="WE" autocomplete="off" name="weekday-we">
-                                            <label class="form-label btn btn-outline-primary" for="weekday-we-1">Mi</label>
+                                            <input type="checkbox" class="btn-check weekday" id="weekday-we-1"
+                                                value="WE" autocomplete="off" name="weekday-we">
+                                            <label class="form-label btn btn-outline-primary"
+                                                for="weekday-we-1">Mi</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-th-1" value="TH" autocomplete="off" name="weekday-th">
-                                            <label class="form-label btn btn-outline-primary" for="weekday-th-1">Do</label>
+                                            <input type="checkbox" class="btn-check weekday" id="weekday-th-1"
+                                                value="TH" autocomplete="off" name="weekday-th">
+                                            <label class="form-label btn btn-outline-primary"
+                                                for="weekday-th-1">Do</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-fr-1" value="FR" autocomplete="off" name="weekday-fr">
-                                            <label class="form-label btn btn-outline-primary" for="weekday-fr-1">Fr</label>
+                                            <input type="checkbox" class="btn-check weekday" id="weekday-fr-1"
+                                                value="FR" autocomplete="off" name="weekday-fr">
+                                            <label class="form-label btn btn-outline-primary"
+                                                for="weekday-fr-1">Fr</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-sa-1" value="SA" autocomplete="off" name="weekday-sa">
-                                            <label class="form-label btn btn-outline-primary" for="weekday-sa-1">Sa</label>
+                                            <input type="checkbox" class="btn-check weekday" id="weekday-sa-1"
+                                                value="SA" autocomplete="off" name="weekday-sa">
+                                            <label class="form-label btn btn-outline-primary"
+                                                for="weekday-sa-1">Sa</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-su-1" value="SU" autocomplete="off" name="weekday-su">
-                                            <label class="form-label btn btn-outline-primary" for="weekday-su-1">So</label>
+                                            <input type="checkbox" class="btn-check weekday" id="weekday-su-1"
+                                                value="SU" autocomplete="off" name="weekday-su">
+                                            <label class="form-label btn btn-outline-primary"
+                                                for="weekday-su-1">So</label>
                                         </div>
                                     </div>
 
@@ -199,13 +217,16 @@
                                         <div class="col-12">
                                             <label class="form-label">Ende der Wiederholung</label>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input repeatEndType" name="repeatEndType1" value="never" checked>
+                                                <input type="radio" class="form-check-input repeatEndType"
+                                                    name="repeatEndType1" value="never" checked>
                                                 <label class="form-check-label">Nie</label>
                                             </div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input repeatEndType" name="repeatEndType1" value="until">
+                                                <input type="radio" class="form-check-input repeatEndType"
+                                                    name="repeatEndType1" value="until">
                                                 <label class="form-check-label">Bis zum</label>
-                                                <input type="date" class="form-control form-control-sm mt-2 repeatUntil" name="repeatUntil">
+                                                <input type="date" class="form-control form-control-sm mt-2 repeatUntil"
+                                                    name="repeatUntil">
                                             </div>
                                         </div>
                                     </div>
@@ -233,8 +254,10 @@
                         <div class="row mb-2">
                             <div class="col-12">
                                 <label class="form-label">Meeting-URL</label>
-                                <input type="url" class="form-control form-control-sm url" id="url1" name="url" placeholder="https://meeting-link.de">
-                                <small class="text-muted">Link zur Veranstaltung oder zum Online-Meeting (z.B. Zoom, Teams, Jitsi)</small>
+                                <input type="url" class="form-control form-control-sm url" id="url1" name="url"
+                                    placeholder="https://meeting-link.de">
+                                <small class="text-muted">Link zur Veranstaltung oder zum Online-Meeting (z.B. Zoom,
+                                    Teams, Jitsi)</small>
                             </div>
                         </div>
 
@@ -242,7 +265,8 @@
                         <div class="row mb-2">
                             <div class="col-12">
                                 <label class="form-label">Anhang-URL</label>
-                                <input type="url" class="form-control form-control-sm attachment" id="attachment1" name="attachment" placeholder="https://datei-link.de">
+                                <input type="url" class="form-control form-control-sm attachment" id="attachment1"
+                                    name="attachment" placeholder="https://datei-link.de">
                                 <small class="text-muted">Link zu einer Datei (z.B. PDF, Bild, etc.)</small>
                             </div>
                         </div>
@@ -257,10 +281,12 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h2 class="h5 card-title mb-0">Termin</h2>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-outline-primary btn-sm copyEvent me-1" title="Termin kopieren">
+                            <button type="button" class="btn btn-outline-primary btn-sm copyEvent me-1"
+                                title="Termin kopieren">
                                 <i class="fas fa-copy"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-danger btn-sm removeEvent" title="Termin löschen">
+                            <button type="button" class="btn btn-outline-danger btn-sm removeEvent"
+                                title="Termin löschen">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -274,7 +300,7 @@
                                     <span class="text-danger" aria-label="Pflichtfeld">*</span>
                                     <small class="text-muted ms-2">(Pflichtfeld)</small>
                                 </label>
-                                <input type="text" class="form-control form-control-sm summary" required name="summary" 
+                                <input type="text" class="form-control form-control-sm summary" required name="summary"
                                     data-error="Bitte geben Sie einen Titel ein">
                             </div>
                         </div>
@@ -294,8 +320,8 @@
                                     Startdatum
                                     <span class="text-danger" aria-label="Pflichtfeld">*</span>
                                 </label>
-                                <input type="date" class="form-control form-control-sm startDate" required name="startDate"
-                                    data-error="Bitte wählen Sie ein Startdatum">
+                                <input type="date" class="form-control form-control-sm startDate" required
+                                    name="startDate" data-error="Bitte wählen Sie ein Startdatum">
                                 <div class="form-check mt-2">
                                     <input type="checkbox" class="form-check-input allDay" name="allDay">
                                     <label class="form-check-label">Ganztägig</label>
@@ -316,19 +342,19 @@
                             <div class="col-md-6 time-field">
                                 <label class="form-label">
                                     Startzeit
-                                    <span class="text-danger time-required" aria-label="Pflichtfeld bei Terminen mit Uhrzeit">*</span>
+                                    <span class="text-danger time-required"
+                                        aria-label="Pflichtfeld bei Terminen mit Uhrzeit">*</span>
                                 </label>
-                                <input type="time" class="form-control form-control-sm startTime" 
-                                    name="startTime"
+                                <input type="time" class="form-control form-control-sm startTime" name="startTime"
                                     data-error="Bitte wählen Sie eine Startzeit">
                             </div>
                             <div class="col-md-6 time-field">
                                 <label class="form-label">
                                     Endzeit
-                                    <span class="text-danger time-required" aria-label="Pflichtfeld bei Terminen mit Uhrzeit">*</span>
+                                    <span class="text-danger time-required"
+                                        aria-label="Pflichtfeld bei Terminen mit Uhrzeit">*</span>
                                 </label>
-                                <input type="time" class="form-control form-control-sm endTime" 
-                                    name="endTime"
+                                <input type="time" class="form-control form-control-sm endTime" name="endTime"
                                     data-error="Bitte wählen Sie eine Endzeit">
                             </div>
                             <div class="col-12">
@@ -340,7 +366,8 @@
                         <div class="row mb-2">
                             <div class="col-12">
                                 <label class="form-label">Beschreibung</label>
-                                <textarea class="form-control form-control-sm description" rows="2" name="description"></textarea>
+                                <textarea class="form-control form-control-sm description" rows="2"
+                                    name="description"></textarea>
                             </div>
                         </div>
 
@@ -361,7 +388,8 @@
                                         <div class="col-md-6">
                                             <label class="form-label">Intervall</label>
                                             <div class="input-group">
-                                                <input type="number" class="form-control repeatInterval" value="1" min="1" name="repeatInterval">
+                                                <input type="number" class="form-control repeatInterval" value="1"
+                                                    min="1" name="repeatInterval">
                                                 <span class="input-group-text repeatIntervalLabel">Intervall</span>
                                             </div>
                                         </div>
@@ -371,25 +399,32 @@
                                     <div class="weeklySelector mb-2" style="display: none;">
                                         <label class="form-label">Wochentage</label>
                                         <div class="btn-group d-flex flex-wrap" role="group">
-                                            <input type="checkbox" class="btn-check weekday" value="MO" autocomplete="off" name="weekday-mo">
+                                            <input type="checkbox" class="btn-check weekday" value="MO"
+                                                autocomplete="off" name="weekday-mo">
                                             <label class="btn btn-outline-primary">Mo</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="TU" autocomplete="off" name="weekday-tu">
+                                            <input type="checkbox" class="btn-check weekday" value="TU"
+                                                autocomplete="off" name="weekday-tu">
                                             <label class="btn btn-outline-primary">Di</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="WE" autocomplete="off" name="weekday-we">
+                                            <input type="checkbox" class="btn-check weekday" value="WE"
+                                                autocomplete="off" name="weekday-we">
                                             <label class="btn btn-outline-primary">Mi</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="TH" autocomplete="off" name="weekday-th">
+                                            <input type="checkbox" class="btn-check weekday" value="TH"
+                                                autocomplete="off" name="weekday-th">
                                             <label class="btn btn-outline-primary">Do</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="FR" autocomplete="off" name="weekday-fr">
+                                            <input type="checkbox" class="btn-check weekday" value="FR"
+                                                autocomplete="off" name="weekday-fr">
                                             <label class="btn btn-outline-primary">Fr</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="SA" autocomplete="off" name="weekday-sa">
+                                            <input type="checkbox" class="btn-check weekday" value="SA"
+                                                autocomplete="off" name="weekday-sa">
                                             <label class="btn btn-outline-primary">Sa</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="SU" autocomplete="off" name="weekday-su">
+                                            <input type="checkbox" class="btn-check weekday" value="SU"
+                                                autocomplete="off" name="weekday-su">
                                             <label class="btn btn-outline-primary">So</label>
                                         </div>
                                     </div>
@@ -408,13 +443,16 @@
                                         <div class="col-12">
                                             <label class="form-label">Ende der Wiederholung</label>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input repeatEndType" name="repeatEndType" value="never" checked>
+                                                <input type="radio" class="form-check-input repeatEndType"
+                                                    name="repeatEndType" value="never" checked>
                                                 <label class="form-check-label">Nie</label>
                                             </div>
                                             <div class="form-check">
-                                                <input type="radio" class="form-check-input repeatEndType" name="repeatEndType" value="until">
+                                                <input type="radio" class="form-check-input repeatEndType"
+                                                    name="repeatEndType" value="until">
                                                 <label class="form-check-label">Bis zum</label>
-                                                <input type="date" class="form-control form-control-sm mt-2 repeatUntil" name="repeatUntil">
+                                                <input type="date" class="form-control form-control-sm mt-2 repeatUntil"
+                                                    name="repeatUntil">
                                             </div>
                                         </div>
                                     </div>
@@ -442,8 +480,10 @@
                         <div class="row mb-2">
                             <div class="col-12">
                                 <label class="form-label">Meeting-URL</label>
-                                <input type="url" class="form-control form-control-sm url" name="url" placeholder="https://meeting-link.de">
-                                <small class="text-muted">Link zur Veranstaltung oder zum Online-Meeting (z.B. Zoom, Teams, Jitsi)</small>
+                                <input type="url" class="form-control form-control-sm url" name="url"
+                                    placeholder="https://meeting-link.de">
+                                <small class="text-muted">Link zur Veranstaltung oder zum Online-Meeting (z.B. Zoom,
+                                    Teams, Jitsi)</small>
                             </div>
                         </div>
 
@@ -451,7 +491,8 @@
                         <div class="row mb-2">
                             <div class="col-12">
                                 <label class="form-label">Anhang-URL</label>
-                                <input type="url" class="form-control form-control-sm attachment" name="attachment" placeholder="https://datei-link.de">
+                                <input type="url" class="form-control form-control-sm attachment" name="attachment"
+                                    placeholder="https://datei-link.de">
                                 <small class="text-muted">Link zu einer Datei (z.B. PDF, Bild, etc.)</small>
                             </div>
                         </div>
@@ -461,45 +502,52 @@
         </template>
 
         <!-- Modal für Validierung und Import -->
-        <div class="modal fade" id="icsImportModal" tabindex="-1" aria-labelledby="icsImportModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="icsImportModalLabel">ICS-Datei importieren</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <input type="file" id="icsFileInputModal" accept=".ics" class="form-control mb-3" />
-                <div id="icsValidationResult"></div>
-                <div id="importSuccess" class="alert alert-success d-none mt-3"></div>
-                <div class="accordion mt-3 d-none" id="mappingAccordion">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingMapping">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMapping" aria-expanded="false" aria-controls="collapseMapping">
-        Feld-Mapping &amp; Prüfung
-      </button>
-    </h2>
-    <div id="collapseMapping" class="accordion-collapse collapse" aria-labelledby="headingMapping" data-bs-parent="#mappingAccordion">
-      <div class="accordion-body p-3" id="icsMappingResult">
-        <!-- Mapping-Resultat wird hier dynamisch eingefügt -->
-      </div>
-    </div>
-  </div>
-</div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-                <button type="button" class="btn btn-success" id="confirmICSImportBtn" disabled>Importieren</button>
-              </div>
+        <div class="modal fade" id="icsImportModal" tabindex="-1" aria-labelledby="icsImportModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="icsImportModalLabel">ICS-Datei importieren</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="file" id="icsFileInputModal" accept=".ics" class="form-control mb-3" />
+                        <div id="icsValidationResult"></div>
+                        <div id="importSuccess" class="alert alert-success d-none mt-3"></div>
+                        <div class="accordion mt-3 d-none" id="mappingAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingMapping">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseMapping" aria-expanded="false"
+                                        aria-controls="collapseMapping">
+                                        Feld-Mapping &amp; Prüfung
+                                    </button>
+                                </h2>
+                                <div id="collapseMapping" class="accordion-collapse collapse"
+                                    aria-labelledby="headingMapping" data-bs-parent="#mappingAccordion">
+                                    <div class="accordion-body p-3" id="icsMappingResult">
+                                        <!-- Mapping-Resultat wird hier dynamisch eingefügt -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                        <button type="button" class="btn btn-success" id="confirmICSImportBtn"
+                            disabled>Importieren</button>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
 
         <div class="btn-group mb-4">
-            <button class="btn btn-primary me-2" id="downloadICS" data-bs-toggle="tooltip" data-bs-placement="top" title="Lädt die ICS-Datei herunter">
+            <button class="btn btn-primary me-2" id="downloadICS" data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Lädt die ICS-Datei herunter">
                 <i class="fas fa-download" aria-hidden="true"></i> ICS herunterladen
             </button>
-            <button class="btn btn-success" id="addEvent" data-bs-toggle="tooltip" data-bs-placement="top" title="Fügt einen weiteren Termin hinzu">
+            <button class="btn btn-success" id="addEvent" data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Fügt einen weiteren Termin hinzu">
                 <i class="fas fa-plus" aria-hidden="true"></i> Termin hinzufügen
             </button>
         </div>
@@ -508,10 +556,8 @@
     <div id="footer"></div>
 
     <!-- JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/components.js"></script>
-    <script src="js/headerLoader.js"></script>
     <script type="module">
         import { initializeGenerator } from './js/modules/generatorInit.js';
         initializeGenerator();
@@ -519,4 +565,5 @@
     <script type="module" src="js/components.js"></script>
     <script type="module" src="js/icsImportInit.js"></script>
 </body>
+
 </html>

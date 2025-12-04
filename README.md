@@ -118,8 +118,8 @@ Jeder Termin wird in einer Bootstrap-Card dargestellt mit:
 - "Termin hinzufügen" (`#addEvent`)
 
 #### JavaScript-Einbindung
-- Bootstrap 5.1.3
-- jQuery 3.6.0
+- Bootstrap 5.3.2
+
 - Font Awesome 5.15.4
 - Eigene Module:
   - `components.js`
@@ -129,7 +129,7 @@ Jeder Termin wird in einer Bootstrap-Card dargestellt mit:
   - `eventHandlers.js`
 
 #### CSS und Styling
-- Bootstrap 5.1.3 Basis-Klassen
+- Bootstrap 5.3.2 Basis-Klassen
 - Eigene Styles in `styles.css`
 - Responsive Layout mit Bootstrap-Grid
 - Kompakte Darstellung durch `form-control-sm`
@@ -137,7 +137,6 @@ Jeder Termin wird in einer Bootstrap-Card dargestellt mit:
 #### Sicherheit
 - Content Security Policy (CSP) definiert
 - Sichere Ressourcen-Einbindung
-- WebSocket-Verbindung für Live-Features
 
 #### Meta-Informationen
 - Deutsch als Sprache
@@ -165,7 +164,6 @@ Tool zur Überprüfung bestehender ICS-Dateien auf Konformität mit dem iCalenda
 #### Footer (components/footer.html)
 - Copyright-Informationen
 - Links zu Impressum und Datenschutz
-- Aktuelle Besucherzahl (via WebSocket)
 
 ## Setup
 
@@ -194,7 +192,7 @@ php -S localhost:8000
 
 ### Verwendete Technologien
 - HTML5
-- CSS3 mit Bootstrap 4.5.2
+- CSS3 mit Bootstrap 5.3.2
 - JavaScript (ES6+)
 - Font Awesome 5.15.4
 
@@ -239,7 +237,7 @@ Bei Fragen oder Problemen können Sie mich erreichen unter:
 - Spezielle Validierung für Wiederholungsoptionen
 
 ### CSS-Klassen
-- Bootstrap 5.1.3 als Basis-Framework
+- Bootstrap 5.3.2 als Basis-Framework
 - Eigene Styles in `styles.css`
 - Responsive Design mit col-* Klassen
 - Formular-Styling mit form-control-sm für kompakte Darstellung

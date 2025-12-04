@@ -109,8 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const link = navBtn.querySelector('a');
                 if (document.getElementById('icsImportModal')) {
                     // Modal existiert, öffne es
-                    link && link.setAttribute('data-toggle', 'modal');
-                    link && link.setAttribute('data-target', '#icsImportModal');
+                    link && link.setAttribute('data-bs-toggle', 'modal');
+                    link && link.setAttribute('data-bs-target', '#icsImportModal');
                     link && link.click();
                 } else {
                     window.location.href = 'generator.html#icsImport';

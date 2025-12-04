@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="description" content="Erstellen Sie einzelne oder wiederkehrende Kalenderereignisse und exportieren Sie diese als ICS-Datei">
+
+    <meta name="description"
+        content="Erstellen Sie einzelne oder wiederkehrende Kalenderereignisse und exportieren Sie diese als ICS-Datei">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         connect-src 'self' https://ics-generator.com;
         style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net;
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
         font-src 'self' https://cdnjs.cloudflare.com;
         img-src 'self' data: https:">
     <title>ICS Tools - Kalenderdateien einfach erstellen</title>
@@ -23,7 +24,7 @@
     <link rel="preload" href="styles.css" as="style">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    
+
 </head>
 
 <body>
@@ -36,32 +37,42 @@
                     Erstellen und validieren Sie Kalenderdateien im iCalendar-Format
                 </p>
                 <div class="btn-group mb-4" role="group" aria-label="Hauptfunktionen">
-                    <a href="generator.html" class="btn btn-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s" role="button">
-                        <i class="fas fa-calendar-plus" aria-hidden="true"></i> 
+                    <a href="generator.html"
+                        class="btn btn-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s"
+                        role="button">
+                        <i class="fas fa-calendar-plus" aria-hidden="true"></i>
                         <span>Termine erstellen</span>
                     </a>
-                    <a href="validator.html" class="btn btn-outline-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s">
+                    <a href="validator.html"
+                        class="btn btn-outline-primary btn-lg animate__animated animate__fadeInLeft animate__delay-1s">
                         <i class="fas fa-check-circle"></i> ICS validieren
                     </a>
-                    <a href="generator.html#icsImport" class="btn btn-outline-success btn-lg animate__animated animate__fadeInLeft animate__delay-1s" id="index-import-btn">
+                    <a href="generator.html#icsImport"
+                        class="btn btn-outline-success btn-lg animate__animated animate__fadeInLeft animate__delay-1s"
+                        id="index-import-btn">
                         <i class="fas fa-file-import"></i> ICS importieren
                     </a>
                 </div>
             </div>
         </div>
         <h4 class="animate__animated animate__fadeIn animate__delay-2s">Erstelle mühelos iCalendar-Einladungen</h4>
-        <p>Suchst du nach einer einfachen Möglichkeit, iCalendar-Einladungen mit Anhängen oder relevanten URLs zu erstellen? Dann ist mein Programm genau das Richtige für dich! Mit dieser benutzerfreundlichen Anwendung kannst du im Handumdrehen einzelne oder mehrere Termine planen und direkt in eine iCalendar-Datei (.ics) exportieren.</p>
+        <p>Suchst du nach einer einfachen Möglichkeit, iCalendar-Einladungen mit Anhängen oder relevanten URLs zu
+            erstellen? Dann ist mein Programm genau das Richtige für dich! Mit dieser benutzerfreundlichen Anwendung
+            kannst du im Handumdrehen einzelne oder mehrere Termine planen und direkt in eine iCalendar-Datei (.ics)
+            exportieren.</p>
 
         <div class="accordion mb-4" id="solutionsAccordion">
             <!-- Lösung 1: ICS Datei -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                         📅 Lösung 1: Termine als ICS-Datei bereitstellen
                     </button>
                 </h2>
 
-                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#solutionsAccordion">
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                    data-bs-parent="#solutionsAccordion">
                     <div class="accordion-body bg-light">
                         <h5>Der einfache Weg</h5>
                         <p>Erstellen und teilen Sie Termine mit allen Beteiligten in wenigen Schritten:</p>
@@ -97,7 +108,9 @@
 
                         <div class="alert alert-success mt-3">
                             <strong>Perfekt für:</strong>
-                            <p class="mb-0">Schuljahresplanung, Ferienzeiten, Elternabende, Schulfeste, Klassenarbeiten und alle weiteren festen Termine des Schuljahres. Eine einmalige Erstellung spart hunderten Eltern wertvolle Zeit beim manuellen Eintragen!</p>
+                            <p class="mb-0">Schuljahresplanung, Ferienzeiten, Elternabende, Schulfeste, Klassenarbeiten
+                                und alle weiteren festen Termine des Schuljahres. Eine einmalige Erstellung spart
+                                hunderten Eltern wertvolle Zeit beim manuellen Eintragen!</p>
                         </div>
                     </div>
                 </div>
@@ -106,14 +119,17 @@
             <!-- Lösung 2: Kalender-Abo -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                         🔄 Lösung 2: Kalender als Abonnement anbieten
                     </button>
                 </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#solutionsAccordion">
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#solutionsAccordion">
                     <div class="accordion-body bg-light">
                         <h5>Der dynamische Weg</h5>
-                        <p>Noch einen Schritt weiter: Stellen Sie Ihren Kalender als Abonnement zur Verfügung. Das bedeutet:</p>
+                        <p>Noch einen Schritt weiter: Stellen Sie Ihren Kalender als Abonnement zur Verfügung. Das
+                            bedeutet:</p>
 
                         <div class="row">
                             <div class="col-md-6">
@@ -146,7 +162,11 @@
 
                         <div class="alert alert-info mt-3">
                             <strong>So funktioniert's:</strong>
-                            <p class="mb-0">Erstellen Sie einen Online-Kalender (z.B. in Google Calendar oder Apple iCloud) und teilen Sie den Abo-Link mit den Eltern. Sobald diese den Link in ihrer Kalender-App hinzufügen, werden alle Termine automatisch synchronisiert. Bei Änderungen oder neuen Terminen wird der Kalender aller Eltern automatisch aktualisiert - ganz ohne zusätzlichen Aufwand!</p>
+                            <p class="mb-0">Erstellen Sie einen Online-Kalender (z.B. in Google Calendar oder Apple
+                                iCloud) und teilen Sie den Abo-Link mit den Eltern. Sobald diese den Link in ihrer
+                                Kalender-App hinzufügen, werden alle Termine automatisch synchronisiert. Bei Änderungen
+                                oder neuen Terminen wird der Kalender aller Eltern automatisch aktualisiert - ganz ohne
+                                zusätzlichen Aufwand!</p>
                         </div>
                     </div>
                 </div>
@@ -158,14 +178,8 @@
 
     <!-- Bootstrap JS und zusätzliche Abhängigkeiten -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/components.js" type="module"></script>
     <script src="script.js" type="module"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-    <script src="js/components.js"></script>
-    <script src="js/headerLoader.js"></script>
 </body>
 
 </html>

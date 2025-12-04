@@ -10,7 +10,7 @@
 
 export function initializeValidator() {
     console.log('Initialisiere Validator...');
-    
+
     const fileInput = document.getElementById('icsFileInput');
     const validateButton = document.getElementById('validateButton');
     const resultDiv = document.getElementById('validationResult');
@@ -30,7 +30,7 @@ export function initializeValidator() {
 
     validateButton.addEventListener('click', () => {
         console.log('Validierungs-Button geklickt');
-        
+
         const file = fileInput.files[0];
         if (!file) {
             showValidationMessage('Bitte wählen Sie eine ICS-Datei aus.', 'warning');
@@ -98,7 +98,7 @@ function showValidationMessage(message, type) {
 }
 
 function updateValidationStatus(section, status) {
-    const statusElement = document.querySelector(`[data-target="#${section}Collapse"] .validation-status`);
+    const statusElement = document.querySelector(`[data-bs-target="#${section}Collapse"] .validation-status`);
     if (statusElement) {
         statusElement.className = 'validation-status ' + status;
     }
@@ -130,11 +130,11 @@ export function validateICS(icsContent) {
     const lines = icsContent.split(/\r\n|\n|\r/);
     const errors = [];
     const warnings = [];
-    
+
     // Reset validation status and messages
     resetValidationStatus();
     clearSectionMessages();
-    
+
     // Validate core properties
     let hasCore = false;
     let coreValid = true;
@@ -156,7 +156,7 @@ export function validateICS(icsContent) {
         showSectionMessage('coreProperties', 'Alle Kern-Properties sind gültig', 'success');
     }
     updateValidationStatus('coreProperties', hasCore ? (coreValid ? 'success' : 'error') : 'warning');
-    
+
     // Validate extended properties
     let hasExtended = false;
     let extendedValid = true;
@@ -178,7 +178,7 @@ export function validateICS(icsContent) {
         showSectionMessage('extendedProperties', 'Alle erweiterten Properties sind gültig', 'success');
     }
     updateValidationStatus('extendedProperties', hasExtended ? (extendedValid ? 'success' : 'error') : 'warning');
-    
+
     // Validate special properties
     let hasSpecial = false;
     let specialValid = true;
@@ -200,14 +200,14 @@ export function validateICS(icsContent) {
         showSectionMessage('specialValidation', 'Alle speziellen Properties sind gültig', 'success');
     }
     updateValidationStatus('specialValidation', hasSpecial ? (specialValid ? 'success' : 'error') : 'warning');
-    
+
     // Additional checks
     let additionalValid = true;
     let additionalMessages = [];
     lines.forEach((line, index) => {
         const lineNumber = index + 1;
         const validation = validateICSLine(line);
-        
+
         if (validation === false) {
             errors.push(`Zeile ${lineNumber}: Ungültige Property-Syntax in "${line}"`);
             additionalValid = false;
@@ -217,7 +217,7 @@ export function validateICS(icsContent) {
             additionalMessages.push(`Zeile ${lineNumber}: Unbekannte Property "${line.split(/[;:]/)[0]}"`);
         }
     });
-    
+
     if (additionalMessages.length > 0) {
         additionalMessages.forEach(msg => {
             showSectionMessage('additionalChecks', msg, additionalValid ? 'warning' : 'error');
@@ -226,7 +226,7 @@ export function validateICS(icsContent) {
         showSectionMessage('additionalChecks', 'Keine zusätzlichen Probleme gefunden', 'success');
     }
     updateValidationStatus('additionalChecks', additionalValid ? 'success' : (warnings.length > 0 ? 'warning' : 'error'));
-    
+
     return { errors, warnings };
 }
 
@@ -254,14 +254,14 @@ function validateICSLine(line) {
     }
 
     // Ignoriere Google-spezifische Zeilen
-    if (line.includes('hangouts.google.com') || 
+    if (line.includes('hangouts.google.com') ||
         line.includes('~:~:~:~:~:~') ||
         line.includes('calendar/') ||
         /[a-zA-Z0-9]{20,}/.test(line)) {
         // console.log('Google-spezifische Zeile ignoriert');
         return true;
     }
-    
+
     // Liste der Kern-Properties nach RFC 5545
     const coreProperties = [
         'BEGIN:VCALENDAR',
@@ -276,7 +276,7 @@ function validateICSLine(line) {
         'END:VEVENT',
         'END:VCALENDAR'
     ];
-    
+
     // Liste der erweiterten Properties
     const extendedProperties = [
         'DESCRIPTION',
@@ -287,39 +287,39 @@ function validateICSLine(line) {
         'TRIGGER',
         'ACTION'
     ];
-    
+
     // Prüfe ob die Zeile mit einer gültigen Property beginnt
     const parts = line.split(':');
     const propertyPart = parts[0];
     const valuePart = parts[1];
-    
+
     // Extrahiere den Property-Namen (vor dem ersten ; oder :)
     const propertyName = propertyPart.split(';')[0].toUpperCase();
-    
+
     // Wenn es eine Kern-Property ist
     if (coreProperties.includes(propertyName)) {
         return true;
     }
-    
+
     // Wenn es eine erweiterte Property ist
     if (extendedProperties.includes(propertyName)) {
         return { isValid: true, isKnown: true };
     }
-    
+
     // Spezielle Validierung für TRIGGER
     if (propertyName === 'TRIGGER') {
         const durationPattern = /^-?PT\d+[HMS]$/;
         const isValid = durationPattern.test(valuePart);
         return isValid;
     }
-    
+
     // Spezielle Validierung für ACTION
     if (propertyName === 'ACTION') {
         const validActions = ['DISPLAY', 'AUDIO', 'EMAIL'];
         const isValid = validActions.includes(valuePart);
         return isValid;
     }
-    
+
     // Unbekannte Property
     return false;
 }
@@ -329,7 +329,7 @@ function getNormReference(line) {
     // Mapping: Property -> Abschnitt im RFC
     const rfcBase = 'https://datatracker.ietf.org/doc/html/rfc5545';
     const property = line.split(':')[0].split(';')[0].toUpperCase();
-    switch(property) {
+    switch (property) {
         case 'BEGIN':
         case 'END':
             return { stepDesc: 'Abschnitt 3.6', normUrl: rfcBase + '#section-3.6' };
