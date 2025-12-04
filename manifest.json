@@ -1,0 +1,26 @@
+{
+    "name": "ICS Tools",
+    "short_name": "ICS Tools",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0d6efd",
+    "description": "Erstellen und validieren Sie Kalenderdateien im iCalendar-Format",
+    "icons": [
+        {
+            "src": "favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "Logo ICS Generator.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

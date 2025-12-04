@@ -36,54 +36,85 @@ function validateEventForm(event) {
     return true;
 }
 
-// Funktion zum Anzeigen einer Erfolgsmeldung
-function showSuccessMessage(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-success alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    const container = document.querySelector('main') || document.querySelector('.container');
-    if (container) {
-        container.insertBefore(alertDiv, container.firstChild);
-        // Automatisch nach 3 Sekunden ausblenden
-        setTimeout(() => {
-            alertDiv.classList.remove('show');
-            setTimeout(() => alertDiv.remove(), 150);
-        }, 3000);
+// Funktion zum Anzeigen eines Toasts
+function showToast(message, type = 'info') {
+    // Toast-Container erstellen, falls noch nicht vorhanden
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        toastContainer.style.zIndex = '1050';
+        document.body.appendChild(toastContainer);
     }
+
+    // Icon basierend auf Typ
+    let icon = '';
+    let headerClass = '';
+    switch (type) {
+        case 'success':
+            icon = '<i class="fas fa-check-circle me-2"></i>';
+            headerClass = 'text-success';
+            break;
+        case 'danger':
+            icon = '<i class="fas fa-exclamation-circle me-2"></i>';
+            headerClass = 'text-danger';
+            break;
+        case 'warning':
+            icon = '<i class="fas fa-exclamation-triangle me-2"></i>';
+            headerClass = 'text-warning';
+            break;
+        default:
+            icon = '<i class="fas fa-info-circle me-2"></i>';
+            headerClass = 'text-primary';
+    }
+
+    // Toast-Element erstellen
+    const toastEl = document.createElement('div');
+    toastEl.className = 'toast';
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+
+    toastEl.innerHTML = `
+        <div class="toast-header">
+            <strong class="me-auto ${headerClass}">${icon}Hinweis</strong>
+            <small>Gerade eben</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+
+    toastContainer.appendChild(toastEl);
+
+    // Bootstrap Toast initialisieren und anzeigen
+    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+    toast.show();
+
+    // Nach dem Ausblenden aus dem DOM entfernen
+    toastEl.addEventListener('hidden.bs.toast', () => {
+        toastEl.remove();
+    });
 }
 
-// Funktion zum Anzeigen einer Fehlermeldung
+// Wrapper für Kompatibilität
+function showSuccessMessage(message) {
+    showToast(message, 'success');
+}
+
 function showErrorMessage(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    const container = document.querySelector('main') || document.querySelector('.container');
-    if (container) {
-        container.insertBefore(alertDiv, container.firstChild);
-        // Automatisch nach 5 Sekunden ausblenden
-        setTimeout(() => {
-            alertDiv.classList.remove('show');
-            setTimeout(() => alertDiv.remove(), 150);
-        }, 5000);
-    }
+    showToast(message, 'danger');
 }
 
 // Funktion zum Formatieren des Datums
 function formatDate(dateStr) {
     if (!dateStr) return '';
-    
+
     try {
         // Entferne mögliche Zeitzonenangaben und Value-Type-Parameter
         dateStr = dateStr.replace(/;VALUE=DATE[^:]*:/, '').replace('Z', '');
-        
+
         // Wenn das Datum im ICS-Format ist (YYYYMMDD oder YYYYMMDDTHHMMSS)
         if (dateStr.match(/^\d{8}(T\d{6})?$/)) {
             const year = dateStr.substring(0, 4);
@@ -108,7 +139,7 @@ function formatDate(dateStr) {
 // Funktion zum Extrahieren der Zeit aus einem ICS-Datum
 function extractTimeFromDate(dateStr) {
     if (!dateStr) return '';
-    
+
     try {
         // Wenn das Datum eine Zeit enthält (YYYYMMDDTHHMMSS)
         if (dateStr.includes('T')) {
@@ -151,7 +182,7 @@ function handleRepeatTypeChange(event) {
         const repeatDetails = form.querySelector('.repeatDetails');
         const weeklySelector = form.querySelector('.weeklySelector');
         const monthlySelector = form.querySelector('.monthlySelector');
-        
+
         // Zeige/Verstecke den Wiederholungs-Details-Bereich
         if (repeatDetails) {
             repeatDetails.style.display = repeatType === 'none' ? 'none' : 'block';
@@ -195,7 +226,7 @@ function handleRepeatTypeChange(event) {
 // Funktion zur Validierung des Formulars
 function validateForm(form) {
     const errors = [];
-    
+
     // Pflichtfelder prüfen
     const summary = form.querySelector('.summary')?.value?.trim();
     if (!summary) {
@@ -364,7 +395,7 @@ export function initializeEventHandlers() {
         initializeDateTimeFields();
 
         // --- URL Live-Validierung direkt bei Eingabe ---
-        document.addEventListener('input', function(event) {
+        document.addEventListener('input', function (event) {
             if (event.target.classList.contains('url')) {
                 const urlInput = event.target;
                 const urlValue = urlInput.value.trim();
@@ -395,14 +426,4 @@ export function initializeEventHandlers() {
     }
 }
 
-// Event Handler für das Löschen eines Events
-function handleDeleteEvent(eventNumber) {
-    const event = document.querySelector(`#eventForm${eventNumber}`);
-    if (event) {
-        const card = event.closest('.card');
-        if (card) {
-            card.remove();
-            showSuccessMessage(`Termin ${eventNumber} wurde gelöscht.`);
-        }
-    }
-}
+

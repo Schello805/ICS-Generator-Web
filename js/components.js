@@ -1,20 +1,7 @@
-// Test Kommentar
 /**
  * Komponenten-System für ICS Tools
  * Lädt Header und Footer dynamisch in alle Seiten
- * 
- * Verwendung:
- * 1. HTML-Struktur:
- *    <div id="header"></div>
- *    <div id="footer"></div>
- * 
- * 2. Skript einbinden:
- *    <script src="js/components.js"></script>
- * 
- * 3. Automatische Initialisierung beim DOMContentLoaded
  */
-
-// Komponenten-Initialisierung
 
 // Konfigurationsobjekt für die Navigation
 const NAV_CONFIG = {
@@ -91,9 +78,52 @@ function tryInitICSImportModal() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// Theme-Verwaltung
+function initializeTheme() {
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (!toggleBtn) return;
+
+    const icon = toggleBtn.querySelector('i');
+    const html = document.documentElement;
+
+    // Gespeichertes Theme oder System-Präferenz abrufen
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    let currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+    // Theme anwenden
+    setTheme(currentTheme);
+
+    // Event Listener für Toggle
+    toggleBtn.addEventListener('click', () => {
+        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(currentTheme);
+    });
+
+    function setTheme(theme) {
+        html.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+
+        // Icon aktualisieren
+        if (theme === 'dark') {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+            toggleBtn.classList.replace('btn-outline-light', 'btn-outline-warning');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+            toggleBtn.classList.replace('btn-outline-warning', 'btn-outline-light');
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
     // Lade Header
-    loadComponent('header', 'components/header.html');
+    loadComponent('header', 'components/header.html').then(() => {
+        // Theme-Logik initialisieren, sobald Header geladen ist
+        initializeTheme();
+    });
     // Lade Footer
     loadComponent('footer', 'components/footer.html');
 
@@ -103,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Workaround: Menüpunkt immer korrekt initialisieren, auch wenn Modal noch nicht im DOM ist
         const navBtn = document.getElementById('nav-import-ics');
         if (navBtn) {
-            navBtn.addEventListener('click', function(e) {
+            navBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 // Suche das <a>-Element im Menüpunkt
                 const link = navBtn.querySelector('a');
@@ -121,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Funktion zum Warten auf ein Element
-window.waitForElement = function(selector) {
+window.waitForElement = function (selector) {
     return new Promise(resolve => {
         if (document.querySelector(selector)) {
             return resolve(document.querySelector(selector));
@@ -151,4 +181,17 @@ try {
     }
 } catch (e) {
     // Ignorieren im Browser-Kontext
+}
+
+// Service Worker Registrierung für PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+    });
 }
