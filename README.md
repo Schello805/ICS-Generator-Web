@@ -1,10 +1,15 @@
-# ICS Tools
+# ICS-Generator.de
 
 Ein webbasiertes Tool zur Erstellung und Validierung von iCalendar-Dateien.
 
 ## Features
 
 ### ICS Generator
+- **Import & Export**: Erstellung neuer und Import bestehender ICS-Dateien
+- **Vorschau-Funktion**: Überprüfung der Termine vor dem Download
+- **PWA Support**: Installierbar als App und offline nutzbar
+- **Dark Mode**: Automatische Anpassung an Systemeinstellungen oder manuell umschaltbar
+- **Datenschutz**: 100% lokale Verarbeitung im Browser
 - Erstellung einzelner oder mehrerer Termine
 - Unterstützung für ganztägige Termine
 - Flexible Wiederholungsoptionen:
@@ -296,8 +301,6 @@ Bei Fragen oder Problemen können Sie mich erreichen unter:
 - Einführung von Code-Coverage-Metriken
 - Implementation von Performance-Monitoring
 
-## Geplante Features
-
-- **ICS-Import**
-  - Möglichkeit, bestehende ICS-Dateien zu importieren
-  - Automatische Übernahme von Terminen und Serien
+- **Erweiterte Validierung**
+  - Detailliertere Fehlermeldungen
+  - Korrekturvorschläge für ungültige Dateien
