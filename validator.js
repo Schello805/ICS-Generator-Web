@@ -11,22 +11,22 @@ function addLoadingIndicator() {
         </div>`;
 }
 
-document.getElementById('icsFile').addEventListener('change', function(e) {
+document.getElementById('icsFile').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (!file) return;
 
     addLoadingIndicator();
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const content = e.target.result;
         const { errors, warnings } = validateICS(content);
         displayValidationResults(errors, warnings);
         displayFileContent(content);
     };
-    reader.onerror = function() {
+    reader.onerror = function () {
         displayValidationResults(
-            ['Fehler beim Lesen der Datei'], 
+            ['Fehler beim Lesen der Datei'],
             []
         );
     };
@@ -41,10 +41,10 @@ document.getElementById('icsFile').addEventListener('change', function(e) {
 function validateICSFile(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const icsContent = e.target.result;
             const { errors, warnings } = validateICS(icsContent);
-            
+
             // Ergebnisse anzeigen
             displayValidationResults(errors, warnings);
         };
@@ -58,18 +58,18 @@ function isValidICSDate(dateString) {
         const date = dateString.split(':')[1];
         return /^\d{8}$/.test(date);
     }
-    
+
     // Prüft Datum-Zeit-Werte
     const datetime = dateString.split(':')[1];
-    return /^\d{8}T\d{6}(?:Z)?$/.test(datetime) || 
-           /^\d{8}T\d{6}(?:[+-]\d{4})?$/.test(datetime);
+    return /^\d{8}T\d{6}(?:Z)?$/.test(datetime) ||
+        /^\d{8}T\d{6}(?:[+-]\d{4})?$/.test(datetime);
 }
 
 function validateICS(icsContent) {
     const lines = icsContent.split(/\r\n|\n|\r/);
     const errors = [];
     const warnings = [];
-    
+
     // Liste der erlaubten Properties
     const validProperties = [
         'BEGIN', 'END', 'VERSION', 'PRODID', 'UID', 'DTSTAMP',
@@ -79,7 +79,7 @@ function validateICS(icsContent) {
 
     lines.forEach((line, index) => {
         const lineNumber = index + 1;
-        
+
         // Leere Zeilen sind erlaubt
         if (line.trim() === '') {
             return;
@@ -123,14 +123,14 @@ function validateICS(icsContent) {
                 break;
         }
     });
-    
+
     return { errors, warnings };
 }
 
 function displayValidationResults(errors, warnings) {
     const resultsDiv = document.getElementById('validationResults');
     let html = '';
-    
+
     if (errors.length > 0) {
         html += '<h3>Fehler:</h3><ul class="text-danger">';
         errors.forEach(error => {
@@ -138,7 +138,7 @@ function displayValidationResults(errors, warnings) {
         });
         html += '</ul>';
     }
-    
+
     if (warnings.length > 0) {
         html += '<h3>Warnungen:</h3><ul class="text-warning">';
         warnings.forEach(warning => {
@@ -146,23 +146,23 @@ function displayValidationResults(errors, warnings) {
         });
         html += '</ul>';
     }
-    
+
     if (errors.length === 0 && warnings.length === 0) {
         html = '<div class="alert alert-success">Die ICS-Datei ist valide.</div>';
     }
-    
+
     resultsDiv.innerHTML = html;
 }
 
 function displayFileContent(content) {
     const pre = document.getElementById('fileContent');
     const maxDisplayLength = 100000; // Zeichen-Limit für Performance
-    
+
     if (content.length > maxDisplayLength) {
         showWarning(`Die Datei ist sehr groß (${content.length} Zeichen). Es werden nur die ersten ${maxDisplayLength} Zeichen angezeigt.`);
         content = content.substring(0, maxDisplayLength) + '\n[...]';
     }
-    
+
     // Escape HTML um XSS zu verhindern
     const escapedContent = content
         .replace(/&/g, '&amp;')
@@ -170,12 +170,12 @@ function displayFileContent(content) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
-    
+
     // Syntax-Highlighting für bessere Lesbarkeit
     const highlightedContent = escapedContent
         .replace(/(BEGIN:|END:)([^\r\n]+)/g, '<span class="text-primary">$1$2</span>')
         .replace(/([A-Z-]+):/g, '<span class="text-success">$1:</span>');
-    
+
     pre.innerHTML = highlightedContent;
     pre.setAttribute('role', 'region');
     pre.setAttribute('aria-label', `ICS-Dateiinhalt mit ${content.length} Zeichen`);
@@ -187,9 +187,7 @@ function showWarning(message) {
     warningDiv.innerHTML = `
         <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
         ${message}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Schließen">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schließen"></button>
     `;
     document.getElementById('fileContent').parentNode.insertBefore(warningDiv, document.getElementById('fileContent'));
 }

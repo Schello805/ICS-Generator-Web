@@ -353,6 +353,76 @@ export function initializeEventHandlers() {
             });
         }
 
+        // Event-Handler für "Vorschau" Button
+        const previewBtn = document.getElementById('previewEvents');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', () => {
+                const events = document.querySelectorAll('.eventForm');
+                let hasError = false;
+                const previewContent = [];
+
+                // Validierung
+                for (const form of events) {
+                    const errors = validateForm(form);
+                    if (errors.length > 0) {
+                        hasError = true;
+                        showErrorMessage(errors.join('<br>'));
+                        form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        break;
+                    }
+
+                    // Daten für Vorschau sammeln
+                    const summary = form.querySelector('.summary').value;
+                    const startDate = form.querySelector('.startDate').value;
+                    const endDate = form.querySelector('.endDate').value;
+                    const startTime = form.querySelector('.startTime').value;
+                    const endTime = form.querySelector('.endTime').value;
+                    const allDay = form.querySelector('.allDay').checked;
+                    const location = form.querySelector('.location').value;
+                    const description = form.querySelector('.description').value;
+
+                    let timeString = 'Ganztägig';
+                    if (!allDay) {
+                        timeString = `${startTime} - ${endTime}`;
+                    }
+
+                    previewContent.push(`
+                        <div class="preview-event mb-3 p-3 border rounded">
+                            <h5 class="text-primary">${escapeText(summary)}</h5>
+                            <p class="mb-1"><strong><i class="fas fa-calendar-alt me-2"></i>Zeit:</strong> ${formatDate(startDate)} ${allDay ? '' : 'bis ' + formatDate(endDate)} (${timeString})</p>
+                            ${location ? `<p class="mb-1"><strong><i class="fas fa-map-marker-alt me-2"></i>Ort:</strong> ${escapeText(location)}</p>` : ''}
+                            ${description ? `<p class="mb-1"><strong><i class="fas fa-align-left me-2"></i>Beschreibung:</strong><br>${escapeText(description)}</p>` : ''}
+                        </div>
+                    `);
+                }
+
+                if (hasError) return;
+
+                // Modal befüllen und anzeigen
+                const modalBody = document.getElementById('previewModalBody');
+                if (modalBody) {
+                    modalBody.innerHTML = previewContent.join('');
+                    const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+                    previewModal.show();
+                }
+            });
+        }
+
+        // Event-Handler für "Herunterladen" im Vorschau-Modal
+        const downloadFromPreviewBtn = document.getElementById('downloadICSFromPreview');
+        if (downloadFromPreviewBtn) {
+            downloadFromPreviewBtn.addEventListener('click', () => {
+                // Schließe Modal
+                const previewModalEl = document.getElementById('previewModal');
+                const modalInstance = bootstrap.Modal.getInstance(previewModalEl);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+                // Trigger Download
+                document.getElementById('downloadICS').click();
+            });
+        }
+
         // Event-Handler für dynamisch hinzugefügte Events
         document.addEventListener('click', (event) => {
             // Kopieren-Button

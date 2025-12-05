@@ -116,36 +116,36 @@ function handleICSFile(e) {
 
 function importEventsToUI() {
     if (!parsedEvents.length) return;
-    
+
     // KORREKTUR: Alle bestehenden Formulare entfernen
     document.querySelectorAll('.eventForm').forEach(form => {
         const card = form.closest('.card');
         if (card) card.remove();
     });
-    
+
     const eventsContainer = document.getElementById('eventsContainer');
 
     // KORREKTUR: Schleife durch alle geparsten Events
     parsedEvents.forEach((eventObj, idx) => {
-        
+
         // KORREKTUR: Erstelle eine neue Karte. 'newEventCard' ist jetzt das HTML-Element
         let newEventCard = duplicateEvent();
-        
+
         if (!newEventCard) {
             console.error(`Konnte Karte für Termin ${idx + 1} nicht erstellen.`);
             return; // Gehe zum nächsten Termin in der Schleife
         }
-        
+
         const form = newEventCard.querySelector('.eventForm');
         if (!form) return;
-        
+
         // --- Ab hier deine bestehende Mapping-Logik ---
-        
+
         // Standard-Felder
         if (eventObj['SUMMARY'] && form.querySelector('.summary')) form.querySelector('.summary').value = eventObj['SUMMARY'];
         if (eventObj['DESCRIPTION'] && form.querySelector('.description')) form.querySelector('.description').value = eventObj['DESCRIPTION'];
         if (eventObj['LOCATION'] && form.querySelector('.location')) form.querySelector('.location').value = eventObj['LOCATION'];
-        
+
         // DTSTART und DTEND aufteilen in Datum und Uhrzeit, Zeitzone berücksichtigen
         if (eventObj['DTSTART']) {
             const dt = parseICSDateTime(eventObj['DTSTART']);
@@ -170,7 +170,7 @@ function importEventsToUI() {
         }
         // Nach dem Setzen aller Felder: Zeitfelder je nach Ganztägig-Status aus-/einblenden
         if (typeof toggleDateTimeFields === 'function') toggleDateTimeFields(form);
-        
+
         // RRULE: Wiederholung korrekt auf Formularfelder mappen
         if (eventObj['RRULE']) {
             const rrule = eventObj['RRULE'];
@@ -184,7 +184,7 @@ function importEventsToUI() {
             const byday = (rrule.match(/BYDAY=([^;]+)/) || [])[1];
             if (byday && form.querySelector('.repeatType') && form.querySelector('.repeatType').value === 'WEEKLY') {
                 byday.split(',').forEach(day => {
-                    const cb = form.querySelector('.weekday[value="'+day+'"]');
+                    const cb = form.querySelector('.weekday[value="' + day + '"]');
                     if (cb) cb.checked = true;
                 });
             }
@@ -202,7 +202,7 @@ function importEventsToUI() {
                 });
                 if (form.querySelector('.repeatUntil')) {
                     // UNTIL: JJJJMMTTHHMMSSZ oder JJJJMMTT
-                    const untilDate = until.substring(0,8).replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+                    const untilDate = until.substring(0, 8).replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
                     form.querySelector('.repeatUntil').value = untilDate;
                 }
             }
@@ -211,9 +211,9 @@ function importEventsToUI() {
             form.querySelector('.reminderTime').value = eventObj['REMINDER'];
         }
     });
-    
+
     // --- Ab hier deine Logik zur Erfolgsmeldung und Mapping-Anzeige ---
-    
+
     const importSuccessDiv = document.getElementById('importSuccess');
     if (importSuccessDiv) {
         importSuccessDiv.textContent = 'Import erfolgreich! Die Termine wurden übernommen.';
@@ -228,7 +228,8 @@ function importEventsToUI() {
                 if (window.$ && typeof $(modalEl).modal === 'function') {
                     $(modalEl).modal('hide');
                 } else if (window.bootstrap && bootstrap.Modal) {
-                    bootstrap.Modal.getInstance(modalEl)?.hide();
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.hide();
                 }
                 // Footer-Buttons wieder einblenden, wenn Modal geschlossen wird
                 const modalFooter = document.querySelector('.modal-footer');
@@ -240,7 +241,7 @@ function importEventsToUI() {
     // Nach erfolgreichem Import: Zeige nur noch OK-Button in Modal-Footer
     const modalFooter = document.querySelector('.modal-footer');
     if (modalFooter) {
-        modalFooter.innerHTML = `<button type="button" class="btn btn-success ms-auto" data-dismiss="modal" id="okICSImportBtn">OK</button>`;
+        modalFooter.innerHTML = `<button type="button" class="btn btn-success ms-auto" data-bs-dismiss="modal" id="okICSImportBtn">OK</button>`;
     }
     const mappingDiv = document.getElementById('icsMappingResult');
     if (mappingDiv) {
@@ -249,17 +250,17 @@ function importEventsToUI() {
         // Akkordeon einblenden
         const acc = document.getElementById('mappingAccordion');
         if (acc) acc.classList.remove('d-none');
-        
+
         // KORREKTUR: Verwende die neu erstellten Formulare im DOM für die Überprüfung
         const formsInDOM = document.querySelectorAll('.eventForm');
-        
+
         parsedEvents.forEach((eventObj, idx) => {
             // Finde das zugehörige Formular
             const form = formsInDOM[idx]; // Greife auf das Formular im DOM zu
             if (!form) return; // Sicherheitshalber
-            
+
             html += `<li class="list-group-item">
-                <b>Event ${idx+1}</b>:
+                <b>Event ${idx + 1}</b>:
                 <ul class="mb-1">`;
             // Prüfe relevante Felder
             html += checkFieldMapping(form, '.summary', eventObj['SUMMARY'], 'SUMMARY');
@@ -324,12 +325,13 @@ export function initializeICSImportModal() {
         } else {
             // Fallback für Bootstrap 5 (falls mal migriert):
             if (window.bootstrap && bootstrap.Modal) {
-                new bootstrap.Modal(modalEl).show();
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
             }
         }
     }
     if (openBtn) openBtn.addEventListener('click', openModal);
-    if (navBtn) navBtn.addEventListener('click', function(e) {
+    if (navBtn) navBtn.addEventListener('click', function (e) {
         e.preventDefault();
         if (modalEl) {
             openModal();
