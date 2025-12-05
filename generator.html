@@ -542,7 +542,32 @@
             </div>
         </div>
 
+        <!-- Modal für Vorschau -->
+        <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="previewModalLabel">Termin-Vorschau</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="previewModalBody">
+                        <!-- Vorschau-Inhalt wird hier eingefügt -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                        <button type="button" class="btn btn-primary" id="downloadICSFromPreview">
+                            <i class="fas fa-download"></i> Herunterladen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="btn-group mb-4">
+            <button class="btn btn-info me-2 text-white" id="previewEvents" data-bs-toggle="tooltip"
+                data-bs-placement="top" title="Zeigt eine Vorschau der Termine an">
+                <i class="fas fa-eye" aria-hidden="true"></i> Vorschau
+            </button>
             <button class="btn btn-primary me-2" id="downloadICS" data-bs-toggle="tooltip" data-bs-placement="top"
                 title="Lädt die ICS-Datei herunter">
                 <i class="fas fa-download" aria-hidden="true"></i> ICS herunterladen
