@@ -11,27 +11,3 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Error initializing event handlers:', error);
     }
 });
-
-// iOS App Banner Logik
-document.addEventListener('DOMContentLoaded', function() {
-    // Prüfe ob Benutzer iOS verwendet
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    
-    if (isIOS) {
-        const banner = document.getElementById('ios-app-banner');
-        if (banner) {
-            banner.style.display = 'flex';
-            
-            // Speichere in localStorage wenn Banner geschlossen wird
-            const closeButton = banner.querySelector('.btn-close');
-            closeButton.addEventListener('click', function() {
-                localStorage.setItem('iosAppBannerClosed', 'true');
-            });
-            
-            // Prüfe ob Banner bereits geschlossen wurde
-            if (localStorage.getItem('iosAppBannerClosed') === 'true') {
-                banner.style.display = 'none';
-            }
-        }
-    }
-});

@@ -142,7 +142,7 @@ Jeder Termin wird in einer Bootstrap-Card dargestellt mit:
 - Deutsch als Sprache
 - Responsive Viewport
 - SEO-Beschreibung
-- Apple App Store Link
+
 
 ### Validator (validator.html)
 Tool zur Überprüfung bestehender ICS-Dateien auf Konformität mit dem iCalendar-Standard.
