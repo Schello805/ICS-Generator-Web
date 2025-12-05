@@ -37,7 +37,9 @@
         <!-- Copyright & Social Links -->
         <div class="row mt-3 pt-3 border-top">
             <div class="col-md-4 text-center text-md-start">
-                <p class="small mb-0">&copy; 2024 Michael Schellenberger - V2.0</p>
+                <p class="small mb-0">&copy; 2024 Michael Schellenberger - <a href="#"
+                        class="text-light text-decoration-none" data-bs-toggle="modal"
+                        data-bs-target="#changelogModal">V2.6</a></p>
             </div>
             <div class="col-md-4 text-center">
             </div>
@@ -54,6 +56,68 @@
                     class="text-light text-decoration-none mx-2" aria-label="Zu Website">
                     <i class="fas fa-globe"></i>
                 </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changelog Modal -->
+    <div class="modal fade text-dark" id="changelogModal" tabindex="-1" aria-labelledby="changelogModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changelogModalLabel">Änderungsprotokoll</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="fw-bold">Version 2.6</h6>
+                    <ul>
+                        <li>Fix: Scroll-Problem nach ICS-Import behoben</li>
+                        <li>UI: Validator-Oberfläche modernisiert</li>
+                        <li>System: Bootstrap 5 Modal-Handling verbessert</li>
+                    </ul>
+                    <hr>
+                    <h6 class="fw-bold">Version 2.5</h6>
+                    <ul>
+                        <li>Feature: Vorschau-Funktion wiederhergestellt</li>
+                        <li>Feature: Termine vor Download prüfen</li>
+                    </ul>
+                    <hr>
+                    <h6 class="fw-bold">Version 2.4</h6>
+                    <ul>
+                        <li>Cleanup: iOS App Referenzen entfernt</li>
+                        <li>Fokus: Reine Web-Applikation</li>
+                    </ul>
+                    <hr>
+                    <h6 class="fw-bold">Version 2.3</h6>
+                    <ul>
+                        <li>Design: Dark Mode Kontrast verbessert</li>
+                        <li>Design: Bootstrap Dark Theme aktiviert</li>
+                    </ul>
+                    <hr>
+                    <h6 class="fw-bold">Version 2.2</h6>
+                    <ul>
+                        <li>Design: CSS-Variablen für konsistentes Styling</li>
+                        <li>Design: Dark Mode für Alerts und Accordions optimiert</li>
+                    </ul>
+                    <hr>
+                    <h6 class="fw-bold">Version 2.1</h6>
+                    <ul>
+                        <li>Feature: PWA Support (Offline-Fähigkeit)</li>
+                        <li>Feature: Dark Mode Toggle</li>
+                        <li>Feature: Toast-Benachrichtigungen</li>
+                    </ul>
+                    <hr>
+                    <h6 class="fw-bold">Version 2.0</h6>
+                    <ul>
+                        <li>Tech: Migration auf Vanilla JS (jQuery entfernt)</li>
+                        <li>Tech: Bootstrap 5 Update</li>
+                        <li>Tech: Server-Komponente entfernt (Client-Side Only)</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                </div>
             </div>
         </div>
     </div>
