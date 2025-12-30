@@ -166,23 +166,16 @@ Tool zur Überprüfung bestehender ICS-Dateien auf Konformität mit dem iCalenda
 
 ## Changelog
 
-### Version 1.1.0 (2025-01-01)
+### Version 2.7 (2025-01-01)
 - **Validator-Update:**
   - Verbesserte Unterstützung für RFC 5545 (iCalendar) Standards.
-  - Hinzugefügt: "Unfolding" Support für mehrzeilige Properties.
-  - Hinzugefügt: Unterstützung für `X-` Erweiterungs-Properties (z.B. Outlook).
-  - Verbessert: Toleranz bei Datumsformaten und Parameter-Handling.
-  - Neu: Explizite Prüfung auf `BEGIN:VCALENDAR` und `END:VCALENDAR`.
+  - Support für Outlook/Google Kalender Besonderheiten (X-Properties, Unfolding).
+- **System:**
+  - Deployment-Script (`deploy.sh`) für einfache Server-Updates.
+  - Bereinigung alter App Store Referenzen.
 
-## Changelog
-
-### Version 1.1.0 (2025-01-01)
-- **Validator-Update:**
-  - Verbesserte Unterstützung für RFC 5545 (iCalendar) Standards.
-  - Hinzugefügt: "Unfolding" Support für mehrzeilige Properties.
-  - Hinzugefügt: Unterstützung für `X-` Erweiterungs-Properties (z.B. Outlook).
-  - Verbessert: Toleranz bei Datumsformaten und Parameter-Handling.
-  - Neu: Explizite Prüfung auf `BEGIN:VCALENDAR` und `END:VCALENDAR`.
+### Version 2.6
+- UI Modernisierung und Bugfixes.
 
 ## Setup
 

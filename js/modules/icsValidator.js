@@ -1,6 +1,6 @@
 /**
  * ICS Validator Module
- * Version: 1.1.0
+ * Version: 2.7
  * Last Updated: 2025-01-01
  * 
  * Der Validator überprüft ICS-Dateien auf Konformität mit dem RFC 5545 Standard.
