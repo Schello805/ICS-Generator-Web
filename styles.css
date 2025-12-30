@@ -112,6 +112,21 @@
     --val-success-border: #0f5132;
 }
 
+/* Dark Mode Button Fixes */
+[data-theme="dark"] .btn-outline-dark {
+    color: #f8f9fa;
+    border-color: #f8f9fa;
+}
+
+[data-theme="dark"] .btn-outline-dark:hover {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+[data-theme="dark"] .text-dark {
+    color: #f8f9fa !important;
+}
+
 body {
     background-color: var(--bg-body);
     color: var(--text-main);
