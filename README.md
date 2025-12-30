@@ -1,15 +1,10 @@
-# ICS-Generator.de
+# ICS Tools
 
 Ein webbasiertes Tool zur Erstellung und Validierung von iCalendar-Dateien.
 
 ## Features
 
 ### ICS Generator
-- **Import & Export**: Erstellung neuer und Import bestehender ICS-Dateien
-- **Vorschau-Funktion**: Überprüfung der Termine vor dem Download
-- **PWA Support**: Installierbar als App und offline nutzbar
-- **Dark Mode**: Automatische Anpassung an Systemeinstellungen oder manuell umschaltbar
-- **Datenschutz**: 100% lokale Verarbeitung im Browser
 - Erstellung einzelner oder mehrerer Termine
 - Unterstützung für ganztägige Termine
 - Flexible Wiederholungsoptionen:
@@ -147,7 +142,7 @@ Jeder Termin wird in einer Bootstrap-Card dargestellt mit:
 - Deutsch als Sprache
 - Responsive Viewport
 - SEO-Beschreibung
-
+- Apple App Store Link
 
 ### Validator (validator.html)
 Tool zur Überprüfung bestehender ICS-Dateien auf Konformität mit dem iCalendar-Standard.
@@ -169,6 +164,26 @@ Tool zur Überprüfung bestehender ICS-Dateien auf Konformität mit dem iCalenda
 #### Footer (components/footer.html)
 - Copyright-Informationen
 - Links zu Impressum und Datenschutz
+
+## Changelog
+
+### Version 1.1.0 (2025-01-01)
+- **Validator-Update:**
+  - Verbesserte Unterstützung für RFC 5545 (iCalendar) Standards.
+  - Hinzugefügt: "Unfolding" Support für mehrzeilige Properties.
+  - Hinzugefügt: Unterstützung für `X-` Erweiterungs-Properties (z.B. Outlook).
+  - Verbessert: Toleranz bei Datumsformaten und Parameter-Handling.
+  - Neu: Explizite Prüfung auf `BEGIN:VCALENDAR` und `END:VCALENDAR`.
+
+## Changelog
+
+### Version 1.1.0 (2025-01-01)
+- **Validator-Update:**
+  - Verbesserte Unterstützung für RFC 5545 (iCalendar) Standards.
+  - Hinzugefügt: "Unfolding" Support für mehrzeilige Properties.
+  - Hinzugefügt: Unterstützung für `X-` Erweiterungs-Properties (z.B. Outlook).
+  - Verbessert: Toleranz bei Datumsformaten und Parameter-Handling.
+  - Neu: Explizite Prüfung auf `BEGIN:VCALENDAR` und `END:VCALENDAR`.
 
 ## Setup
 
@@ -301,6 +316,8 @@ Bei Fragen oder Problemen können Sie mich erreichen unter:
 - Einführung von Code-Coverage-Metriken
 - Implementation von Performance-Monitoring
 
-- **Erweiterte Validierung**
-  - Detailliertere Fehlermeldungen
-  - Korrekturvorschläge für ungültige Dateien
+## Geplante Features
+
+- **ICS-Import**
+  - Möglichkeit, bestehende ICS-Dateien zu importieren
+  - Automatische Übernahme von Terminen und Serien
