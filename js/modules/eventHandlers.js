@@ -307,6 +307,30 @@ function validateForm(form) {
     return errors;
 }
 
+// Helper für Validierung und ICS-Aktion
+async function handleValidationAndAction(events, actionCallback) {
+    let hasError = false;
+    for (const form of events) {
+        const errors = validateForm(form);
+        if (errors.length > 0) {
+            hasError = true;
+            showErrorMessage(errors.join('<br>'));
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+        }
+    }
+    if (hasError) return false;
+
+    try {
+        const icsContent = await createICSCalendar(events);
+        await actionCallback(icsContent);
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
 // Event Handler Initialisierung
 export function initializeEventHandlers() {
     try {
@@ -321,21 +345,7 @@ export function initializeEventHandlers() {
         if (downloadICSBtn) {
             downloadICSBtn.addEventListener('click', async () => {
                 const events = document.querySelectorAll('.eventForm');
-                let hasError = false;
-                for (const form of events) {
-                    const errors = validateForm(form);
-                    if (errors.length > 0) {
-                        hasError = true;
-                        showErrorMessage(errors.join('<br>'));
-                        form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        break;
-                    }
-                }
-                if (hasError) return;
-                // Erstelle ICS nur wenn alles valide
-                try {
-                    const icsContent = await createICSCalendar(events);
-                    // Download auslösen
+                if (await handleValidationAndAction(events, async (icsContent) => {
                     const blob = new Blob([icsContent], { type: 'text/calendar' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -347,9 +357,47 @@ export function initializeEventHandlers() {
                         document.body.removeChild(a);
                         URL.revokeObjectURL(url);
                     }, 100);
-                } catch (error) {
-                    // Fehler werden bereits in createICSCalendar angezeigt
-                }
+                })) return;
+            });
+        }
+
+        // Event-Handler für "QR-Code" Button
+        const qrCodeBtn = document.getElementById('generateQRCode');
+        if (qrCodeBtn) {
+            qrCodeBtn.addEventListener('click', async () => {
+                const events = document.querySelectorAll('.eventForm');
+                await handleValidationAndAction(events, async (icsContent) => {
+                    // Zeige Modal
+                    const qrModal = new bootstrap.Modal(document.getElementById('qrCodeModal'));
+                    const qrContainer = document.getElementById('qrcode');
+                    const warningEl = document.getElementById('qrCodeWarning');
+                    
+                    qrContainer.innerHTML = ''; // Reset
+                    warningEl.classList.add('d-none');
+
+                    // Warnung bei großen Datenmengen (QR Codes haben Limits, ca 2-3kb max sinnvoll)
+                    if (icsContent.length > 1500) {
+                        warningEl.classList.remove('d-none');
+                    }
+
+                    // QR Code generieren
+                    // Wir nutzen createObjectURL nicht für QR, da wir den Text direkt brauchen oder eine Data-URI
+                    // Leider können wir ohne Server keine URL generieren. Wir packen den Content direkt rein.
+                    try {
+                        new QRCode(qrContainer, {
+                            text: icsContent,
+                            width: 256,
+                            height: 256,
+                            colorDark : "#000000",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.M
+                        });
+                        qrModal.show();
+                    } catch (e) {
+                        showErrorMessage('Fehler beim Generieren des QR-Codes: Datenmenge zu groß.');
+                        console.error(e);
+                    }
+                });
             });
         }
 

@@ -1,6 +1,6 @@
 /**
  * ICS Validator Module
- * Version: 2.7
+ * Version: 2.8
  * Last Updated: 2025-01-01
  * 
  * Der Validator überprüft ICS-Dateien auf Konformität mit dem RFC 5545 Standard.
@@ -15,12 +15,60 @@ export function initializeValidator() {
     const resultDiv = document.getElementById('validationResult');
     const fileContentPre = document.getElementById('fileContent');
     const dropZone = document.getElementById('dropZone');
+    
+    // Auto-Reparatur Container (wird dynamisch erzeugt, falls nicht vorhanden)
+    let fixContainer = document.getElementById('fixContainer');
+    if (!fixContainer) {
+        fixContainer = document.createElement('div');
+        fixContainer.id = 'fixContainer';
+        fixContainer.className = 'mt-3 d-none';
+        fixContainer.innerHTML = `
+            <div class="alert alert-info">
+                <h5><i class="fas fa-tools"></i> Automatische Reparatur möglich</h5>
+                <p>Der Validator hat Probleme gefunden, die automatisch behoben werden können.</p>
+                <button id="autoFixBtn" class="btn btn-sm btn-success">
+                    <i class="fas fa-magic"></i> Jetzt reparieren & herunterladen
+                </button>
+            </div>
+        `;
+        // Füge es nach dem ResultDiv ein
+        if (resultDiv && resultDiv.parentNode) {
+            resultDiv.parentNode.insertBefore(fixContainer, resultDiv.nextSibling);
+        }
+    }
+    const autoFixBtn = document.getElementById('autoFixBtn');
 
     console.log('Gefundene Elemente:', { fileInput, validateButton, resultDiv, fileContentPre, dropZone });
 
     if (!fileInput || !validateButton || !resultDiv || !fileContentPre) {
         console.error('Erforderliche Elemente nicht gefunden');
         return;
+    }
+
+    // Auto-Fix Event Listener
+    if (autoFixBtn) {
+        autoFixBtn.addEventListener('click', () => {
+            const currentContent = fileContentPre.textContent;
+            const fixedContent = fixICSContent(currentContent);
+            
+            // Download anbieten
+            const blob = new Blob([fixedContent], { type: 'text/calendar' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fixed_calendar.ics';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            // Validierung neu starten mit gefixter Version (optional, aber nice UX)
+            fileContentPre.textContent = fixedContent;
+            const result = validateICS(fixedContent);
+            // ... (Hier könnte man die Anzeige aktualisieren, aber Download reicht meist)
+        });
     }
 
     // Drag & Drop Handler
@@ -102,6 +150,23 @@ export function initializeValidator() {
 
             // Normale Validierungsergebnisse anzeigen
             const result = validateICS(content);
+            
+            // Auto-Fix Check
+            const fixContainer = document.getElementById('fixContainer');
+            if (fixContainer) {
+                const canFix = result.errors.some(e => 
+                    e.includes('BEGIN:VCALENDAR') || 
+                    e.includes('END:VCALENDAR') || 
+                    e.includes('Ungültige Syntax') // Leere Zeilen etc
+                );
+                
+                if (canFix && result.errors.length > 0) {
+                    fixContainer.classList.remove('d-none');
+                } else {
+                    fixContainer.classList.add('d-none');
+                }
+            }
+
             if (result.errors.length === 0 && result.warnings.length === 0) {
                 showValidationMessage('Die ICS-Datei ist gültig!', 'success');
             } else {
@@ -127,6 +192,36 @@ export function initializeValidator() {
     }
 
     console.log('Validator initialisiert');
+}
+
+function fixICSContent(content) {
+    let lines = content.split(/\r\n|\n|\r/);
+    
+    // 1. Leere Zeilen entfernen
+    lines = lines.filter(l => l.trim() !== '');
+    
+    // 2. BEGIN:VCALENDAR prüfen
+    const hasBegin = lines.some(l => l.trim().toUpperCase() === 'BEGIN:VCALENDAR');
+    if (!hasBegin) {
+        // Versuche es ganz oben einzufügen
+        lines.unshift('BEGIN:VCALENDAR');
+    }
+    
+    // 3. END:VCALENDAR prüfen
+    const hasEnd = lines.some(l => l.trim().toUpperCase() === 'END:VCALENDAR');
+    if (!hasEnd) {
+        lines.push('END:VCALENDAR');
+    }
+    
+    // 4. VERSION und PRODID Check (optional, aber gut für Standards)
+    if (!lines.some(l => l.startsWith('VERSION:'))) {
+        lines.splice(1, 0, 'VERSION:2.0');
+    }
+    if (!lines.some(l => l.startsWith('PRODID:'))) {
+        lines.splice(1, 0, 'PRODID:-//ICS Generator//AutoFix//DE');
+    }
+
+    return lines.join('\r\n');
 }
 
 function showValidationMessage(message, type) {
