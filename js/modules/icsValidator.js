@@ -1,11 +1,10 @@
 /**
  * ICS Validator Module
- * 
- * WICHTIG: Dieser Validator wurde gründlich getestet und funktioniert einwandfrei.
- * NICHT ÄNDERN! Jegliche Änderungen könnten die Funktionalität beeinträchtigen.
+ * Version: 1.1.0
+ * Last Updated: 2025-01-01
  * 
  * Der Validator überprüft ICS-Dateien auf Konformität mit dem RFC 5545 Standard.
- * Er validiert die Syntax jeder Zeile und erkennt ungültige oder unbekannte Properties.
+ * Er unterstützt nun auch "Unfolding" (mehrzeilige Properties) und X-Properties.
  */
 
 export function initializeValidator() {
@@ -247,12 +246,6 @@ export function validateICS(icsContent) {
     }
 
     return { errors, warnings };
-}
-
-function validateICSLine(line) {
-   // Legacy Funktion, wird intern kaum noch gebraucht, aber 
-   // falls noch Referenzen existieren, lassen wir eine Dummy-Implementierung
-   return true; 
 }
 
 // --- Hilfsfunktion für Norm-Referenz ---
