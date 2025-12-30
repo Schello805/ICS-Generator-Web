@@ -203,6 +203,25 @@ php -S localhost:8000
 
 3. http://localhost:8000 im Browser öffnen
 
+## Deployment & Updates (Linux Server)
+
+Statt den Ordner bei jedem Update zu löschen und neu zu klonen, nutzen Sie das mitgelieferte `deploy.sh` Script:
+
+1. **Einmaliges Setup:**
+   ```bash
+   cd /var/www/html
+   git clone https://github.com/Schello805/ICS-Generator-Web.git
+   cd ICS-Generator-Web
+   chmod +x deploy.sh
+   ```
+
+2. **Update durchführen:**
+   Führen Sie einfach das Script aus, um die neueste Version zu laden:
+   ```bash
+   ./deploy.sh
+   ```
+   *Das Script führt einen `git fetch` und `git reset --hard` durch, um Ihre Installation sauber auf den Stand des GitHub-Main-Branches zu bringen.*
+
 ## Technische Details
 - Rein clientseitige Verarbeitung
 - Keine Serveranbindung erforderlich
