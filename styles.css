@@ -1,5 +1,23 @@
 /* Basis-Styles */
 
+/* Drag & Drop Zone */
+.drop-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+    background-color: var(--bg-card);
+}
+
+.drop-zone.dragover {
+    border-color: var(--primary-color);
+    background-color: rgba(13, 110, 253, 0.05);
+    transform: scale(1.01);
+}
+
+[data-theme="dark"] .drop-zone.dragover {
+    background-color: rgba(61, 139, 253, 0.1);
+}
+
 /* Mapping-Akkordeon & Mapping-Result Styles */
 #icsMappingResult ul {
     list-style: none;

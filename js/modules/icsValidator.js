@@ -14,29 +14,60 @@ export function initializeValidator() {
     const validateButton = document.getElementById('validateButton');
     const resultDiv = document.getElementById('validationResult');
     const fileContentPre = document.getElementById('fileContent');
+    const dropZone = document.getElementById('dropZone');
 
-    console.log('Gefundene Elemente:', { fileInput, validateButton, resultDiv, fileContentPre });
+    console.log('Gefundene Elemente:', { fileInput, validateButton, resultDiv, fileContentPre, dropZone });
 
     if (!fileInput || !validateButton || !resultDiv || !fileContentPre) {
-        console.error('Erforderliche Elemente nicht gefunden:', {
-            fileInput: !!fileInput,
-            validateButton: !!validateButton,
-            resultDiv: !!resultDiv,
-            fileContentPre: !!fileContentPre
-        });
+        console.error('Erforderliche Elemente nicht gefunden');
         return;
     }
 
-    validateButton.addEventListener('click', () => {
-        console.log('Validierungs-Button geklickt');
+    // Drag & Drop Handler
+    if (dropZone) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
 
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                fileInput.files = files; // Input updaten
+                // Trigger change event manuell oder direkt validieren
+                validateFile(files[0]);
+            }
+        }
+    }
+
+    validateButton.addEventListener('click', () => {
         const file = fileInput.files[0];
+        validateFile(file);
+    });
+
+    function validateFile(file) {
+        console.log('Validierungs-Start für:', file ? file.name : 'Keine Datei');
+
         if (!file) {
             showValidationMessage('Bitte wählen Sie eine ICS-Datei aus.', 'warning');
             return;
         }
-
-        console.log('Datei ausgewählt:', file.name);
 
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -44,11 +75,10 @@ export function initializeValidator() {
             const content = e.target.result;
             // Zeige den Dateiinhalt im Validator an
             fileContentPre.textContent = content;
-
+            
             // Schritt-für-Schritt-Validierung mit Normbezug anzeigen
             const rawLines = content.split(/\r\n|\n|\r/);
             // Wir machen hier kein Unfolding für die Anzeige, damit der User die Originalzeilen sieht.
-            // Aber wir müssen für die Validierung im Hintergrund unterscheiden.
             
             let stepsHtml = '<h5>Prüfschritte nach <a href="https://datatracker.ietf.org/doc/html/rfc5545" target="_blank">RFC 5545</a>:</h5><ol>';
             
@@ -94,7 +124,7 @@ export function initializeValidator() {
             }
         };
         reader.readAsText(file);
-    });
+    }
 
     console.log('Validator initialisiert');
 }
