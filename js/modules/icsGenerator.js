@@ -189,10 +189,48 @@ export async function createICSCalendar(events) {
             }
             
             // Reminder
-            if (reminderTime && parseInt(reminderTime) > 0) {
+            let reminderMinutes = 0;
+            
+            if (reminderTime === 'custom_9am_day_before') {
+                // Spezialfall: 9 Uhr am Vortag
+                // Wir berechnen die Differenz zwischen Startzeit und "Vortag 09:00" in Minuten
+                let startDt;
+                if (allDay) {
+                    // Bei ganztägig ist Startzeit quasi 00:00
+                    startDt = new Date(`${startDate}T00:00:00`);
+                } else {
+                    startDt = new Date(`${startDate}T${startTime}:00`);
+                }
+                
+                // Zielzeitpunkt: Gleicher Tag 09:00, dann minus 1 Tag
+                // Wir klonen das Datum, um startDt nicht zu ändern
+                const targetDt = new Date(startDt.getTime());
+                targetDt.setHours(9, 0, 0, 0); // Setze auf 9:00 Uhr des Starttages
+                targetDt.setDate(targetDt.getDate() - 1); // Gehe 1 Tag zurück
+                
+                // Differenz in Millisekunden
+                const diffMs = startDt - targetDt;
+                // Umrechnung in Minuten
+                reminderMinutes = Math.floor(diffMs / (1000 * 60));
+                
+                // Falls der Termin VOR 9 Uhr am Vortag startet (theoretisch möglich bei rückwirkender Planung oder sehr seltsamen Inputs),
+                // würde reminderMinutes negativ oder 0 sein. Trigger muss negativ sein für "vorher".
+                // Aber VALARM TRIGGER Syntax mit Duration 'P' oder '-P'.
+                // Unsere Logik unten schreibt `TRIGGER:-PT...`.
+                // Also brauchen wir den positiven Wert "Minuten VOR Start".
+                
+                // Wenn diffMs positiv ist (Start ist NACH Vortag 9 Uhr), dann ist reminderMinutes > 0.
+                // Das ist korrekt. Z.B. Start Sa 10:00. Vortag 9:00 = Fr 09:00. Diff = 25h = 1500 min.
+                // TRIGGER:-PT1500M -> 1500 Min vor Start -> Fr 09:00.
+                
+            } else {
+                reminderMinutes = parseInt(reminderTime);
+            }
+
+            if (reminderMinutes > 0) {
                 icsContent += 'BEGIN:VALARM\r\n';
                 icsContent += 'ACTION:DISPLAY\r\n';
-                icsContent += `TRIGGER:-PT${parseInt(reminderTime)}M\r\n`;
+                icsContent += `TRIGGER:-PT${reminderMinutes}M\r\n`;
                 icsContent += 'DESCRIPTION:Reminder\r\n';
                 icsContent += 'END:VALARM\r\n';
             }

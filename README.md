@@ -51,6 +51,9 @@ Nutzen Sie das `deploy.sh` Script, um die Installation zu aktualisieren (resette
 
 ## Changelog
 
+### Version 2.8.2 (2025-01-01)
+- **Generator:** Neue Erinnerungs-Option: "9 Uhr am Vortag" (Speziell für Wandergruppen/Tourenplanung).
+
 ### Version 2.8.1 (2025-01-01)
 - **UI:** Fix für Lesbarkeitsprobleme im Dark Mode.
 

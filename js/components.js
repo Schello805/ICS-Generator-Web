@@ -121,12 +121,12 @@ function initializeTheme() {
 
 document.addEventListener('DOMContentLoaded', function () {
     // Lade Header
-    loadComponent('header', 'components/header.html?v=2.8.1').then(() => {
+    loadComponent('header', 'components/header.html?v=2.8.2').then(() => {
         // Theme-Logik initialisieren, sobald Header geladen ist
         initializeTheme();
     });
     // Lade Footer
-    loadComponent('footer', 'components/footer.html?v=2.8.1');
+    loadComponent('footer', 'components/footer.html?v=2.8.2');
 
     // Nach dem Nachladen des Headers das Modal initialisieren!
     window.waitForElement('#icsImportModal').then(() => {
