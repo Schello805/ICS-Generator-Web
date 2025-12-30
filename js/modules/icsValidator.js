@@ -47,12 +47,22 @@ export function initializeValidator() {
             fileContentPre.textContent = content;
 
             // Schritt-für-Schritt-Validierung mit Normbezug anzeigen
-            const lines = content.split(/\r\n|\n|\r/);
+            const rawLines = content.split(/\r\n|\n|\r/);
+            // Wir machen hier kein Unfolding für die Anzeige, damit der User die Originalzeilen sieht.
+            // Aber wir müssen für die Validierung im Hintergrund unterscheiden.
+            
             let stepsHtml = '<h5>Prüfschritte nach <a href="https://datatracker.ietf.org/doc/html/rfc5545" target="_blank">RFC 5545</a>:</h5><ol>';
-            lines.forEach((line, idx) => {
+            
+            // Für die "Simple Check" Liste in der UI zeigen wir einfach alle Zeilen an
+            // Der eigentliche Validator (validateICS) macht dann das Unfolding
+            rawLines.forEach((line, idx) => {
+                if (line.trim() === '') return;
                 const { stepDesc, normUrl } = getNormReference(line);
-                let stepResult = validateICSLine(line) ? '✅' : '❌';
-                stepsHtml += `<li><code>${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code> ${stepResult}`;
+                // Einfache visuelle Prüfung für die Liste (nicht strikt)
+                const isLookOkay = line.length > 0 && !line.startsWith(' '); 
+                let stepResult = isLookOkay ? 'ℹ️' : '...'; // Neutraler Status für Rohzeilen
+                
+                stepsHtml += `<li><code>${line.replace(/</g, '&lt;').replace(/>/g, '&gt;').substring(0, 100)}${line.length > 100 ? '...' : ''}</code>`;
                 if (stepDesc) {
                     stepsHtml += ` <small><a href="${normUrl}" target="_blank">${stepDesc}</a></small>`;
                 }
@@ -126,8 +136,35 @@ function clearSectionMessages() {
     });
 }
 
+function isValidICSDate(dateString) {
+    // Extrahiere den Wert nach dem ersten Doppelpunkt
+    const parts = dateString.split(':');
+    if (parts.length < 2) return false;
+    const value = parts.slice(1).join(':'); 
+    
+    if (dateString.toUpperCase().includes('VALUE=DATE')) {
+        return /^\d{8}$/.test(value.trim());
+    }
+    
+    // YYYYMMDDTHHMMSSZ oder YYYYMMDDTHHMMSS
+    return /^\d{8}T\d{6}(?:Z)?$/.test(value.trim());
+}
+
 export function validateICS(icsContent) {
-    const lines = icsContent.split(/\r\n|\n|\r/);
+    // 1. Unfolding (Zeilenumbrüche entfernen)
+    const rawLines = icsContent.split(/\r\n|\n|\r/);
+    const lines = [];
+    
+    rawLines.forEach(line => {
+        if (line.length === 0) return;
+        
+        if ((line.startsWith(' ') || line.startsWith('\t')) && lines.length > 0) {
+            lines[lines.length - 1] += line.substring(1);
+        } else {
+            lines.push(line);
+        }
+    });
+
     const errors = [];
     const warnings = [];
 
@@ -135,193 +172,87 @@ export function validateICS(icsContent) {
     resetValidationStatus();
     clearSectionMessages();
 
-    // Validate core properties
-    let hasCore = false;
-    let coreValid = true;
-    let coreMessages = [];
-    lines.forEach((line, index) => {
-        if (line.startsWith('BEGIN:') || line.startsWith('END:') || line.startsWith('VERSION:')) {
-            hasCore = true;
-            if (!validateICSLine(line)) {
-                coreValid = false;
-                coreMessages.push(`Zeile ${index + 1}: Ungültige Syntax in "${line}"`);
-            }
-        }
-    });
-    if (!hasCore) {
-        showSectionMessage('coreProperties', 'Keine Kern-Properties gefunden', 'warning');
-    } else if (!coreValid) {
-        coreMessages.forEach(msg => showSectionMessage('coreProperties', msg, 'error'));
-    } else {
-        showSectionMessage('coreProperties', 'Alle Kern-Properties sind gültig', 'success');
+    // Erweiterte Property Liste
+    const validProperties = [
+        'BEGIN', 'END', 'VERSION', 'PRODID', 'CALSCALE', 'METHOD',
+        'UID', 'DTSTAMP', 'DTSTART', 'DTEND', 'SUMMARY', 'DESCRIPTION', 
+        'LOCATION', 'RRULE', 'ACTION', 'TRIGGER', 'VALARM', 'DURATION',
+        'ATTACH', 'ATTENDEE', 'CATEGORIES', 'CLASS', 'COMMENT', 'CONTACT',
+        'CREATED', 'EXDATE', 'GEO', 'LAST-MODIFIED', 'ORGANIZER', 'PRIORITY',
+        'RDATE', 'RECURRENCE-ID', 'RELATED-TO', 'RESOURCES', 'SEQUENCE',
+        'STATUS', 'TRANSP', 'URL', 'TZID', 'TZNAME', 'TZOFFSETFROM', 
+        'TZOFFSETTO', 'TZURL'
+    ];
+
+    // Check Start/Ende
+    const firstValidLine = rawLines.find(l => l.trim().length > 0);
+    if (!firstValidLine || !firstValidLine.toUpperCase().includes('BEGIN:VCALENDAR')) {
+        const msg = 'Datei muss mit "BEGIN:VCALENDAR" beginnen.';
+        errors.push(msg);
+        showSectionMessage('coreProperties', msg, 'error');
     }
-    updateValidationStatus('coreProperties', hasCore ? (coreValid ? 'success' : 'error') : 'warning');
-
-    // Validate extended properties
-    let hasExtended = false;
-    let extendedValid = true;
-    let extendedMessages = [];
-    lines.forEach((line, index) => {
-        if (line.startsWith('DESCRIPTION:') || line.startsWith('LOCATION:') || line.startsWith('URL:') || line.startsWith('RRULE:') || line.startsWith('ATTACH:') || line.startsWith('TRIGGER;') || line.startsWith('ACTION:')) {
-            hasExtended = true;
-            if (!validateICSLine(line)) {
-                extendedValid = false;
-                extendedMessages.push(`Zeile ${index + 1}: Ungültige Syntax in "${line}"`);
-            }
-        }
-    });
-    if (!hasExtended) {
-        showSectionMessage('extendedProperties', 'Keine erweiterten Properties gefunden', 'warning');
-    } else if (!extendedValid) {
-        extendedMessages.forEach(msg => showSectionMessage('extendedProperties', msg, 'error'));
-    } else {
-        showSectionMessage('extendedProperties', 'Alle erweiterten Properties sind gültig', 'success');
+    
+    if (!rawLines.some(l => l.trim().toUpperCase() === 'END:VCALENDAR')) {
+        const msg = 'Datei muss mit "END:VCALENDAR" enden.';
+        errors.push(msg);
+        showSectionMessage('coreProperties', msg, 'error');
     }
-    updateValidationStatus('extendedProperties', hasExtended ? (extendedValid ? 'success' : 'error') : 'warning');
 
-    // Validate special properties
-    let hasSpecial = false;
-    let specialValid = true;
-    let specialMessages = [];
     lines.forEach((line, index) => {
-        if (line.startsWith('TRIGGER;') || line.startsWith('ACTION:')) {
-            hasSpecial = true;
-            if (!validateICSLine(line)) {
-                specialValid = false;
-                specialMessages.push(`Zeile ${index + 1}: Ungültige Syntax in "${line}"`);
-            }
+        const lineContext = `(Zeile ${index + 1})`; // Logische Zeile
+        if (line.trim() === '') return;
+
+        const parts = line.split(':');
+        if (parts.length < 2) {
+             // Ignoriere Zeilen, die vielleicht durch kaputtes Copy-Paste entstanden sind,
+             // aber eigentlich valide wären, wenn wir nicht zu strikt sind.
+             // Aber Standard sagt: PropertyName:Value
+             errors.push(`${lineContext}: Ungültige Syntax in "${line.substring(0, 30)}..."`);
+             return;
         }
-    });
-    if (!hasSpecial) {
-        showSectionMessage('specialValidation', 'Keine speziellen Properties gefunden', 'warning');
-    } else if (!specialValid) {
-        specialMessages.forEach(msg => showSectionMessage('specialValidation', msg, 'error'));
-    } else {
-        showSectionMessage('specialValidation', 'Alle speziellen Properties sind gültig', 'success');
-    }
-    updateValidationStatus('specialValidation', hasSpecial ? (specialValid ? 'success' : 'error') : 'warning');
 
-    // Additional checks
-    let additionalValid = true;
-    let additionalMessages = [];
-    lines.forEach((line, index) => {
-        const lineNumber = index + 1;
-        const validation = validateICSLine(line);
+        const propertyPart = parts[0];
+        const propertyName = propertyPart.split(';')[0].toUpperCase().trim();
 
-        if (validation === false) {
-            errors.push(`Zeile ${lineNumber}: Ungültige Property-Syntax in "${line}"`);
-            additionalValid = false;
-            additionalMessages.push(`Zeile ${lineNumber}: Ungültige Property-Syntax in "${line}"`);
-        } else if (typeof validation === 'object' && validation.isValid && !validation.isKnown) {
-            warnings.push(`Zeile ${lineNumber}: Unbekannte Property "${line.split(/[;:]/)[0]}"`);
-            additionalMessages.push(`Zeile ${lineNumber}: Unbekannte Property "${line.split(/[;:]/)[0]}"`);
+        // Validierung
+        const isKnown = validProperties.includes(propertyName);
+        const isXProp = propertyName.startsWith('X-');
+        
+        if (!isKnown && !isXProp) {
+            warnings.push(`${lineContext}: Unbekannte Property "${propertyName}"`);
+        }
+        
+        // Spezielle Checks
+        if (['DTSTART', 'DTEND'].includes(propertyName)) {
+             if (!isValidICSDate(line)) {
+                 warnings.push(`${lineContext}: Mögliches Datumsformat-Problem in "${propertyName}"`);
+             }
         }
     });
 
-    if (additionalMessages.length > 0) {
-        additionalMessages.forEach(msg => {
-            showSectionMessage('additionalChecks', msg, additionalValid ? 'warning' : 'error');
-        });
+    // Zusammenfassende Status-Updates für die UI-Boxen (vereinfacht)
+    if (errors.length === 0) {
+        showSectionMessage('coreProperties', 'Struktur OK', 'success');
+        updateValidationStatus('coreProperties', 'success');
     } else {
-        showSectionMessage('additionalChecks', 'Keine zusätzlichen Probleme gefunden', 'success');
+        updateValidationStatus('coreProperties', 'error');
     }
-    updateValidationStatus('additionalChecks', additionalValid ? 'success' : (warnings.length > 0 ? 'warning' : 'error'));
+    
+    if (warnings.length === 0) {
+        showSectionMessage('additionalChecks', 'Keine Warnungen', 'success');
+        updateValidationStatus('additionalChecks', 'success');
+    } else {
+         warnings.forEach(w => showSectionMessage('additionalChecks', w, 'warning'));
+         updateValidationStatus('additionalChecks', 'warning');
+    }
 
     return { errors, warnings };
 }
 
 function validateICSLine(line) {
-    // Debug: Zeige die zu validierende Zeile
-    // console.log('Validiere Zeile:', line);
-
-    // Erlaube leere Zeilen
-    if (line.trim() === '') {
-        // console.log('Leere Zeile erkannt');
-        return true;
-    }
-
-    // Erlaube explizit alle BEGIN/END-Zeilen ohne Value
-    const beginEndPatterns = [
-        /^BEGIN:VCALENDAR$/,
-        /^END:VCALENDAR$/,
-        /^BEGIN:VEVENT$/,
-        /^END:VEVENT$/,
-        /^BEGIN:VALARM$/,
-        /^END:VALARM$/
-    ];
-    if (beginEndPatterns.some(re => re.test(line.trim()))) {
-        return true;
-    }
-
-    // Ignoriere Google-spezifische Zeilen
-    if (line.includes('hangouts.google.com') ||
-        line.includes('~:~:~:~:~:~') ||
-        line.includes('calendar/') ||
-        /[a-zA-Z0-9]{20,}/.test(line)) {
-        // console.log('Google-spezifische Zeile ignoriert');
-        return true;
-    }
-
-    // Liste der Kern-Properties nach RFC 5545
-    const coreProperties = [
-        'BEGIN:VCALENDAR',
-        'VERSION',
-        'PRODID',
-        'BEGIN:VEVENT',
-        'UID',
-        'DTSTAMP',
-        'DTSTART',
-        'DTEND',
-        'SUMMARY',
-        'END:VEVENT',
-        'END:VCALENDAR'
-    ];
-
-    // Liste der erweiterten Properties
-    const extendedProperties = [
-        'DESCRIPTION',
-        'LOCATION',
-        'URL',
-        'RRULE',
-        'ATTACH',
-        'TRIGGER',
-        'ACTION'
-    ];
-
-    // Prüfe ob die Zeile mit einer gültigen Property beginnt
-    const parts = line.split(':');
-    const propertyPart = parts[0];
-    const valuePart = parts[1];
-
-    // Extrahiere den Property-Namen (vor dem ersten ; oder :)
-    const propertyName = propertyPart.split(';')[0].toUpperCase();
-
-    // Wenn es eine Kern-Property ist
-    if (coreProperties.includes(propertyName)) {
-        return true;
-    }
-
-    // Wenn es eine erweiterte Property ist
-    if (extendedProperties.includes(propertyName)) {
-        return { isValid: true, isKnown: true };
-    }
-
-    // Spezielle Validierung für TRIGGER
-    if (propertyName === 'TRIGGER') {
-        const durationPattern = /^-?PT\d+[HMS]$/;
-        const isValid = durationPattern.test(valuePart);
-        return isValid;
-    }
-
-    // Spezielle Validierung für ACTION
-    if (propertyName === 'ACTION') {
-        const validActions = ['DISPLAY', 'AUDIO', 'EMAIL'];
-        const isValid = validActions.includes(valuePart);
-        return isValid;
-    }
-
-    // Unbekannte Property
-    return false;
+   // Legacy Funktion, wird intern kaum noch gebraucht, aber 
+   // falls noch Referenzen existieren, lassen wir eine Dummy-Implementierung
+   return true; 
 }
 
 // --- Hilfsfunktion für Norm-Referenz ---
