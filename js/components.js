@@ -184,15 +184,18 @@ try {
     // Ignorieren im Browser-Kontext
 }
 
-// Service Worker Registrierung für PWA
+// Service Worker Kill Switch (um Caching-Probleme zu beheben)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            })
-            .catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-            });
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                console.log('Unregistering Service Worker:', registration);
+                registration.unregister();
+            }
+            // Optional: Reload erzwingen, falls noch ein SW aktiv war
+            if (registrations.length > 0) {
+                console.log('Old Service Worker found and unregistered. Please reload if changes are not visible.');
+            }
+        });
     });
 }
