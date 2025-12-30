@@ -51,6 +51,9 @@ Nutzen Sie das `deploy.sh` Script, um die Installation zu aktualisieren (resette
 
 ## Changelog
 
+### Version 2.8.1 (2025-01-01)
+- **UI:** Fix für Lesbarkeitsprobleme im Dark Mode.
+
 ### Version 2.8 (2025-01-01)
 - **Generator:** QR-Code Generierung für Termine (direkter Transfer aufs Smartphone).
 - **Validator:** 
