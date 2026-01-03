@@ -1,5 +1,6 @@
 import { initializeEventHandlers } from './eventHandlers.js';
 import { initializeDateTimeFields } from './dateTimeManager.js';
+import { duplicateEvent } from './eventManager.js';
 
 /**
  * Initialisiert alle Event-Handler und UI-Elemente für den Generator
@@ -32,7 +33,7 @@ export function initializeGenerator() {
                     // Füge importierte Events hinzu
                     events.forEach(eventObj => {
                         // Erstelle neues Formular
-                        const newEvent = window.duplicateEvent(); // global, da nicht als Modul exportiert
+                        const newEvent = duplicateEvent();
                         // Felder befüllen
                         if (!newEvent) return;
                         const form = newEvent.querySelector('.eventForm');

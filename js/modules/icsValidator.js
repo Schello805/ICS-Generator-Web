@@ -1,7 +1,7 @@
 /**
  * ICS Validator Module
- * Version: 2.8
- * Last Updated: 2025-01-01
+ * Version: 2.8.3
+ * Last Updated: 2026-01-03
  * 
  * Der Validator überprüft ICS-Dateien auf Konformität mit dem RFC 5545 Standard.
  * Er unterstützt nun auch "Unfolding" (mehrzeilige Properties) und X-Properties.
@@ -274,6 +274,24 @@ function isValidICSDate(dateString) {
     return /^\d{8}T\d{6}(?:Z)?$/.test(value.trim());
 }
 
+function parseTriggerDurationMinutes(rawValue) {
+    if (!rawValue) return null;
+    const value = String(rawValue).trim();
+    const m = value.match(/^([+-])?P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/i);
+    if (!m) return null;
+
+    const sign = m[1] || '+';
+    const weeks = parseInt(m[2] || '0', 10);
+    const days = parseInt(m[3] || '0', 10);
+    const hours = parseInt(m[4] || '0', 10);
+    const minutes = parseInt(m[5] || '0', 10);
+    const seconds = parseInt(m[6] || '0', 10);
+
+    const totalMinutes = (weeks * 7 * 24 * 60) + (days * 24 * 60) + (hours * 60) + minutes + Math.floor(seconds / 60);
+    if (totalMinutes <= 0) return null;
+    if (sign !== '-') return null;
+    return totalMinutes;
+}
 export function validateICS(icsContent) {
     // 1. Unfolding (Zeilenumbrüche entfernen)
     const rawLines = icsContent.split(/\r\n|\n|\r/);
@@ -291,6 +309,8 @@ export function validateICS(icsContent) {
 
     const errors = [];
     const warnings = [];
+    const extendedWarnings = [];
+    const specialWarnings = [];
 
     // Reset validation status and messages
     resetValidationStatus();
@@ -321,7 +341,8 @@ export function validateICS(icsContent) {
         errors.push(msg);
         showSectionMessage('coreProperties', msg, 'error');
     }
-
+ 
+    let inAlarm = false;
     lines.forEach((line, index) => {
         const lineContext = `(Zeile ${index + 1})`; // Logische Zeile
         if (line.trim() === '') return;
@@ -338,12 +359,21 @@ export function validateICS(icsContent) {
         const propertyPart = parts[0];
         const propertyName = propertyPart.split(';')[0].toUpperCase().trim();
 
+        if (propertyName === 'BEGIN' && parts.slice(1).join(':').trim().toUpperCase() === 'VALARM') {
+            inAlarm = true;
+        }
+        if (propertyName === 'END' && parts.slice(1).join(':').trim().toUpperCase() === 'VALARM') {
+            inAlarm = false;
+        }
+
         // Validierung
         const isKnown = validProperties.includes(propertyName);
         const isXProp = propertyName.startsWith('X-');
         
         if (!isKnown && !isXProp) {
-            warnings.push(`${lineContext}: Unbekannte Property "${propertyName}"`);
+            const msg = `${lineContext}: Unbekannte Property "${propertyName}"`;
+            warnings.push(msg);
+            extendedWarnings.push(msg);
         }
         
         // Spezielle Checks
@@ -351,6 +381,19 @@ export function validateICS(icsContent) {
              if (!isValidICSDate(line)) {
                  warnings.push(`${lineContext}: Mögliches Datumsformat-Problem in "${propertyName}"`);
              }
+        }
+
+        if (inAlarm && propertyName === 'TRIGGER') {
+            const rawValue = parts.slice(1).join(':').trim();
+            const minutes = parseTriggerDurationMinutes(rawValue);
+            if (minutes !== null) {
+                const knownReminderMinutes = new Set([0, 10, 30, 60, 120, 1440, 10080]);
+                if (!knownReminderMinutes.has(minutes)) {
+                    const msg = `${lineContext}: TRIGGER entspricht ${minutes} Minuten vorher. Dafür gibt es keine vordefinierte Erinnerungs-Option. Beim Import kann eine Alternative ausgewählt werden.`;
+                    warnings.push(msg);
+                    specialWarnings.push(msg);
+                }
+            }
         }
     });
 
@@ -360,6 +403,27 @@ export function validateICS(icsContent) {
         updateValidationStatus('coreProperties', 'success');
     } else {
         updateValidationStatus('coreProperties', 'error');
+    }
+
+    if (errors.length === 0) {
+        if (extendedWarnings.length === 0) {
+            showSectionMessage('extendedProperties', 'Keine Auffälligkeiten', 'success');
+            updateValidationStatus('extendedProperties', 'success');
+        } else {
+            extendedWarnings.forEach(w => showSectionMessage('extendedProperties', w, 'warning'));
+            updateValidationStatus('extendedProperties', 'warning');
+        }
+
+        if (specialWarnings.length === 0) {
+            showSectionMessage('specialValidation', 'Keine Auffälligkeiten', 'success');
+            updateValidationStatus('specialValidation', 'success');
+        } else {
+            specialWarnings.forEach(w => showSectionMessage('specialValidation', w, 'warning'));
+            updateValidationStatus('specialValidation', 'warning');
+        }
+    } else {
+        updateValidationStatus('extendedProperties', 'error');
+        updateValidationStatus('specialValidation', 'error');
     }
     
     if (warnings.length === 0) {

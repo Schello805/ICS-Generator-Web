@@ -3,6 +3,8 @@
  * Lädt Header und Footer dynamisch in alle Seiten
  */
 
+import { initializeICSImportModal } from './modules/icsImport.js';
+
 // Konfigurationsobjekt für die Navigation
 const NAV_CONFIG = {
     'index.html': { id: 'nav-home', label: 'Startseite' },
@@ -73,9 +75,8 @@ function setActiveNavItem() {
 
 // Modal-Initialisierung nachladen, falls vorhanden
 function tryInitICSImportModal() {
-    if (typeof initializeICSImportModal === 'function') {
-        initializeICSImportModal();
-    }
+    if (!document.getElementById('icsImportModal')) return;
+    initializeICSImportModal();
 }
 
 // Theme-Verwaltung

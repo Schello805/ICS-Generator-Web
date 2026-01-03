@@ -51,6 +51,12 @@ Nutzen Sie das `deploy.sh` Script, um die Installation zu aktualisieren (resette
 
 ## Changelog
 
+### Version 2.8.3 (2026-01-03)
+- **Import:** Verbesserte Erinnerungs-Erkennung aus ICS (VALARM/TRIGGER), inkl. RFC5545 Duration Support.
+- **Import:** "9 Uhr am Vortag" wird beim Import wieder korrekt als Option erkannt.
+- **Import/UI:** Bei nicht zuordenbaren Erinnerungen kann der Nutzer eine Alternative auswählen (inkl. "Für alle setzen").
+- **Import:** DESCRIPTION wird beim Import korrekt ent-escaped (z.B. `\\n` → Zeilenumbruch).
+
 ### Version 2.8.2 (2025-01-01)
 - **Generator:** Neue Erinnerungs-Option: "9 Uhr am Vortag" (Speziell für Wandergruppen/Tourenplanung).
 
@@ -67,7 +73,6 @@ Nutzen Sie das `deploy.sh` Script, um die Installation zu aktualisieren (resette
 ### Version 2.7 (2025-01-01)
 - **Validator:** Verbesserter RFC 5545 Support (Outlook/Google).
 - **System:** Deployment-Script (`deploy.sh`) hinzugefügt.
-
 ### Version 2.6
 - UI Modernisierung, Fixes für Scroll-Probleme.
 

@@ -5,6 +5,36 @@ import { toggleDateTimeFields } from './dateTimeManager.js';
 
 let parsedEvents = [];
 
+function unescapeICSText(value) {
+    if (value === undefined || value === null) return value;
+    const str = String(value);
+    return str
+        .replace(/\\\\n/g, '\n')
+        .replace(/\\n/g, '\n')
+        .replace(/\\\\,/g, ',')
+        .replace(/\\;/g, ';')
+        .replace(/\\\\/g, '\\');
+}
+
+function parseTriggerDurationMinutes(rawValue) {
+    if (!rawValue) return null;
+    const value = String(rawValue).trim();
+    const m = value.match(/^([+-])?P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/i);
+    if (!m) return null;
+
+    const sign = m[1] || '+';
+    const weeks = parseInt(m[2] || '0', 10);
+    const days = parseInt(m[3] || '0', 10);
+    const hours = parseInt(m[4] || '0', 10);
+    const minutes = parseInt(m[5] || '0', 10);
+    const seconds = parseInt(m[6] || '0', 10);
+
+    const totalMinutes = (weeks * 7 * 24 * 60) + (days * 24 * 60) + (hours * 60) + minutes + Math.floor(seconds / 60);
+    if (totalMinutes <= 0) return null;
+    if (sign !== '-') return null;
+    return totalMinutes;
+}
+
 function parseICSEvents(icsContent) {
     const events = [];
     const veventRegex = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/g;
@@ -21,15 +51,10 @@ function parseICSEvents(icsContent) {
             if (inAlarm) {
                 // Reminder aus VALARM
                 if (trimmed.startsWith('TRIGGER:')) {
-                    // Beispiel: TRIGGER:-PT30M
-                    const val = trimmed.split(':')[1];
-                    // Wandle typische Reminder in Minuten um
-                    if (val.startsWith('-PT')) {
-                        let min = 0;
-                        if (val.endsWith('M')) min = parseInt(val.match(/-PT(\d+)M/)[1]);
-                        if (val.endsWith('H')) min = parseInt(val.match(/-PT(\d+)H/)[1]) * 60;
-                        if (val.endsWith('D')) min = parseInt(val.match(/-PT(\d+)D/)[1]) * 1440;
-                        event['REMINDER'] = min;
+                    const val = trimmed.substring('TRIGGER:'.length).trim();
+                    const minutes = parseTriggerDurationMinutes(val);
+                    if (minutes !== null) {
+                        event['REMINDER'] = minutes;
                     }
                 }
                 return;
@@ -81,6 +106,148 @@ function parseICSDateTime(dt) {
     return { date, time };
 }
 
+function computeCustom9amDayBeforeMinutes(eventObj) {
+    if (!eventObj || !eventObj['DTSTART']) return null;
+
+    const dt = parseICSDateTime(eventObj['DTSTART']);
+    if (!dt?.date) return null;
+
+    // Startzeit: bei Ganztag 00:00, sonst die geparste lokale Uhrzeit
+    const isoDate = dt.date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+    const startIso = dt.time ? `${isoDate}T${dt.time}:00` : `${isoDate}T00:00:00`;
+    const startDt = new Date(startIso);
+    if (Number.isNaN(startDt.getTime())) return null;
+
+    // Ziel: 09:00 am Vortag
+    const targetDt = new Date(startDt.getTime());
+    targetDt.setHours(9, 0, 0, 0);
+    targetDt.setDate(targetDt.getDate() - 1);
+
+    const diffMs = startDt - targetDt;
+    const minutes = Math.floor(diffMs / (1000 * 60));
+    return minutes > 0 ? minutes : null;
+}
+
+function buildUnknownReminderModal(unknownReminders, reminderOptions) {
+    const existing = document.getElementById('unknownReminderModal');
+    if (existing) existing.remove();
+
+    const modalEl = document.createElement('div');
+    modalEl.className = 'modal fade';
+    modalEl.id = 'unknownReminderModal';
+    modalEl.tabIndex = -1;
+    modalEl.setAttribute('aria-labelledby', 'unknownReminderModalLabel');
+    modalEl.setAttribute('aria-hidden', 'true');
+
+    const optionsHtml = reminderOptions
+        .map(o => `<option value="${String(o.value).replace(/"/g, '&quot;')}">${String(o.text).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</option>`)
+        .join('');
+
+    const rowsHtml = unknownReminders.map((u) => {
+        const title = (u.summary || `Event ${u.index + 1}`).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return `
+            <div class="row align-items-center mb-2" data-unknown-reminder-row="1">
+                <div class="col-12 col-md-6">
+                    <div><b>${title}</b></div>
+                    <div class="text-muted small">Importierter Reminder: ${u.minutes} Minuten vorher</div>
+                </div>
+                <div class="col-12 col-md-6 mt-2 mt-md-0">
+                    <select class="form-select unknown-reminder-select" data-event-index="${u.index}">
+                        ${optionsHtml}
+                    </select>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    modalEl.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unknownReminderModalLabel">Erinnerungen beim Import anpassen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">Einige importierte Erinnerungen konnten nicht 1:1 zugeordnet werden. Bitte wählen Sie pro Termin eine Alternative:</div>
+                    <div class="row align-items-end mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Für alle</label>
+                            <select class="form-select" id="unknownReminderBulkSelect">
+                                ${optionsHtml}
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 mt-2 mt-md-0">
+                            <button type="button" class="btn btn-outline-primary w-100" id="unknownReminderApplyAllBtn">Für alle setzen</button>
+                        </div>
+                    </div>
+                    ${rowsHtml}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="unknownReminderCancelBtn">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="unknownReminderApplyBtn">Übernehmen</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modalEl);
+    return modalEl;
+}
+
+function openUnknownReminderModal(unknownReminders, formsInDOM) {
+    if (!unknownReminders || unknownReminders.length === 0) return;
+
+    const firstForm = formsInDOM?.[0];
+    const reminderSelect = firstForm ? firstForm.querySelector('.reminderTime') : null;
+    if (!reminderSelect) return;
+
+    const reminderOptions = Array.from(reminderSelect.options).map(o => ({ value: o.value, text: o.text }));
+    const modalEl = buildUnknownReminderModal(unknownReminders, reminderOptions);
+
+    const applyAllBtn = modalEl.querySelector('#unknownReminderApplyAllBtn');
+    const bulkSelect = modalEl.querySelector('#unknownReminderBulkSelect');
+    if (applyAllBtn && bulkSelect) {
+        applyAllBtn.addEventListener('click', () => {
+            const v = bulkSelect.value;
+            const selects = modalEl.querySelectorAll('.unknown-reminder-select');
+            selects.forEach(sel => {
+                sel.value = v;
+            });
+        });
+    }
+
+    const applyBtn = modalEl.querySelector('#unknownReminderApplyBtn');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+            const selects = modalEl.querySelectorAll('.unknown-reminder-select');
+            selects.forEach(sel => {
+                const idx = parseInt(sel.getAttribute('data-event-index') || '', 10);
+                const form = formsInDOM?.[idx];
+                const reminder = form ? form.querySelector('.reminderTime') : null;
+                if (reminder) reminder.value = sel.value;
+            });
+
+            if (window.bootstrap && bootstrap.Modal) {
+                const instance = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+                instance.hide();
+            } else if (window.$ && typeof $(modalEl).modal === 'function') {
+                $(modalEl).modal('hide');
+            }
+        });
+    }
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        modalEl.remove();
+    });
+
+    if (window.bootstrap && bootstrap.Modal) {
+        const instance = bootstrap.Modal.getOrCreateInstance(modalEl);
+        instance.show();
+    } else if (window.$ && typeof $(modalEl).modal === 'function') {
+        $(modalEl).modal('show');
+    }
+}
+
 function showValidationResult(resultHtml, isSuccess) {
     const resultDiv = document.getElementById('icsValidationResult');
     resultDiv.className = isSuccess ? 'alert alert-success' : 'alert alert-danger';
@@ -116,6 +283,7 @@ function handleICSFile(e) {
 
 function importEventsToUI() {
     if (!parsedEvents.length) return;
+    const unknownReminders = [];
 
     // KORREKTUR: Alle bestehenden Formulare entfernen
     document.querySelectorAll('.eventForm').forEach(form => {
@@ -143,7 +311,7 @@ function importEventsToUI() {
 
         // Standard-Felder
         if (eventObj['SUMMARY'] && form.querySelector('.summary')) form.querySelector('.summary').value = eventObj['SUMMARY'];
-        if (eventObj['DESCRIPTION'] && form.querySelector('.description')) form.querySelector('.description').value = eventObj['DESCRIPTION'];
+        if (eventObj['DESCRIPTION'] && form.querySelector('.description')) form.querySelector('.description').value = unescapeICSText(eventObj['DESCRIPTION']);
         if (eventObj['LOCATION'] && form.querySelector('.location')) form.querySelector('.location').value = eventObj['LOCATION'];
 
         // DTSTART und DTEND aufteilen in Datum und Uhrzeit, Zeitzone berücksichtigen
@@ -207,11 +375,42 @@ function importEventsToUI() {
                 }
             }
         }
-        if (eventObj['REMINDER'] && form.querySelector('.reminderTime')) {
-            form.querySelector('.reminderTime').value = eventObj['REMINDER'];
+        if (form.querySelector('.reminderTime')) {
+            const reminderSelect = form.querySelector('.reminderTime');
+
+            if (eventObj['REMINDER'] !== undefined && eventObj['REMINDER'] !== null && eventObj['REMINDER'] !== '') {
+                const reminderMinutes = String(eventObj['REMINDER']);
+
+                // Spezialfall: "9 Uhr am Vortag" als Minutenwert in TRIGGER gespeichert
+                const custom9amMinutes = computeCustom9amDayBeforeMinutes(eventObj);
+                if (custom9amMinutes !== null && String(custom9amMinutes) === reminderMinutes) {
+                    reminderSelect.value = 'custom_9am_day_before';
+                } else {
+                    // Normale Fälle: Wert setzen, wenn im Select vorhanden
+                    const hasOption = Array.from(reminderSelect.options).some(o => o.value === reminderMinutes);
+                    if (hasOption) {
+                        reminderSelect.value = reminderMinutes;
+                    } else {
+                        // Unbekannter Minutenwert aus Import: kein unerwartetes UI-Verhalten erzeugen
+                        reminderSelect.value = '0';
+                        unknownReminders.push({
+                            index: idx,
+                            minutes: reminderMinutes,
+                            summary: eventObj['SUMMARY'] || ''
+                        });
+                    }
+                }
+            } else {
+                reminderSelect.value = '0';
+            }
         }
     });
 
+    // Nach dem Import ggf. Auswahl für nicht erkannte Reminder anbieten
+    if (unknownReminders.length > 0) {
+        const formsInDOM = document.querySelectorAll('.eventForm');
+        openUnknownReminderModal(unknownReminders, formsInDOM);
+    }
     // --- Ab hier deine Logik zur Erfolgsmeldung und Mapping-Anzeige ---
 
     const importSuccessDiv = document.getElementById('importSuccess');
@@ -264,7 +463,7 @@ function importEventsToUI() {
                 <ul class="mb-1">`;
             // Prüfe relevante Felder
             html += checkFieldMapping(form, '.summary', eventObj['SUMMARY'], 'SUMMARY');
-            html += checkFieldMapping(form, '.description', eventObj['DESCRIPTION'], 'DESCRIPTION');
+            html += checkFieldMapping(form, '.description', unescapeICSText(eventObj['DESCRIPTION']), 'DESCRIPTION');
             html += checkFieldMapping(form, '.location', eventObj['LOCATION'], 'LOCATION');
             html += checkFieldMapping(form, '.startDate', eventObj['DTSTART'] ? parseICSDateTime(eventObj['DTSTART']).date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') : '', 'DTSTART (Datum)');
             html += checkFieldMapping(form, '.startTime', eventObj['DTSTART'] ? parseICSDateTime(eventObj['DTSTART']).time : '', 'DTSTART (Zeit)');
@@ -355,8 +554,4 @@ export function initializeICSImportModal() {
     if (window.location.hash === '#icsImport') {
         setTimeout(() => openModal(), 300);
     }
-}
-
-if (window.location.pathname.endsWith('generator.html')) {
-    document.addEventListener('DOMContentLoaded', initializeICSImportModal);
 }
