@@ -143,9 +143,9 @@ export async function createICSCalendar(events) {
             // Ganztägig: DTEND auf Folgetag setzen (RFC 5545)
             if (allDay) {
                 icsContent += `DTSTART;VALUE=DATE:${startDate.replace(/-/g, '')}\r\n`;
-                // Folgetag berechnen
-                const start = new Date(startDate);
-                const nextDay = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+                // Folgetag des Enddatums berechnen (DTEND ist exklusiv)
+                const end = new Date(endDate);
+                const nextDay = new Date(end.getTime() + 24 * 60 * 60 * 1000);
                 const yyyy = nextDay.getFullYear();
                 const mm = String(nextDay.getMonth() + 1).padStart(2, '0');
                 const dd = String(nextDay.getDate()).padStart(2, '0');
