@@ -23,9 +23,16 @@ Ein webbasiertes Tool zur Erstellung und Validierung von iCalendar-Dateien.
    git clone https://github.com/Schello805/ICS-Generator-Web.git
    cd ICS-Generator-Web
    ```
-2. Webserver starten (z.B. Python):
+2. Webserver starten (z.B. Python, Java, Npx):
    ```bash
+   # Python
    python -m http.server 8000
+
+   # Java
+   jwebserver
+
+   # Npx
+   npx serve
    ```
 3. Browser öffnen: `http://localhost:8000`
 
