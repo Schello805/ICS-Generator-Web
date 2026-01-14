@@ -72,15 +72,6 @@
                             </div>
                         </div>
 
-                        <!-- Ort -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Ort</label>
-                                <input type="text" class="form-control form-control-sm location" id="location1"
-                                    name="location">
-                            </div>
-                        </div>
-
                         <!-- Datum und Zeit -->
                         <div class="row mb-2">
                             <div class="col-md-6">
@@ -127,6 +118,26 @@
                             </div>
                             <div class="col-12">
                                 <small class="text-muted">* Pflichtfeld bei Terminen mit Uhrzeit</small>
+                            </div>
+                        </div>
+
+                        <!-- Toggle for optional fields -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse"
+                                    data-bs-target="#optionalFields" aria-expanded="false" aria-controls="optionalFields">
+                                    <i class="fas fa-chevron-down me-1"></i> Weitere Optionen
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Optional fields (collapsed by default) -->
+                        <div class="collapse" id="optionalFields">
+                        <!-- Ort -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <label class="form-label">Ort</label>
+                                <input type="text" class="form-control form-control-sm location" name="location">
                             </div>
                         </div>
 
@@ -272,6 +283,7 @@
                                 <small class="text-muted">Link zu einer Datei (z.B. PDF, Bild, etc.)</small>
                             </div>
                         </div>
+                        </div> <!-- End of optional fields collapse -->
                     </form>
                 </div>
             </div>
@@ -304,14 +316,6 @@
                                 </label>
                                 <input type="text" class="form-control form-control-sm summary" required name="summary"
                                     data-error="Bitte geben Sie einen Titel ein">
-                            </div>
-                        </div>
-
-                        <!-- Ort -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Ort</label>
-                                <input type="text" class="form-control form-control-sm location" name="location">
                             </div>
                         </div>
 
@@ -361,6 +365,26 @@
                             </div>
                             <div class="col-12">
                                 <small class="text-muted">* Pflichtfeld bei Terminen mit Uhrzeit</small>
+                            </div>
+                        </div>
+
+                        <!-- Toggle for optional fields -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse"
+                                    data-bs-target="#optionalFieldsTemplate" aria-expanded="false" aria-controls="optionalFieldsTemplate">
+                                    <i class="fas fa-chevron-down me-1"></i> Weitere Optionen
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Optional fields (collapsed by default) -->
+                        <div class="collapse" id="optionalFieldsTemplate">
+                        <!-- Ort -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <label class="form-label">Ort</label>
+                                <input type="text" class="form-control form-control-sm location" name="location">
                             </div>
                         </div>
 
@@ -499,6 +523,7 @@
                                 <small class="text-muted">Link zu einer Datei (z.B. PDF, Bild, etc.)</small>
                             </div>
                         </div>
+                        </div> <!-- End of optional fields collapse -->
                     </form>
                 </div>
             </div>
