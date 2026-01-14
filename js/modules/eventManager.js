@@ -105,7 +105,7 @@ function copyFormFields(sourceForm, targetForm) {
         ].join(', ');
 
         const targetInput = targetForm.querySelector(selectors);
-        
+
         if (targetInput) {
             // Kopiere den Wert basierend auf dem Feldtyp
             if (sourceInput.type === 'checkbox' || sourceInput.type === 'radio') {
@@ -211,10 +211,10 @@ function updateEventNumbers() {
             if (input.id) {
                 const baseName = input.id.replace(/\d+$/, '');
                 const newId = `${baseName}${index + 1}`;
-                
+
                 // Aktualisiere die ID
                 input.id = newId;
-                
+
                 // Aktualisiere das zugehörige Label
                 const label = form.querySelector(`label[for="${input.id}"]`);
                 if (label) {
@@ -222,6 +222,21 @@ function updateEventNumbers() {
                 }
             }
         });
+
+        // Aktualisiere IDs für Collapse-Funktionalität (Weitere Optionen)
+        const collapseBtn = form.querySelector('[data-bs-toggle="collapse"]');
+        const collapseDiv = form.querySelector('.collapse');
+
+        if (collapseBtn && collapseDiv) {
+            const newId = `optionalFields${index + 1}`;
+
+            // Update Ziel-ID des Buttons
+            collapseBtn.setAttribute('data-bs-target', `#${newId}`);
+            collapseBtn.setAttribute('aria-controls', newId);
+
+            // Update ID des Divs
+            collapseDiv.id = newId;
+        }
     });
 }
 

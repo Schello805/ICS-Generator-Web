@@ -122,12 +122,12 @@ function initializeTheme() {
 
 document.addEventListener('DOMContentLoaded', function () {
     // Lade Header
-    loadComponent('header', 'components/header.html?v=2.8.2').then(() => {
+    loadComponent('header', 'components/header.html?v=2.9').then(() => {
         // Theme-Logik initialisieren, sobald Header geladen ist
         initializeTheme();
     });
     // Lade Footer
-    loadComponent('footer', 'components/footer.html?v=2.8.2');
+    loadComponent('footer', 'components/footer.html?v=2.9');
 
     // Nach dem Nachladen des Headers das Modal initialisieren!
     window.waitForElement('#icsImportModal').then(() => {
@@ -188,8 +188,8 @@ try {
 // Service Worker Kill Switch (um Caching-Probleme zu beheben)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            for (let registration of registrations) {
                 console.log('Unregistering Service Worker:', registration);
                 registration.unregister();
             }

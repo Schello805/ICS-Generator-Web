@@ -72,15 +72,6 @@
                             </div>
                         </div>
 
-                        <!-- Ort -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Ort</label>
-                                <input type="text" class="form-control form-control-sm location" id="location1"
-                                    name="location">
-                            </div>
-                        </div>
-
                         <!-- Datum und Zeit -->
                         <div class="row mb-2">
                             <div class="col-md-6">
@@ -130,148 +121,170 @@
                             </div>
                         </div>
 
-                        <!-- Beschreibung -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Beschreibung</label>
-                                <textarea class="form-control form-control-sm description" rows="2" id="description1"
-                                    name="description"></textarea>
+                        <hr class="my-3">
+
+                        <!-- Button für weitere Optionen -->
+                        <button class="btn btn-outline-secondary w-100 mb-3 collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#optionalFields1" aria-expanded="false"
+                            aria-controls="optionalFields1">
+                            Weitere Optionen (Ort, Beschreibung, Wiederholung...) <i
+                                class="fas fa-chevron-down ms-1"></i>
+                        </button>
+
+                        <div class="collapse" id="optionalFields1">
+                            <!-- Ort -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label">Ort</label>
+                                    <input type="text" class="form-control form-control-sm location" id="location1"
+                                        name="location">
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Wiederholung -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label h6 mb-2">Wiederholung</label>
-                                <select class="form-select repeatType" id="repeatType1" name="repeatType">
-                                    <option value="none">Keine Wiederholung</option>
-                                    <option value="DAILY">Täglich</option>
-                                    <option value="WEEKLY">Wöchentlich</option>
-                                    <option value="MONTHLY">Monatlich</option>
-                                    <option value="YEARLY">Jährlich</option>
-                                </select>
+                            <!-- Beschreibung -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label">Beschreibung</label>
+                                    <textarea class="form-control form-control-sm description" rows="2"
+                                        id="description1" name="description"></textarea>
+                                </div>
+                            </div>
 
-                                <div class="repeatDetails mt-2" style="display: none;">
-                                    <div class="row mb-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Intervall</label>
-                                            <div class="input-group">
-                                                <input type="number" class="form-control repeatInterval" value="1"
-                                                    min="1" id="repeatInterval1" name="repeatInterval">
-                                                <span class="input-group-text repeatIntervalLabel">Intervall</span>
+                            <!-- Wiederholung -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label h6 mb-2">Wiederholung</label>
+                                    <select class="form-select repeatType" id="repeatType1" name="repeatType">
+                                        <option value="none">Keine Wiederholung</option>
+                                        <option value="DAILY">Täglich</option>
+                                        <option value="WEEKLY">Wöchentlich</option>
+                                        <option value="MONTHLY">Monatlich</option>
+                                        <option value="YEARLY">Jährlich</option>
+                                    </select>
+
+                                    <div class="repeatDetails mt-2" style="display: none;">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Intervall</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control repeatInterval" value="1"
+                                                        min="1" id="repeatInterval1" name="repeatInterval">
+                                                    <span class="input-group-text repeatIntervalLabel">Intervall</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Wöchentliche Wiederholung -->
-                                    <div class="weeklySelector mb-2" style="display: none;">
-                                        <label class="form-label">Wochentage</label>
-                                        <div class="btn-group d-flex flex-wrap" role="group">
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-mo-1"
-                                                value="MO" autocomplete="off" name="weekday-mo">
-                                            <label class="form-label btn btn-outline-primary"
-                                                for="weekday-mo-1">Mo</label>
+                                        <!-- Wöchentliche Wiederholung -->
+                                        <div class="weeklySelector mb-2" style="display: none;">
+                                            <label class="form-label">Wochentage</label>
+                                            <div class="btn-group d-flex flex-wrap" role="group">
+                                                <input type="checkbox" class="btn-check weekday" id="weekday-mo-1"
+                                                    value="MO" autocomplete="off" name="weekday-mo">
+                                                <label class="form-label btn btn-outline-primary"
+                                                    for="weekday-mo-1">Mo</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-tu-1"
-                                                value="TU" autocomplete="off" name="weekday-tu">
-                                            <label class="form-label btn btn-outline-primary"
-                                                for="weekday-tu-1">Di</label>
+                                                <input type="checkbox" class="btn-check weekday" id="weekday-tu-1"
+                                                    value="TU" autocomplete="off" name="weekday-tu">
+                                                <label class="form-label btn btn-outline-primary"
+                                                    for="weekday-tu-1">Di</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-we-1"
-                                                value="WE" autocomplete="off" name="weekday-we">
-                                            <label class="form-label btn btn-outline-primary"
-                                                for="weekday-we-1">Mi</label>
+                                                <input type="checkbox" class="btn-check weekday" id="weekday-we-1"
+                                                    value="WE" autocomplete="off" name="weekday-we">
+                                                <label class="form-label btn btn-outline-primary"
+                                                    for="weekday-we-1">Mi</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-th-1"
-                                                value="TH" autocomplete="off" name="weekday-th">
-                                            <label class="form-label btn btn-outline-primary"
-                                                for="weekday-th-1">Do</label>
+                                                <input type="checkbox" class="btn-check weekday" id="weekday-th-1"
+                                                    value="TH" autocomplete="off" name="weekday-th">
+                                                <label class="form-label btn btn-outline-primary"
+                                                    for="weekday-th-1">Do</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-fr-1"
-                                                value="FR" autocomplete="off" name="weekday-fr">
-                                            <label class="form-label btn btn-outline-primary"
-                                                for="weekday-fr-1">Fr</label>
+                                                <input type="checkbox" class="btn-check weekday" id="weekday-fr-1"
+                                                    value="FR" autocomplete="off" name="weekday-fr">
+                                                <label class="form-label btn btn-outline-primary"
+                                                    for="weekday-fr-1">Fr</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-sa-1"
-                                                value="SA" autocomplete="off" name="weekday-sa">
-                                            <label class="form-label btn btn-outline-primary"
-                                                for="weekday-sa-1">Sa</label>
+                                                <input type="checkbox" class="btn-check weekday" id="weekday-sa-1"
+                                                    value="SA" autocomplete="off" name="weekday-sa">
+                                                <label class="form-label btn btn-outline-primary"
+                                                    for="weekday-sa-1">Sa</label>
 
-                                            <input type="checkbox" class="btn-check weekday" id="weekday-su-1"
-                                                value="SU" autocomplete="off" name="weekday-su">
-                                            <label class="form-label btn btn-outline-primary"
-                                                for="weekday-su-1">So</label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Monatliche Wiederholung -->
-                                    <div class="monthlySelector mb-2" style="display: none;">
-                                        <label class="form-label">Monatliche Wiederholung</label>
-                                        <select class="form-select monthlyType" name="monthlyType">
-                                            <option value="BYMONTHDAY">Am gleichen Tag</option>
-                                            <option value="BYDAY">Am gleichen Wochentag</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Ende der Wiederholung -->
-                                    <div class="row mb-2">
-                                        <div class="col-12">
-                                            <label class="form-label">Ende der Wiederholung</label>
-                                            <div class="form-check">
-                                                <input type="radio" class="form-check-input repeatEndType"
-                                                    name="repeatEndType1" value="never" checked>
-                                                <label class="form-check-label">Nie</label>
+                                                <input type="checkbox" class="btn-check weekday" id="weekday-su-1"
+                                                    value="SU" autocomplete="off" name="weekday-su">
+                                                <label class="form-label btn btn-outline-primary"
+                                                    for="weekday-su-1">So</label>
                                             </div>
-                                            <div class="form-check">
-                                                <input type="radio" class="form-check-input repeatEndType"
-                                                    name="repeatEndType1" value="until">
-                                                <label class="form-check-label">Bis zum</label>
-                                                <input type="date" class="form-control form-control-sm mt-2 repeatUntil"
-                                                    name="repeatUntil">
+                                        </div>
+
+                                        <!-- Monatliche Wiederholung -->
+                                        <div class="monthlySelector mb-2" style="display: none;">
+                                            <label class="form-label">Monatliche Wiederholung</label>
+                                            <select class="form-select monthlyType" name="monthlyType">
+                                                <option value="BYMONTHDAY">Am gleichen Tag</option>
+                                                <option value="BYDAY">Am gleichen Wochentag</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Ende der Wiederholung -->
+                                        <div class="row mb-2">
+                                            <div class="col-12">
+                                                <label class="form-label">Ende der Wiederholung</label>
+                                                <div class="form-check">
+                                                    <input type="radio" class="form-check-input repeatEndType"
+                                                        name="repeatEndType1" value="never" checked>
+                                                    <label class="form-check-label">Nie</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input type="radio" class="form-check-input repeatEndType"
+                                                        name="repeatEndType1" value="until">
+                                                    <label class="form-check-label">Bis zum</label>
+                                                    <input type="date"
+                                                        class="form-control form-control-sm mt-2 repeatUntil"
+                                                        name="repeatUntil">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Erinnerung -->
-                        <div class="row mb-2">
-                            <div class="col-md-4">
-                                <label class="form-label">Erinnerung</label>
-                                <select class="form-select reminderTime" id="reminderTime1" name="reminderTime">
-                                    <option value="0">Keine Erinnerung</option>
-                                    <option value="10">10 Minuten vorher</option>
-                                    <option value="30" selected>30 Minuten vorher</option>
-                                    <option value="60">1 Stunde vorher</option>
-                                    <option value="120">2 Stunden vorher</option>
-                                    <option value="custom_9am_day_before">9 Uhr am Vortag</option>
-                                    <option value="1440">1 Tag vorher</option>
-                                    <option value="10080">1 Woche vorher</option>
-                                </select>
+                            <!-- Erinnerung -->
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">Erinnerung</label>
+                                    <select class="form-select reminderTime" id="reminderTime1" name="reminderTime">
+                                        <option value="0">Keine Erinnerung</option>
+                                        <option value="10">10 Minuten vorher</option>
+                                        <option value="30" selected>30 Minuten vorher</option>
+                                        <option value="60">1 Stunde vorher</option>
+                                        <option value="120">2 Stunden vorher</option>
+                                        <option value="custom_9am_day_before">9 Uhr am Vortag</option>
+                                        <option value="1440">1 Tag vorher</option>
+                                        <option value="10080">1 Woche vorher</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- URL -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Meeting-URL</label>
-                                <input type="url" class="form-control form-control-sm url" id="url1" name="url"
-                                    placeholder="https://meeting-link.de">
-                                <small class="text-muted">Link zur Veranstaltung oder zum Online-Meeting (z.B. Zoom,
-                                    Teams, Jitsi)</small>
+                            <!-- URL -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label">Meeting-URL</label>
+                                    <input type="url" class="form-control form-control-sm url" id="url1" name="url"
+                                        placeholder="https://meeting-link.de">
+                                    <small class="text-muted">Link zur Veranstaltung oder zum Online-Meeting (z.B. Zoom,
+                                        Teams, Jitsi)</small>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Anhang -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Anhang-URL</label>
-                                <input type="url" class="form-control form-control-sm attachment" id="attachment1"
-                                    name="attachment" placeholder="https://datei-link.de">
-                                <small class="text-muted">Link zu einer Datei (z.B. PDF, Bild, etc.)</small>
+                            <!-- Anhang -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label">Anhang-URL</label>
+                                    <input type="url" class="form-control form-control-sm attachment" id="attachment1"
+                                        name="attachment" placeholder="https://datei-link.de">
+                                    <small class="text-muted">Link zu einer Datei (z.B. PDF, Bild, etc.)</small>
+                                </div>
                             </div>
-                        </div>
+                        </div> <!-- Ende optionalFields1 -->
                     </form>
                 </div>
             </div>
@@ -304,14 +317,6 @@
                                 </label>
                                 <input type="text" class="form-control form-control-sm summary" required name="summary"
                                     data-error="Bitte geben Sie einen Titel ein">
-                            </div>
-                        </div>
-
-                        <!-- Ort -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Ort</label>
-                                <input type="text" class="form-control form-control-sm location" name="location">
                             </div>
                         </div>
 
@@ -364,141 +369,161 @@
                             </div>
                         </div>
 
-                        <!-- Beschreibung -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Beschreibung</label>
-                                <textarea class="form-control form-control-sm description" rows="2"
-                                    name="description"></textarea>
+                        <hr class="my-3">
+
+                        <button class="btn btn-outline-secondary w-100 mb-3 collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#optionalFields" aria-expanded="false"
+                            aria-controls="optionalFields">
+                            Weitere Optionen (Ort, Beschreibung, Wiederholung...) <i
+                                class="fas fa-chevron-down ms-1"></i>
+                        </button>
+
+                        <div class="collapse" id="optionalFields">
+                            <!-- Ort -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label">Ort</label>
+                                    <input type="text" class="form-control form-control-sm location" name="location">
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Wiederholung -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label h6 mb-2">Wiederholung</label>
-                                <select class="form-select repeatType" name="repeatType">
-                                    <option value="none">Keine Wiederholung</option>
-                                    <option value="DAILY">Täglich</option>
-                                    <option value="WEEKLY">Wöchentlich</option>
-                                    <option value="MONTHLY">Monatlich</option>
-                                    <option value="YEARLY">Jährlich</option>
-                                </select>
+                            <!-- Beschreibung -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label">Beschreibung</label>
+                                    <textarea class="form-control form-control-sm description" rows="2"
+                                        name="description"></textarea>
+                                </div>
+                            </div>
 
-                                <div class="repeatDetails mt-2" style="display: none;">
-                                    <div class="row mb-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Intervall</label>
-                                            <div class="input-group">
-                                                <input type="number" class="form-control repeatInterval" value="1"
-                                                    min="1" name="repeatInterval">
-                                                <span class="input-group-text repeatIntervalLabel">Intervall</span>
+                            <!-- Wiederholung -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label h6 mb-2">Wiederholung</label>
+                                    <select class="form-select repeatType" name="repeatType">
+                                        <option value="none">Keine Wiederholung</option>
+                                        <option value="DAILY">Täglich</option>
+                                        <option value="WEEKLY">Wöchentlich</option>
+                                        <option value="MONTHLY">Monatlich</option>
+                                        <option value="YEARLY">Jährlich</option>
+                                    </select>
+
+                                    <div class="repeatDetails mt-2" style="display: none;">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Intervall</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control repeatInterval" value="1"
+                                                        min="1" name="repeatInterval">
+                                                    <span class="input-group-text repeatIntervalLabel">Intervall</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Wöchentliche Wiederholung -->
-                                    <div class="weeklySelector mb-2" style="display: none;">
-                                        <label class="form-label">Wochentage</label>
-                                        <div class="btn-group d-flex flex-wrap" role="group">
-                                            <input type="checkbox" class="btn-check weekday" value="MO"
-                                                autocomplete="off" name="weekday-mo">
-                                            <label class="btn btn-outline-primary">Mo</label>
+                                        <!-- Wöchentliche Wiederholung -->
+                                        <div class="weeklySelector mb-2" style="display: none;">
+                                            <label class="form-label">Wochentage</label>
+                                            <div class="btn-group d-flex flex-wrap" role="group">
+                                                <input type="checkbox" class="btn-check weekday" value="MO"
+                                                    autocomplete="off" name="weekday-mo">
+                                                <label class="btn btn-outline-primary">Mo</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="TU"
-                                                autocomplete="off" name="weekday-tu">
-                                            <label class="btn btn-outline-primary">Di</label>
+                                                <input type="checkbox" class="btn-check weekday" value="TU"
+                                                    autocomplete="off" name="weekday-tu">
+                                                <label class="btn btn-outline-primary">Di</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="WE"
-                                                autocomplete="off" name="weekday-we">
-                                            <label class="btn btn-outline-primary">Mi</label>
+                                                <input type="checkbox" class="btn-check weekday" value="WE"
+                                                    autocomplete="off" name="weekday-we">
+                                                <label class="btn btn-outline-primary">Mi</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="TH"
-                                                autocomplete="off" name="weekday-th">
-                                            <label class="btn btn-outline-primary">Do</label>
+                                                <input type="checkbox" class="btn-check weekday" value="TH"
+                                                    autocomplete="off" name="weekday-th">
+                                                <label class="btn btn-outline-primary">Do</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="FR"
-                                                autocomplete="off" name="weekday-fr">
-                                            <label class="btn btn-outline-primary">Fr</label>
+                                                <input type="checkbox" class="btn-check weekday" value="FR"
+                                                    autocomplete="off" name="weekday-fr">
+                                                <label class="btn btn-outline-primary">Fr</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="SA"
-                                                autocomplete="off" name="weekday-sa">
-                                            <label class="btn btn-outline-primary">Sa</label>
+                                                <input type="checkbox" class="btn-check weekday" value="SA"
+                                                    autocomplete="off" name="weekday-sa">
+                                                <label class="btn btn-outline-primary">Sa</label>
 
-                                            <input type="checkbox" class="btn-check weekday" value="SU"
-                                                autocomplete="off" name="weekday-su">
-                                            <label class="btn btn-outline-primary">So</label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Monatliche Wiederholung -->
-                                    <div class="monthlySelector mb-2" style="display: none;">
-                                        <label class="form-label">Monatliche Wiederholung</label>
-                                        <select class="form-select monthlyType" name="monthlyType">
-                                            <option value="BYMONTHDAY">Am gleichen Tag</option>
-                                            <option value="BYDAY">Am gleichen Wochentag</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Ende der Wiederholung -->
-                                    <div class="row mb-2">
-                                        <div class="col-12">
-                                            <label class="form-label">Ende der Wiederholung</label>
-                                            <div class="form-check">
-                                                <input type="radio" class="form-check-input repeatEndType"
-                                                    name="repeatEndType" value="never" checked>
-                                                <label class="form-check-label">Nie</label>
+                                                <input type="checkbox" class="btn-check weekday" value="SU"
+                                                    autocomplete="off" name="weekday-su">
+                                                <label class="btn btn-outline-primary">So</label>
                                             </div>
-                                            <div class="form-check">
-                                                <input type="radio" class="form-check-input repeatEndType"
-                                                    name="repeatEndType" value="until">
-                                                <label class="form-check-label">Bis zum</label>
-                                                <input type="date" class="form-control form-control-sm mt-2 repeatUntil"
-                                                    name="repeatUntil">
+                                        </div>
+
+                                        <!-- Monatliche Wiederholung -->
+                                        <div class="monthlySelector mb-2" style="display: none;">
+                                            <label class="form-label">Monatliche Wiederholung</label>
+                                            <select class="form-select monthlyType" name="monthlyType">
+                                                <option value="BYMONTHDAY">Am gleichen Tag</option>
+                                                <option value="BYDAY">Am gleichen Wochentag</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Ende der Wiederholung -->
+                                        <div class="row mb-2">
+                                            <div class="col-12">
+                                                <label class="form-label">Ende der Wiederholung</label>
+                                                <div class="form-check">
+                                                    <input type="radio" class="form-check-input repeatEndType"
+                                                        name="repeatEndType" value="never" checked>
+                                                    <label class="form-check-label">Nie</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input type="radio" class="form-check-input repeatEndType"
+                                                        name="repeatEndType" value="until">
+                                                    <label class="form-check-label">Bis zum</label>
+                                                    <input type="date"
+                                                        class="form-control form-control-sm mt-2 repeatUntil"
+                                                        name="repeatUntil">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Erinnerung -->
-                        <div class="row mb-2">
-                            <div class="col-md-4">
-                                <label class="form-label">Erinnerung</label>
-                                <select class="form-select reminderTime" name="reminderTime">
-                                    <option value="0">Keine Erinnerung</option>
-                                    <option value="10">10 Minuten vorher</option>
-                                    <option value="30" selected>30 Minuten vorher</option>
-                                    <option value="60">1 Stunde vorher</option>
-                                    <option value="120">2 Stunden vorher</option>
-                                    <option value="custom_9am_day_before">9 Uhr am Vortag</option>
-                                    <option value="1440">1 Tag vorher</option>
-                                    <option value="10080">1 Woche vorher</option>
-                                </select>
+                            <!-- Erinnerung -->
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">Erinnerung</label>
+                                    <select class="form-select reminderTime" name="reminderTime">
+                                        <option value="0">Keine Erinnerung</option>
+                                        <option value="10">10 Minuten vorher</option>
+                                        <option value="30" selected>30 Minuten vorher</option>
+                                        <option value="60">1 Stunde vorher</option>
+                                        <option value="120">2 Stunden vorher</option>
+                                        <option value="custom_9am_day_before">9 Uhr am Vortag</option>
+                                        <option value="1440">1 Tag vorher</option>
+                                        <option value="10080">1 Woche vorher</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- URL -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Meeting-URL</label>
-                                <input type="url" class="form-control form-control-sm url" name="url"
-                                    placeholder="https://meeting-link.de">
-                                <small class="text-muted">Link zur Veranstaltung oder zum Online-Meeting (z.B. Zoom,
-                                    Teams, Jitsi)</small>
+                            <!-- URL -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label">Meeting-URL</label>
+                                    <input type="url" class="form-control form-control-sm url" name="url"
+                                        placeholder="https://meeting-link.de">
+                                    <small class="text-muted">Link zur Veranstaltung oder zum Online-Meeting (z.B. Zoom,
+                                        Teams, Jitsi)</small>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Anhang -->
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <label class="form-label">Anhang-URL</label>
-                                <input type="url" class="form-control form-control-sm attachment" name="attachment"
-                                    placeholder="https://datei-link.de">
-                                <small class="text-muted">Link zu einer Datei (z.B. PDF, Bild, etc.)</small>
+                            <!-- Anhang -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="form-label">Anhang-URL</label>
+                                    <input type="url" class="form-control form-control-sm attachment" name="attachment"
+                                        placeholder="https://datei-link.de">
+                                    <small class="text-muted">Link zu einer Datei (z.B. PDF, Bild, etc.)</small>
+                                </div>
                             </div>
-                        </div>
+                        </div> <!-- Ende optionalFields -->
                     </form>
                 </div>
             </div>
@@ -575,7 +600,8 @@
                     </div>
                     <div class="modal-body text-center">
                         <div id="qrcode" class="d-flex justify-content-center mb-3"></div>
-                        <p class="text-muted small">Scannen Sie diesen Code, um den Termin direkt auf das Smartphone zu übertragen.</p>
+                        <p class="text-muted small">Scannen Sie diesen Code, um den Termin direkt auf das Smartphone zu
+                            übertragen.</p>
                         <div class="alert alert-warning small d-none" id="qrCodeWarning">
                             <i class="fas fa-exclamation-triangle me-1"></i>
                             Der Termin enthält viele Daten. Ältere Scanner könnten Probleme haben.
@@ -597,8 +623,8 @@
                 title="Lädt die ICS-Datei herunter">
                 <i class="fas fa-download" aria-hidden="true"></i> ICS herunterladen
             </button>
-            <button class="btn btn-outline-dark me-2" id="generateQRCode" data-bs-toggle="tooltip" data-bs-placement="top"
-                title="Zeigt einen QR-Code zum Scannen an">
+            <button class="btn btn-outline-dark me-2" id="generateQRCode" data-bs-toggle="tooltip"
+                data-bs-placement="top" title="Zeigt einen QR-Code zum Scannen an">
                 <i class="fas fa-qrcode" aria-hidden="true"></i> QR-Code
             </button>
             <button class="btn btn-success" id="addEvent" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -613,9 +639,9 @@
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script type="module" src="js/components.js?v=2.8.2"></script>
+    <script type="module" src="js/components.js?v=2.9"></script>
     <script type="module">
-        import { initializeGenerator } from './js/modules/generatorInit.js?v=2.7';
+        import { initializeGenerator } from './js/modules/generatorInit.js?v=2.9';
         initializeGenerator();
     </script>
 </body>

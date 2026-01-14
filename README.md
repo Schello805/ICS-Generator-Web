@@ -29,6 +29,16 @@ Ein webbasiertes Tool zur Erstellung und Validierung von iCalendar-Dateien.
    ```
 3. Browser öffnen: `http://localhost:8000`
 
+### Alternative Start-Methoden
+**Node.js (npx):**
+```bash
+npx http-server -p 8000
+```
+**Java (JDK 18+):**
+```bash
+java -m jdk.httpserver.SimpleFileServer
+```
+
 ### Installation auf Linux Server (Apache/Nginx)
 1. Repository in das Web-Verzeichnis klonen:
    ```bash
@@ -50,6 +60,10 @@ Nutzen Sie das `deploy.sh` Script, um die Installation zu aktualisieren (resette
 - Keine serverseitige Verarbeitung (Privacy by Design)
 
 ## Changelog
+
+### Version 2.9 (2026-01-14)
+- **UI:** Optionale Felder in "Weitere Optionen" verschoben (Cleaner Interface).
+- **Docs:** Alternative Start-Optionen (npx, Java) hinzugefügt.
 
 ### Version 2.8.3 (2026-01-03)
 - **Import:** Verbesserte Erinnerungs-Erkennung aus ICS (VALARM/TRIGGER), inkl. RFC5545 Duration Support.
