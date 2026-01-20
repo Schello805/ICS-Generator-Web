@@ -57,9 +57,21 @@ Nutzen Sie das `deploy.sh` Script, um die Installation zu aktualisieren (resette
 ## Technologien
 - HTML5, CSS3 (Bootstrap 5)
 - Vanilla JavaScript (ES6+)
-- Keine serverseitige Verarbeitung (Privacy by Design)
+- PHP (nur für Feedback-Formular Mailer)
+- Keine Datenbank nötig (Privacy by Design)
+
+## Server Voraussetzungen (für Feedback-Funktion)
+Damit das Feedback-Formular Emails versenden kann, werden auf dem Server benötigt:
+- PHP
+- Ein Mail Transfer Agent (z.B. Postfix)
+`apt install php libapache2-mod-php postfix`
 
 ## Changelog
+
+### Version 2.10 (2026-01-20)
+- **Feature:** Feedback-Button hinzugefügt (unten rechts).
+- **Feature:** Feedback senden per Email (PHP-Backend) oder Mailto-Fallback.
+- **Fix:** Wochentage-Auswahl bei Termin-Duplizierung korrigiert.
 
 ### Version 2.9 (2026-01-14)
 - **UI:** Optionale Felder in "Weitere Optionen" verschoben (Cleaner Interface).

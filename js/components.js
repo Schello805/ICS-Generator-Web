@@ -4,6 +4,7 @@
  */
 
 import { initializeICSImportModal } from './modules/icsImport.js';
+import { initializeFeedback } from './modules/feedback.js';
 
 // Konfigurationsobjekt für die Navigation
 const NAV_CONFIG = {
@@ -127,7 +128,9 @@ document.addEventListener('DOMContentLoaded', function () {
         initializeTheme();
     });
     // Lade Footer
-    loadComponent('footer', 'components/footer.html?v=2.9');
+    loadComponent('footer', 'components/footer.html?v=2.9').then(() => {
+        initializeFeedback();
+    });
 
     // Nach dem Nachladen des Headers das Modal initialisieren!
     window.waitForElement('#icsImportModal').then(() => {

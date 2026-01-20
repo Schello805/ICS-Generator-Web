@@ -211,15 +211,16 @@ function updateEventNumbers() {
             if (input.id) {
                 const baseName = input.id.replace(/\d+$/, '');
                 const newId = `${baseName}${index + 1}`;
+                const currentId = input.id;
 
-                // Aktualisiere die ID
-                input.id = newId;
-
-                // Aktualisiere das zugehörige Label
-                const label = form.querySelector(`label[for="${input.id}"]`);
+                // Aktualisiere das zugehörige Label (suche mit der alten ID)
+                const label = form.querySelector(`label[for="${currentId}"]`);
                 if (label) {
                     label.setAttribute('for', newId);
                 }
+
+                // Aktualisiere die ID
+                input.id = newId;
             }
         });
 
