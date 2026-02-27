@@ -68,6 +68,9 @@ Damit das Feedback-Formular Emails versenden kann, werden auf dem Server benöti
 
 ## Changelog
 
+### Version 2.11 (2026-02-27)
+- **UI:** Fix für mobile Ansicht der Haupt-Buttons (Action-Buttons brechen nun auf kleinen Bildschirmen korrekt um).
+
 ### Version 2.10 (2026-01-20)
 - **Feature:** Feedback-Button hinzugefügt (unten rechts).
 - **Feature:** Feedback senden per Email (PHP-Backend) oder Mailto-Fallback.

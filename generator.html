@@ -614,17 +614,17 @@
             </div>
         </div>
 
-        <div class="btn-group mb-4">
-            <button class="btn btn-info me-2 text-white" id="previewEvents" data-bs-toggle="tooltip"
-                data-bs-placement="top" title="Zeigt eine Vorschau der Termine an">
+        <div class="d-flex flex-column flex-md-row gap-2 mb-4">
+            <button class="btn btn-info text-white" id="previewEvents" data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Zeigt eine Vorschau der Termine an">
                 <i class="fas fa-eye" aria-hidden="true"></i> Vorschau
             </button>
-            <button class="btn btn-primary me-2" id="downloadICS" data-bs-toggle="tooltip" data-bs-placement="top"
+            <button class="btn btn-primary" id="downloadICS" data-bs-toggle="tooltip" data-bs-placement="top"
                 title="Lädt die ICS-Datei herunter">
                 <i class="fas fa-download" aria-hidden="true"></i> ICS herunterladen
             </button>
-            <button class="btn btn-outline-dark me-2" id="generateQRCode" data-bs-toggle="tooltip"
-                data-bs-placement="top" title="Zeigt einen QR-Code zum Scannen an">
+            <button class="btn btn-outline-dark" id="generateQRCode" data-bs-toggle="tooltip" data-bs-placement="top"
+                title="Zeigt einen QR-Code zum Scannen an">
                 <i class="fas fa-qrcode" aria-hidden="true"></i> QR-Code
             </button>
             <button class="btn btn-success" id="addEvent" data-bs-toggle="tooltip" data-bs-placement="top"
