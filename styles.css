@@ -631,9 +631,10 @@ html {
 /* Feedback Button */
 .feedback-btn {
     position: fixed;
-    bottom: 20px;
+    bottom: 40px;
     right: 20px;
-    z-index: 1050; /* Same as Bootstrap modals/tooltips usually */
+    z-index: 1050;
+    /* Same as Bootstrap modals/tooltips usually */
     border-radius: 50px;
     padding: 12px 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
