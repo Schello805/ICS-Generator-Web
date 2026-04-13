@@ -23,7 +23,8 @@
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://analytics.schellenberger.biz;
+        connect-src 'self' https://analytics.schellenberger.biz;
         font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
         img-src 'self' data: https:">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -35,6 +36,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
     <script type="module" src="js/seo.js?v=2.12"></script>
+    <script defer src="js/matomo.js?v=2.12"></script>
 </head>
 
 <body>

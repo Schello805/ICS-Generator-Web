@@ -24,7 +24,8 @@
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://analytics.schellenberger.biz;
+        connect-src 'self' https://analytics.schellenberger.biz;
         font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
         img-src 'self' data: https:">
     <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
@@ -38,6 +39,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="manifest" href="manifest.json">
     <script type="module" src="js/seo.js?v=2.12"></script>
+    <script defer src="js/matomo.js?v=2.12"></script>
 </head>
 
 <body>

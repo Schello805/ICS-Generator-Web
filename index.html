@@ -25,9 +25,9 @@
     <meta name="twitter:image" content="">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        connect-src 'self' https://ics-generator.com;
+        connect-src 'self' https://ics-generator.com https://analytics.schellenberger.biz;
         style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://analytics.schellenberger.biz;
         font-src 'self' https://cdnjs.cloudflare.com;
         img-src 'self' data: https:">
     <title>ICS-Generator - Kalenderdateien einfach erstellen</title>
@@ -42,6 +42,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
     <script type="module" src="js/seo.js?v=2.12"></script>
+    <script defer src="js/matomo.js?v=2.12"></script>
 
 </head>
 
