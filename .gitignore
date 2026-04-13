@@ -1,5 +1,9 @@
 # OS specific
 .DS_Store
+.vscode/
+
+# Lokale/produktive Overrides (nicht in Git)
+js/local/
 .AppleDouble
 .LSOverride
 Thumbs.db
