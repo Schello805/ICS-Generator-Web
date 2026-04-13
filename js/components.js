@@ -16,9 +16,23 @@ const NAV_CONFIG = {
 // Fehlerbehandlung für fehlende Komponenten
 function handleComponentError(componentName, error) {
     console.error(`Error loading ${componentName}:`, error);
+    const isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+    const isOffline = typeof navigator !== 'undefined' && navigator && navigator.onLine === false;
+    const isStatus0 = error && typeof error.message === 'string' && error.message.includes('status: 0');
+
+    let hint = '';
+    if (isFileProtocol) {
+        hint = 'Tipp: Öffnen Sie die Seite über einen Webserver (http/https). Das direkte Öffnen als Datei (file://) blockiert Requests in vielen Browsern.';
+    } else if (isOffline) {
+        hint = 'Tipp: Sie scheinen offline zu sein. Bitte prüfen Sie die Internetverbindung und laden Sie die Seite neu.';
+    } else if (isStatus0) {
+        hint = 'Tipp: Status 0 deutet auf einen Netzwerk-/Blockierungsfehler hin (z.B. offline, Content-Blocker, Provider-Restriktionen). Prüfen Sie, ob `components/header.html` und `components/footer.html` direkt im Browser erreichbar sind.';
+    }
+
     return `<div class="alert alert-danger" role="alert">
         Fehler beim Laden der ${componentName}-Komponente. 
         Bitte laden Sie die Seite neu.
+        ${hint ? `<div class="small mt-2">${hint}</div>` : ''}
     </div>`;
 }
 
@@ -31,6 +45,9 @@ async function loadComponent(elementId, path) {
     }
 
     try {
+        if (window.location && window.location.protocol === 'file:') {
+            throw new Error(`[ICS Tools] HTTP error! status: 0 for ${path}`);
+        }
         const response = await fetch(path);
         if (!response.ok) {
             throw new Error(`[ICS Tools] HTTP error! status: ${response.status} for ${path}`);
