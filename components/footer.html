@@ -35,11 +35,13 @@
             </div>
         </div>
 
-        <!-- Copyright & Social Links -->
-        <div class="row mt-3 pt-3 border-top">
-            <div class="col-md-4 text-center text-md-start">
-                <p class="small mb-0">&copy; 2026 Michael Schellenberger - V2.12</p>
-            </div>
+	        <!-- Copyright & Social Links -->
+	        <div class="row mt-3 pt-3 border-top">
+	            <div class="col-md-4 text-center text-md-start">
+                <p class="small mb-0">&copy; 2026 Michael Schellenberger - <a href="#"
+                        class="text-light text-decoration-underline" data-bs-toggle="modal"
+                        data-bs-target="#changelogModal" title="Änderungsprotokoll anzeigen">V2.12</a></p>
+	            </div>
             <div class="col-md-4 text-center">
             </div>
             <div class="col-md-4 text-center text-md-end">
@@ -68,12 +70,20 @@
                     <h5 class="modal-title" id="changelogModalLabel">Änderungsprotokoll</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <h6 class="fw-bold">Version 2.11 (2026-02-27)</h6>
+	            <div class="modal-body">
+                    <h6 class="fw-bold">Version 2.12 (2026-04-13)</h6>
                     <ul>
-                        <li>UI: Fix für mobile Ansicht der Haupt-Buttons (Action-Buttons brechen nun auf kleinen
-                            Bildschirmen korrekt um).</li>
+                        <li>Mobile: ICS Export verbessert (Teilen-Dialog bevorzugt, Download-Fallback stabiler).</li>
+                        <li>SEO: Basis ergänzt (Canonical, OpenGraph/Twitter, robots.txt, sitemap.xml, H1 auf Startseite).</li>
+                        <li>System: Bessere Hinweise bei Header/Footer-Ladefehlern (z.B. file:// oder offline).</li>
+                        <li>Rechtliches: Impressum/Datenschutz technisch modernisiert (Module/Bootstrap 5).</li>
                     </ul>
+                    <hr>
+	                    <h6 class="fw-bold">Version 2.11 (2026-02-27)</h6>
+	                    <ul>
+	                        <li>UI: Fix für mobile Ansicht der Haupt-Buttons (Action-Buttons brechen nun auf kleinen
+	                            Bildschirmen korrekt um).</li>
+	                    </ul>
                     <hr>
                     <h6 class="fw-bold">Version 2.10 (2026-01-20)</h6>
                     <ul>
