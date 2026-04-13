@@ -47,22 +47,13 @@ export function initializeValidator() {
 
     // Auto-Fix Event Listener
     if (autoFixBtn) {
-        autoFixBtn.addEventListener('click', () => {
+        autoFixBtn.addEventListener('click', async () => {
             const currentContent = fileContentPre.textContent;
             const fixedContent = fixICSContent(currentContent);
             
-            // Download anbieten
-            const blob = new Blob([fixedContent], { type: 'text/calendar' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'fixed_calendar.ics';
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
+            // Export anbieten (Teilen bevorzugen)
+            const { exportICSFile } = await import('./fileDownloader.js');
+            await exportICSFile(fixedContent, { filename: 'fixed_calendar.ics', preferShare: true });
             
             // Validierung neu starten mit gefixter Version (optional, aber nice UX)
             fileContentPre.textContent = fixedContent;

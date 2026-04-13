@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Wenn die Seite unter einer anderen Domain gehostet wird, diese URL bitte anpassen.
+Sitemap: https://ics-generator.de/sitemap.xml
+

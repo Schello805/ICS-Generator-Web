@@ -3,6 +3,7 @@ import { createICSCalendar } from './icsGenerator.js';
 import { toggleDateTimeFields, initializeDateTimeFields } from './dateTimeManager.js';
 import { duplicateEvent, removeEvent } from './eventManager.js';
 import { escapeText } from './icsFormatter.js';
+import { exportICSFile } from './fileDownloader.js';
 
 // Funktion zur Validierung der Formulardaten
 function validateEventForm(event) {
@@ -346,17 +347,7 @@ export function initializeEventHandlers() {
             downloadICSBtn.addEventListener('click', async () => {
                 const events = document.querySelectorAll('.eventForm');
                 if (await handleValidationAndAction(events, async (icsContent) => {
-                    const blob = new Blob([icsContent], { type: 'text/calendar' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'termine.ics';
-                    document.body.appendChild(a);
-                    a.click();
-                    setTimeout(() => {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    }, 100);
+                    await exportICSFile(icsContent, { filename: 'termine.ics', preferShare: true });
                 })) return;
             });
         }
@@ -543,5 +534,4 @@ export function initializeEventHandlers() {
         showErrorMessage('Fehler beim Initialisieren der Event-Handler.');
     }
 }
-
 
