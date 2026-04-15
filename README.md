@@ -48,6 +48,8 @@ java -m jdk.httpserver.SimpleFileServer
    chmod +x deploy.sh
    ```
 
+Hinweis: Für SEO ist die kanonische Startseite `/` (nicht `/index.html`). Für Apache liegt dafür eine `.htaccess` bei, die `/index.html` per 301 auf `/` umleitet.
+
 ### Updates einspielen
 Nutzen Sie das `deploy.sh` Script, um die Installation zu aktualisieren (resettet auf Main-Branch Stand):
 ```bash
