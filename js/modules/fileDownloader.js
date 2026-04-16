@@ -32,12 +32,13 @@ export const exportICSFile = async (content, options = {}) => {
                     return;
                 }
             } catch (e) {
-                // Nutzer-Abbruch (z.B. iOS) nicht als Fehler behandeln
+                // Nutzer-Abbruch oder fehlende Berechtigung: kein Hard-Fail,
+                // sondern weiter zum Download-Fallback (Desktop/Mac Safari).
                 if (e && (e.name === 'AbortError' || e.name === 'NotAllowedError')) {
-                    console.log('ICS-Teilen abgebrochen');
-                    return;
+                    console.log('ICS-Teilen nicht durchgeführt, fallback auf Download');
+                } else {
+                    console.warn('Teilen nicht möglich, fallback auf Download:', e);
                 }
-                console.warn('Teilen nicht möglich, fallback auf Download:', e);
             }
         }
 
