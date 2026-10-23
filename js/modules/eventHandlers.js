@@ -2,7 +2,7 @@
 import { createICSCalendar } from './icsGenerator.js';
 import { toggleDateTimeFields, initializeDateTimeFields } from './dateTimeManager.js';
 import { duplicateEvent, removeEvent } from './eventManager.js';
-import { escapeText } from './icsFormatter.js';
+import { escapeHTML } from './security.js';
 import { exportICSFile } from './fileDownloader.js';
 
 // Funktion zur Validierung der Formulardaten
@@ -83,7 +83,7 @@ function showToast(message, type = 'info') {
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
-            ${message}
+            ${escapeHTML(message).replace(/&lt;br\s*\/?&gt;/gi, '<br>')}
         </div>
     `;
 
@@ -483,18 +483,22 @@ export function initializeEventHandlers() {
                     const allDay = form.querySelector('.allDay').checked;
                     const location = form.querySelector('.location').value;
                     const description = form.querySelector('.description').value;
+                    const timeZone = form.querySelector('.timeZone')?.value;
 
                     let timeString = 'Ganztägig';
                     if (!allDay) {
                         timeString = `${startTime} - ${endTime}`;
+                        if (timeZone && timeZone !== 'floating') {
+                            timeString += ` (${timeZone})`;
+                        }
                     }
 
                     previewContent.push(`
                         <div class="preview-event mb-3 p-3 border rounded">
-                            <h5 class="text-primary">${escapeText(summary)}</h5>
-                            <p class="mb-1"><strong><i class="fas fa-calendar-alt me-2"></i>Zeit:</strong> ${formatDate(startDate)} ${allDay ? '' : 'bis ' + formatDate(endDate)} (${timeString})</p>
-                            ${location ? `<p class="mb-1"><strong><i class="fas fa-map-marker-alt me-2"></i>Ort:</strong> ${escapeText(location)}</p>` : ''}
-                            ${description ? `<p class="mb-1"><strong><i class="fas fa-align-left me-2"></i>Beschreibung:</strong><br>${escapeText(description)}</p>` : ''}
+                            <h5 class="text-primary">${escapeHTML(summary)}</h5>
+                            <p class="mb-1"><strong><i class="fas fa-calendar-alt me-2"></i>Zeit:</strong> ${formatDate(startDate)} ${allDay ? '' : 'bis ' + formatDate(endDate)} (${escapeHTML(timeString)})</p>
+                            ${location ? `<p class="mb-1"><strong><i class="fas fa-map-marker-alt me-2"></i>Ort:</strong> ${escapeHTML(location)}</p>` : ''}
+                            ${description ? `<p class="mb-1"><strong><i class="fas fa-align-left me-2"></i>Beschreibung:</strong><br>${escapeHTML(description)}</p>` : ''}
                         </div>
                     `);
                 }

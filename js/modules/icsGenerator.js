@@ -2,6 +2,7 @@
 
 import { formatDate, formatDateTime, generateUID, escapeText, generateDTStamp } from './icsFormatter.js';
 import { validateICS } from './icsValidator.js';
+import { getTimezoneBlock } from './timezoneHelper.js';
 
 /**
  * Generiert die RRULE gemäß RFC 5545
@@ -91,6 +92,7 @@ export async function createICSCalendar(events) {
         
         // Validiere und sammle alle Events
         const usedUIDs = new Set();
+        const usedTimezones = new Set();
         for (const event of eventList) {
             // Pflichtfelder prüfen
             const summary = event.querySelector('.summary')?.value?.trim();
@@ -106,6 +108,7 @@ export async function createICSCalendar(events) {
             const repeatInterval = event.querySelector('.repeatInterval')?.value;
             const repeatUntil = event.querySelector('.repeatUntil')?.value;
             const reminderTime = event.querySelector('.reminderTime')?.value;
+            const timeZone = event.querySelector('.timeZone')?.value || 'Europe/Berlin';
             
             // UID prüfen/erzeugen
             let uid = event.getAttribute('data-uid');
@@ -151,8 +154,17 @@ export async function createICSCalendar(events) {
                 const dd = String(nextDay.getDate()).padStart(2, '0');
                 icsContent += `DTEND;VALUE=DATE:${yyyy}${mm}${dd}\r\n`;
             } else {
-                icsContent += `DTSTART:${startDate.replace(/-/g, '')}T${startTime.replace(':', '')}00\r\n`;
-                icsContent += `DTEND:${endDate.replace(/-/g, '')}T${endTime.replace(':', '')}00\r\n`;
+                if (timeZone === 'floating') {
+                    icsContent += `DTSTART:${startDate.replace(/-/g, '')}T${startTime.replace(':', '')}00\r\n`;
+                    icsContent += `DTEND:${endDate.replace(/-/g, '')}T${endTime.replace(':', '')}00\r\n`;
+                } else if (timeZone === 'UTC') {
+                    icsContent += `DTSTART:${startDate.replace(/-/g, '')}T${startTime.replace(':', '')}00Z\r\n`;
+                    icsContent += `DTEND:${endDate.replace(/-/g, '')}T${endTime.replace(':', '')}00Z\r\n`;
+                } else {
+                    icsContent += `DTSTART;TZID=${timeZone}:${startDate.replace(/-/g, '')}T${startTime.replace(':', '')}00\r\n`;
+                    icsContent += `DTEND;TZID=${timeZone}:${endDate.replace(/-/g, '')}T${endTime.replace(':', '')}00\r\n`;
+                    usedTimezones.add(timeZone);
+                }
             }
             
             icsContent += `SUMMARY:${escapeText(summary)}\r\n`;
@@ -260,8 +272,17 @@ export async function createICSCalendar(events) {
             throw new Error('Kein gültiger Termin gefunden!');
         }
         
+        // Timezone Definitionen voranstellen
+        let timezoneBlocks = '';
+        for (const tz of usedTimezones) {
+            const block = getTimezoneBlock(tz);
+            if (block) {
+                timezoneBlocks += block + '\r\n';
+            }
+        }
+        
         // ICS-Header/Footer
-        icsContent = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//ICS Generator//NONSGML ICS Generator//DE\r\n' + icsContent + 'END:VCALENDAR\r\n';
+        icsContent = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//ICS Generator//NONSGML ICS Generator//DE\r\n' + timezoneBlocks + icsContent + 'END:VCALENDAR\r\n';
         
         // Nach dem Erstellen: ICS-Datei validieren
         const validation = validateICS(icsContent.replace(/\r\n/g, '\n'));

@@ -7,6 +7,8 @@
  * Er unterstützt nun auch "Unfolding" (mehrzeilige Properties) und X-Properties.
  */
 
+import { escapeHTML, assertICSFileSize, MAX_ICS_FILE_BYTES } from './security.js';
+
 export function initializeValidator() {
     console.log('Initialisiere Validator...');
 
@@ -108,6 +110,12 @@ export function initializeValidator() {
             return;
         }
 
+        try {
+            assertICSFileSize(file);
+        } catch (error) {
+            showValidationMessage(escapeHTML(error.message), 'danger');
+            return;
+        }
         const reader = new FileReader();
         reader.onload = (e) => {
             console.log('Datei gelesen, validiere...');
@@ -130,7 +138,7 @@ export function initializeValidator() {
                 const isLookOkay = line.length > 0 && !line.startsWith(' '); 
                 let stepResult = isLookOkay ? 'ℹ️' : '...'; // Neutraler Status für Rohzeilen
                 
-                stepsHtml += `<li><code>${line.replace(/</g, '&lt;').replace(/>/g, '&gt;').substring(0, 100)}${line.length > 100 ? '...' : ''}</code>`;
+                stepsHtml += `<li><code>${escapeHTML(line.substring(0, 100))}${line.length > 100 ? '...' : ''}</code>`;
                 if (stepDesc) {
                     stepsHtml += ` <small><a href="${normUrl}" target="_blank">${stepDesc}</a></small>`;
                 }
@@ -165,14 +173,14 @@ export function initializeValidator() {
                 if (result.errors.length > 0) {
                     message += '<h5>Fehler:</h5><ul>';
                     result.errors.forEach(error => {
-                        message += `<li>${error}</li>`;
+                        message += `<li>${escapeHTML(error)}</li>`;
                     });
                     message += '</ul>';
                 }
                 if (result.warnings.length > 0) {
                     message += '<h5>Warnungen:</h5><ul>';
                     result.warnings.forEach(warning => {
-                        message += `<li>${warning}</li>`;
+                        message += `<li>${escapeHTML(warning)}</li>`;
                     });
                     message += '</ul>';
                 }
@@ -240,7 +248,7 @@ function showSectionMessage(section, message, type) {
     if (messagesContainer) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `validation-message ${type}`;
-        messageDiv.innerHTML = message;
+        messageDiv.textContent = message;
         messagesContainer.appendChild(messageDiv);
     }
 }
@@ -284,6 +292,9 @@ function parseTriggerDurationMinutes(rawValue) {
     return totalMinutes;
 }
 export function validateICS(icsContent) {
+    if (icsContent.length > MAX_ICS_FILE_BYTES || new TextEncoder().encode(icsContent).byteLength > MAX_ICS_FILE_BYTES) {
+        return { errors: ['Die ICS-Datei darf maximal 2 MiB groß sein.'], warnings: [] };
+    }
     // 1. Unfolding (Zeilenumbrüche entfernen)
     const rawLines = icsContent.split(/\r\n|\n|\r/);
     const lines = [];

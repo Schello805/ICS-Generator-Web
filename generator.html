@@ -35,8 +35,10 @@
     </script>
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
+        worker-src 'self';
         style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://analytics.schellenberger.biz;
+        script-src 'self' 'sha256-wcKxF4hq9bm0r+MF2+2psZtDwVP/PZGr2TMRH4XperI=' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://analytics.schellenberger.biz;
+        object-src 'none'; base-uri 'self'; form-action 'self';
         connect-src 'self' https://analytics.schellenberger.biz;
         font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
         img-src 'self' data: https:">
@@ -155,7 +157,7 @@
                         <button class="btn btn-outline-secondary w-100 mb-3 collapsed" type="button"
                             data-bs-toggle="collapse" data-bs-target="#optionalFields1" aria-expanded="false"
                             aria-controls="optionalFields1">
-                            Weitere Optionen (Ort, Beschreibung, Wiederholung...) <i
+                            Weitere Optionen (Ort, Beschreibung, Wiederholung, Zeitzone...) <i
                                 class="fas fa-chevron-down ms-1"></i>
                         </button>
 
@@ -275,11 +277,28 @@
                                 </div>
                             </div>
 
-                            <!-- Erinnerung -->
+                            <!-- Zeitzone und Erinnerung -->
                             <div class="row mb-2">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Zeitzone</label>
+                                    <select class="form-select form-select-sm timeZone" id="timeZone1" name="timeZone">
+                                        <option value="Europe/Berlin" selected>Europe/Berlin (Deutschland, MEZ/MESZ)</option>
+                                        <option value="Europe/Vienna">Europe/Vienna (Wien)</option>
+                                        <option value="Europe/Zurich">Europe/Zurich (Zürich)</option>
+                                        <option value="Europe/London">Europe/London (GMT/BST)</option>
+                                        <option value="Europe/Paris">Europe/Paris (Paris)</option>
+                                        <option value="UTC">UTC (Koordinierte Weltzeit)</option>
+                                        <option value="America/New_York">America/New_York (US Eastern Time)</option>
+                                        <option value="America/Chicago">America/Chicago (US Central Time)</option>
+                                        <option value="America/Denver">America/Denver (US Mountain Time)</option>
+                                        <option value="America/Los_Angeles">America/Los_Angeles (US Pacific Time)</option>
+                                        <option value="Asia/Tokyo">Asia/Tokyo (Japan / JST)</option>
+                                        <option value="floating">Ohne Zeitzone (Lokal / Floating Time)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
                                     <label class="form-label">Erinnerung</label>
-                                    <select class="form-select reminderTime" id="reminderTime1" name="reminderTime">
+                                    <select class="form-select form-select-sm reminderTime" id="reminderTime1" name="reminderTime">
                                         <option value="0">Keine Erinnerung</option>
                                         <option value="10">10 Minuten vorher</option>
                                         <option value="30" selected>30 Minuten vorher</option>
@@ -402,7 +421,7 @@
                         <button class="btn btn-outline-secondary w-100 mb-3 collapsed" type="button"
                             data-bs-toggle="collapse" data-bs-target="#optionalFields" aria-expanded="false"
                             aria-controls="optionalFields">
-                            Weitere Optionen (Ort, Beschreibung, Wiederholung...) <i
+                            Weitere Optionen (Ort, Beschreibung, Wiederholung, Zeitzone...) <i
                                 class="fas fa-chevron-down ms-1"></i>
                         </button>
 
@@ -514,11 +533,28 @@
                                 </div>
                             </div>
 
-                            <!-- Erinnerung -->
+                            <!-- Zeitzone und Erinnerung -->
                             <div class="row mb-2">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Zeitzone</label>
+                                    <select class="form-select form-select-sm timeZone" name="timeZone">
+                                        <option value="Europe/Berlin" selected>Europe/Berlin (Deutschland, MEZ/MESZ)</option>
+                                        <option value="Europe/Vienna">Europe/Vienna (Wien)</option>
+                                        <option value="Europe/Zurich">Europe/Zurich (Zürich)</option>
+                                        <option value="Europe/London">Europe/London (GMT/BST)</option>
+                                        <option value="Europe/Paris">Europe/Paris (Paris)</option>
+                                        <option value="UTC">UTC (Koordinierte Weltzeit)</option>
+                                        <option value="America/New_York">America/New_York (US Eastern Time)</option>
+                                        <option value="America/Chicago">America/Chicago (US Central Time)</option>
+                                        <option value="America/Denver">America/Denver (US Mountain Time)</option>
+                                        <option value="America/Los_Angeles">America/Los_Angeles (US Pacific Time)</option>
+                                        <option value="Asia/Tokyo">Asia/Tokyo (Japan / JST)</option>
+                                        <option value="floating">Ohne Zeitzone (Lokal / Floating Time)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
                                     <label class="form-label">Erinnerung</label>
-                                    <select class="form-select reminderTime" name="reminderTime">
+                                    <select class="form-select form-select-sm reminderTime" name="reminderTime">
                                         <option value="0">Keine Erinnerung</option>
                                         <option value="10">10 Minuten vorher</option>
                                         <option value="30" selected>30 Minuten vorher</option>
@@ -688,13 +724,10 @@
     <div id="footer"></div>
 
     <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
     <script type="module" src="js/components.js?v=2.9"></script>
-    <script type="module">
-        import { initializeGenerator } from './js/modules/generatorInit.js?v=2.9';
-        initializeGenerator();
-    </script>
+    <script type="module" src="js/generatorPage.js"></script>
 </body>
 
 </html>

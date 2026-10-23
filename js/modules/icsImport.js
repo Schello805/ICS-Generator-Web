@@ -1,5 +1,6 @@
 // ICS Import Module für Modal in generator.html
 import { validateICS } from './icsValidator.js';
+import { escapeHTML, assertICSFileSize } from './security.js';
 import { duplicateEvent } from './eventManager.js';
 import { toggleDateTimeFields } from './dateTimeManager.js';
 
@@ -63,6 +64,16 @@ function parseICSEvents(icsContent) {
             const idx = trimmed.indexOf(':');
             let key = trimmed.substring(0, idx).trim().toUpperCase();
             let value = trimmed.substring(idx + 1).trim();
+
+            if (trimmed.startsWith('DTSTART')) {
+                if (trimmed.includes('TZID=')) {
+                    const m = trimmed.match(/TZID=([^;:]+)/i);
+                    if (m) event['TZID'] = m[1].trim();
+                } else if (value.endsWith('Z')) {
+                    event['TZID'] = 'UTC';
+                }
+            }
+
             // Entferne Value-Parameter (z.B. DTSTART;VALUE=DATE → DTSTART)
             if (key.includes(';')) key = key.split(';')[0];
             event[key] = value;
@@ -140,11 +151,11 @@ function buildUnknownReminderModal(unknownReminders, reminderOptions) {
     modalEl.setAttribute('aria-hidden', 'true');
 
     const optionsHtml = reminderOptions
-        .map(o => `<option value="${String(o.value).replace(/"/g, '&quot;')}">${String(o.text).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</option>`)
+        .map(o => `<option value="${escapeHTML(o.value)}">${escapeHTML(o.text)}</option>`)
         .join('');
 
     const rowsHtml = unknownReminders.map((u) => {
-        const title = (u.summary || `Event ${u.index + 1}`).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const title = escapeHTML(u.summary || `Event ${u.index + 1}`);
         return `
             <div class="row align-items-center mb-2" data-unknown-reminder-row="1">
                 <div class="col-12 col-md-6">
@@ -257,13 +268,21 @@ function showValidationResult(resultHtml, isSuccess) {
 function handleICSFile(e) {
     const file = e.target.files[0];
     if (!file) return;
+    parsedEvents = [];
+    document.getElementById('confirmICSImportBtn').disabled = true;
+    try {
+        assertICSFileSize(file);
+    } catch (error) {
+        showValidationResult(escapeHTML(error.message), false);
+        return;
+    }
     const reader = new FileReader();
     reader.onload = ev => {
         const content = ev.target.result;
         // Automatisch validieren
         const validation = validateICS(content);
         if (validation.errors && validation.errors.length > 0) {
-            showValidationResult('Fehler:<br>' + validation.errors.join('<br>'), false);
+            showValidationResult('Fehler:<br>' + validation.errors.map(escapeHTML).join('<br>'), false);
             document.getElementById('confirmICSImportBtn').disabled = true;
             parsedEvents = [];
             return;
@@ -372,6 +391,22 @@ function importEventsToUI() {
                     // UNTIL: JJJJMMTTHHMMSSZ oder JJJJMMTT
                     const untilDate = until.substring(0, 8).replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
                     form.querySelector('.repeatUntil').value = untilDate;
+                }
+            }
+        }
+        if (form.querySelector('.timeZone')) {
+            const tzSelect = form.querySelector('.timeZone');
+            const eventTz = eventObj['TZID'];
+            if (eventTz) {
+                const hasTzOption = Array.from(tzSelect.options).some(o => o.value === eventTz);
+                if (hasTzOption) {
+                    tzSelect.value = eventTz;
+                } else {
+                    const opt = document.createElement('option');
+                    opt.value = eventTz;
+                    opt.textContent = `${eventTz} (Importiert)`;
+                    opt.selected = true;
+                    tzSelect.appendChild(opt);
                 }
             }
         }
@@ -497,7 +532,7 @@ function checkFieldMapping(form, selector, expected, icsKey) {
     // Für Checkboxen wie .allDay: checked statt value
     if (input && input.type === 'checkbox') val = input.checked;
     const match = (val == expected);
-    return `<li>${match ? "<span class='text-success'><i class='bi bi-check-circle-fill'></i></span>" : "<span class='text-danger'><i class='bi bi-x-circle-fill'></i></span>"} <code>${icsKey}</code> → <code>${selector}</code>: <b>${expected !== undefined && expected !== null && expected !== '' ? expected : '(leer)'}</b></li>`;
+    return `<li>${match ? "<span class='text-success'><i class='bi bi-check-circle-fill'></i></span>" : "<span class='text-danger'><i class='bi bi-x-circle-fill'></i></span>"} <code>${escapeHTML(icsKey)}</code> → <code>${escapeHTML(selector)}</code>: <b>${escapeHTML(expected !== undefined && expected !== null && expected !== '' ? expected : '(leer)')}</b></li>`;
 }
 
 // Optional: Mapping-Erklärung als Hilfetext einfügen, z.B. beim Anzeigen des Mapping-Resultats:

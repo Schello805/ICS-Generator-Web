@@ -40,7 +40,7 @@
 	            <div class="col-md-4 text-center text-md-start">
                 <p class="small mb-0">&copy; 2026 Michael Schellenberger - <a href="#"
                         class="text-light text-decoration-underline" data-bs-toggle="modal"
-                        data-bs-target="#changelogModal" title="Änderungsprotokoll anzeigen">V2.14</a></p>
+                        data-bs-target="#changelogModal" title="Änderungsprotokoll anzeigen">V2.15</a></p>
 	            </div>
             <div class="col-md-4 text-center">
             </div>
@@ -71,6 +71,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 	            <div class="modal-body">
+	                    <h6 class="fw-bold">Version 2.15 (2026-10-17)</h6>
+	                    <ul>
+	                        <li>Sicherheitsupdate (2026-10-23): XSS-Schutz, sichere Feedback-Mail-Header, Versand- und Dateigrößenlimits sowie verschärfte Skript-Richtlinien und Sicherheitstests.</li>
+	                        <li>Feature: Vollwertige Offline-PWA mit modernem Service Worker (Netzwerk-First &amp; Cache-Fallback).</li>
+	                        <li>Feature: Zeitzonen-Unterstützung mit RFC 5545 VTIMEZONE-Blöcken (Europe/Berlin, UTC, US, UK, Japan etc.).</li>
+	                        <li>Import/Vorschau: Zeitzonen werden beim ICS-Import automatisch erkannt und in der Terminvorschau angezeigt.</li>
+	                        <li>Tests: Automatische Unit-Tests für VTIMEZONE- und Zeitzonenerstellung ergänzt.</li>
+	                    </ul>
+                    <hr>
 	                    <h6 class="fw-bold">Version 2.14 (2026-07-21)</h6>
 	                    <ul>
 	                        <li>Export: Weitere Wege ergänzt (Teilen, E-Mail-Entwurf, ICS-Inhalt kopieren).</li>

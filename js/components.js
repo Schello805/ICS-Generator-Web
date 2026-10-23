@@ -35,7 +35,6 @@ function handleComponentError(componentName, error) {
         ${hint ? `<div class="small mt-2">${hint}</div>` : ''}
     </div>`;
 }
-
 // Komponenten laden mit Fehlerbehandlung
 async function loadComponent(elementId, path) {
     const element = document.getElementById(elementId);
@@ -205,18 +204,16 @@ try {
     // Ignorieren im Browser-Kontext
 }
 
-// Service Worker Kill Switch (um Caching-Probleme zu beheben)
-if ('serviceWorker' in navigator) {
+// Service Worker Registrierung für PWA / Offline-Fähigkeit
+if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.getRegistrations().then(function (registrations) {
-            for (let registration of registrations) {
-                console.log('Unregistering Service Worker:', registration);
-                registration.unregister();
-            }
-            // Optional: Reload erzwingen, falls noch ein SW aktiv war
-            if (registrations.length > 0) {
-                console.log('Old Service Worker found and unregistered. Please reload if changes are not visible.');
-            }
-        });
+        navigator.serviceWorker.register('./sw.js')
+            .then((registration) => {
+                console.info('[ICS Tools] Service Worker erfolgreich registriert:', registration.scope);
+            })
+            .catch((error) => {
+                console.warn('[ICS Tools] Service Worker Registrierung fehlgeschlagen:', error);
+            });
     });
 }
+

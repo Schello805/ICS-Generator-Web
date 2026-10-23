@@ -1,5 +1,6 @@
 // Validator Handlers Module
 import { validateICS } from './icsValidator.js';
+import { escapeHTML, assertICSFileSize } from './security.js';
 
 function updateValidationResults(results) {
     const validationList = document.getElementById('validationResults');
@@ -14,7 +15,7 @@ function updateValidationResults(results) {
             li.className = 'list-group-item list-group-item-danger';
             li.innerHTML = `
                 <i class="fas fa-times me-2"></i>
-                ${error}
+                ${escapeHTML(error)}
             `;
             validationList.appendChild(li);
         });
@@ -27,7 +28,7 @@ function updateValidationResults(results) {
             li.className = 'list-group-item list-group-item-warning';
             li.innerHTML = `
                 <i class="fas fa-exclamation-triangle me-2"></i>
-                ${warning}
+                ${escapeHTML(warning)}
             `;
             validationList.appendChild(li);
         });
@@ -55,6 +56,12 @@ function displayFileContent(content) {
 
 function handleFileUpload(file) {
     if (!file) return;
+    try {
+        assertICSFileSize(file);
+    } catch (error) {
+        updateValidationResults({ errors: [error.message], warnings: [] });
+        return;
+    }
 
     const reader = new FileReader();
     reader.onload = (e) => {

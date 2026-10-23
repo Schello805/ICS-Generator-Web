@@ -70,7 +70,27 @@ Damit das Feedback-Formular Emails versenden kann, werden auf dem Server benöti
 - Ein Mail Transfer Agent (z.B. Postfix)
 `apt install php libapache2-mod-php postfix`
 
+### Sicherheit
+- ICS-Dateien werden bis maximal 2 MiB verarbeitet; importierte Texte werden für HTML-Ausgaben escaped.
+- Feedback benötigt PHP ab 7.3, akzeptiert ausschließlich JSON (maximal 64 KiB), Nachrichten bis 10000 Bytes und geprüfte E-Mail-Adressen. Der feste Absender ist `noreply@ics-generator.de` und muss vom Mailserver unterstützt werden.
+- Ein Dateilimit mit exklusiver Sperre erlaubt fünf Feedback-Versuche je IP und insgesamt 100 je Stunde. Die Quoten liegen außerhalb des Webverzeichnisses im PHP-Temp-Verzeichnis; dieses muss beschreibbar sein. Bei Speicherfehlern wird nicht versendet. Bei mehreren Servern ist ein gemeinsamer Rate-Limiter nötig; hinter einem Proxy zählt standardmäßig dessen `REMOTE_ADDR` (keine ungeprüften Forwarded-Header übernehmen).
+- Apache setzt über `.htaccess` `nosniff`, einen Einbettungsschutz und eine Referrer-Policy; bei Nginx diese Header entsprechend konfigurieren.
+- Inline-JavaScript ist durch die CSP gesperrt. Bei Änderungen an JSON-LD den zugehörigen SHA-256-Hash in der CSP aktualisieren. CDN-Skripte besitzen SRI-Hashes; lokale Matomo-Konfigurationen müssen ohne Inline-Skripte und `eval` auskommen.
+- Tests: `npm test` und mit installiertem PHP `php test/feedback.test.php`. GitHub Actions führt beide Prüfungen aus. Automatische Tests versenden keine E-Mails.
+
 ## Changelog
+
+### Sicherheitsupdate (2026-10-23)
+- Sicherheitskorrekturen für ICS-Import, Vorschau und Validierung (XSS), Feedback-Header, Versandlimits, Dateigrößen und Skript-Richtlinien; Regressionstests ergänzt.
+
+### Version 2.15 (2026-10-17)
+- **PWA/Offline:** Vollwertige Offline-Nutzung über modernen Service Worker (`sw.js`). Die Web-App funktioniert nun auch ohne Internetverbindung komplett lokal.
+- **Zeitzonen (`VTIMEZONE`):** Volle Unterstützung für Zeitzonen nach RFC 5545 mit Standard-`VTIMEZONE`-Definitionen (Europe/Berlin, UTC, US, UK, Japan etc.).
+- **Import & Vorschau:** Importierte Zeitzonen werden erkannt und übernommen; Terminvorschau zeigt die Zeitzone an.
+
+### Version 2.14 (2026-07-21)
+- **Export:** Erweiterte Export-Optionen (Teilen, E-Mail-Entwurf, ICS-Inhalt kopieren).
+- **Tests & CI:** Automatische Unit-Tests und GitHub Actions CI hinzugefügt.
 
 ### Version 2.11 (2026-02-27)
 - **UI:** Fix für mobile Ansicht der Haupt-Buttons (Action-Buttons brechen nun auf kleinen Bildschirmen korrekt um).

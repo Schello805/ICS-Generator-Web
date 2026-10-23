@@ -88,6 +88,74 @@ test('createICSCalendar builds and validates an all-day event', async () => {
     assert.match(ics, /END:VCALENDAR/);
 });
 
+test('createICSCalendar builds timed event with Europe/Berlin VTIMEZONE', async () => {
+    const event = createEventForm({
+        '.summary': { value: 'Projekt-Kickoff' },
+        '.startDate': { value: '2026-07-22' },
+        '.endDate': { value: '2026-07-22' },
+        '.allDay': { checked: false },
+        '.startTime': { value: '10:00' },
+        '.endTime': { value: '11:30' },
+        '.timeZone': { value: 'Europe/Berlin' },
+        '.location': { value: 'Raum A' },
+        '.description': { value: '' },
+        '.url': { value: '' },
+        '.repeatType': { value: 'none' },
+        '.repeatInterval': { value: '' },
+        '.repeatUntil': { value: '' },
+        '.reminderTime': { value: '0' },
+        '.attachment': { files: [], value: '' }
+    });
+
+    const ics = await generator.createICSCalendar([event]);
+
+    assert.match(ics, /BEGIN:VTIMEZONE/);
+    assert.match(ics, /TZID:Europe\/Berlin/);
+    assert.match(ics, /DTSTART;TZID=Europe\/Berlin:20260722T100000/);
+    assert.match(ics, /DTEND;TZID=Europe\/Berlin:20260722T113000/);
+    assert.match(ics, /END:VTIMEZONE/);
+    assert.match(ics, /END:VCALENDAR/);
+
+    const validation = validator.validateICS(ics.replace(/\r\n/g, '\n'));
+    assert.deepEqual(validation.errors, []);
+});
+
+test('createICSCalendar builds timed event with UTC and floating time', async () => {
+    const utcEvent = createEventForm({
+        '.summary': { value: 'UTC Event' },
+        '.startDate': { value: '2026-07-22' },
+        '.endDate': { value: '2026-07-22' },
+        '.allDay': { checked: false },
+        '.startTime': { value: '14:00' },
+        '.endTime': { value: '15:00' },
+        '.timeZone': { value: 'UTC' },
+        '.reminderTime': { value: '0' }
+    });
+
+    const floatingEvent = createEventForm({
+        '.summary': { value: 'Floating Event' },
+        '.startDate': { value: '2026-07-23' },
+        '.endDate': { value: '2026-07-23' },
+        '.allDay': { checked: false },
+        '.startTime': { value: '09:00' },
+        '.endTime': { value: '10:00' },
+        '.timeZone': { value: 'floating' },
+        '.reminderTime': { value: '0' }
+    });
+
+    const ics = await generator.createICSCalendar([utcEvent, floatingEvent]);
+
+    assert.doesNotMatch(ics, /BEGIN:VTIMEZONE/);
+    assert.match(ics, /DTSTART:20260722T140000Z/);
+    assert.match(ics, /DTEND:20260722T150000Z/);
+    assert.match(ics, /DTSTART:20260723T090000/);
+    assert.match(ics, /DTEND:20260723T100000/);
+
+    const validation = validator.validateICS(ics.replace(/\r\n/g, '\n'));
+    assert.deepEqual(validation.errors, []);
+});
+
+
 test('exportICSFile forceDownload skips share API and triggers download', async () => {
     const clickedLinks = [];
     const createdUrls = [];

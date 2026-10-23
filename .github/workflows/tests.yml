@@ -21,3 +21,16 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Check PHP syntax and feedback security
+        run: |
+          php -l feedback.php
+          php -l feedback-security.php
+          php -l test/feedback.test.php
+          php test/feedback.test.php

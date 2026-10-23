@@ -47,11 +47,11 @@ function createFeedbackModal() {
                     <form id="feedbackForm">
                         <div class="mb-3">
                             <label for="feedbackMessage" class="form-label">Deine Nachricht / Wunsch</label>
-                            <textarea class="form-control" id="feedbackMessage" rows="4" placeholder="Was kann ich besser machen?"></textarea>
+                            <textarea class="form-control" id="feedbackMessage" rows="4" maxlength="10000" placeholder="Was kann ich besser machen?"></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="feedbackEmail" class="form-label">E-Mail (optional, für Rückfragen)</label>
-                            <input type="email" class="form-control" id="feedbackEmail" placeholder="name@beispiel.de">
+                            <input type="email" class="form-control" id="feedbackEmail" maxlength="254" placeholder="name@beispiel.de">
                         </div>
                     </form>
                 </div>
@@ -87,6 +87,11 @@ async function sendFeedback() {
 
     if (!message) {
         alert('Bitte geben Sie eine Nachricht ein.');
+        return;
+    }
+
+    if (new TextEncoder().encode(message).byteLength > 10000 || !emailInput.checkValidity()) {
+        alert('Bitte eine gültige E-Mail-Adresse und eine Nachricht mit maximal 10000 Bytes eingeben.');
         return;
     }
 

@@ -1,70 +1,59 @@
 <?php
-/**
- * Simple PHP Feedback Script
- * Receives JSON data and sends an email via sendmail/mail().
- */
 
-header('Content-Type: application/json');
+require_once __DIR__ . '/feedback-security.php';
 
-// Configuration
-$toEmail = 'info@schellenberger.biz';
-$subjectPrefix = '[ICS Tool Feedback]';
+header('Content-Type: application/json; charset=UTF-8');
+header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');
 
-// Only allow POST
+function feedbackResponse($status, $message) {
+    http_response_code($status);
+    echo json_encode(['success' => $status === 200, 'message' => $message]);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method Not Allowed']);
-    exit;
+    header('Allow: POST');
+    feedbackResponse(405, 'Method Not Allowed');
 }
 
-// Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
-
-if (!$input) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid JSON']);
-    exit;
+$contentType = strtolower(trim(explode(';', $_SERVER['CONTENT_TYPE'] ?? '')[0]));
+if ($contentType !== 'application/json') {
+    feedbackResponse(415, 'JSON erforderlich.');
 }
 
-// Extract and sanitize data
-$message = isset($input['message']) ? trim($input['message']) : '';
-$userEmail = isset($input['email']) ? trim($input['email']) : '';
-
-if (empty($message)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Nachricht darf nicht leer sein.']);
-    exit;
+$maxBytes = 65536;
+if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > $maxBytes) {
+    feedbackResponse(413, 'Anfrage zu groß.');
+}
+$rawInput = file_get_contents('php://input', false, null, 0, $maxBytes + 1);
+if ($rawInput === false || strlen($rawInput) > $maxBytes) {
+    feedbackResponse(413, 'Anfrage zu groß.');
 }
 
-// Prepare Email
-$subject = $subjectPrefix . ' Neuer Nutzerwunsch / Feedback';
-$body = "Neues Feedback vom ICS Generator:\n\n";
-$body .= "Nachricht:\n" . $message . "\n\n";
-
-if (!empty($userEmail)) {
-    $body .= "Antwort an: " . $userEmail . "\n";
-    $headers = 'From: ' . $userEmail . "\r\n" .
-               'Reply-To: ' . $userEmail . "\r\n";
-} else {
-    $body .= "(Anonym gesendet)\n";
-    // Set a default sender to ensure delivery, or use the server's default
-    // Using a noreply address is safer to avoid spam filters blocking "empty" from
-    $headers = 'From: noreply@' . $_SERVER['HTTP_HOST'] . "\r\n";
-}
-
-$headers .= 'X-Mailer: PHP/' . phpversion();
-
-// Send Email
 try {
-    $success = mail($toEmail, $subject, $body, $headers);
-    
-    if ($success) {
-        echo json_encode(['success' => true]);
-    } else {
-        throw new Exception('Mail function returned false.');
+    [$message, $userEmail] = validateFeedbackInput(json_decode($rawInput, true));
+} catch (InvalidArgumentException $error) {
+    feedbackResponse(400, $error->getMessage());
+}
+
+try {
+    $quotaDirectory = sys_get_temp_dir() . '/ics-feedback-' . hash('sha256', __DIR__);
+    if (!is_dir($quotaDirectory) && !mkdir($quotaDirectory, 0700, true) && !is_dir($quotaDirectory)) {
+        throw new RuntimeException('Rate limit directory unavailable.');
     }
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Serverfehler beim Senden der Mail.']);
-    error_log("Feedback Error: " . $e->getMessage());
+    if (!consumeFeedbackQuota($quotaDirectory . '/quota.json', $_SERVER['REMOTE_ADDR'] ?? 'unknown', time())) {
+        header('Retry-After: 3600');
+        feedbackResponse(429, 'Zu viele Nachrichten. Bitte später erneut versuchen.');
+    }
+
+    $body = "Neues Feedback vom ICS Generator:\n\nNachricht:\n" . $message . "\n\n";
+    $body .= $userEmail !== '' ? "Antwort an: " . $userEmail . "\n" : "(Anonym gesendet)\n";
+    if (!mail('info@schellenberger.biz', '[ICS Tool Feedback] Neuer Nutzerwunsch / Feedback', $body, feedbackHeaders($userEmail))) {
+        throw new RuntimeException('Mail delivery failed.');
+    }
+    feedbackResponse(200, 'Vielen Dank für Dein Feedback!');
+} catch (Throwable $error) {
+    error_log('Feedback Error: ' . $error->getMessage());
+    feedbackResponse(503, 'Feedback momentan nicht verfügbar. Bitte später erneut versuchen.');
 }
